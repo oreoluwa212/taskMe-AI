@@ -5,12 +5,10 @@ import { bluedot, greendot, hero2 } from "../../../public";
 function TryItSection() {
   return (
     <div className="relative bg-white w-full h-fit font-lato flex flex-col items-center text-center px-5 py-20">
-      {/* Blue dot */}
       <div className="absolute top-5 left-10 w-6 h-6 mt-2 mr-2">
         <img src={bluedot} alt="" />
       </div>
 
-      {/* Content */}
       <div className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-full my-8">
         Free Trial
       </div>
