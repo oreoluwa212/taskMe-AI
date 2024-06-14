@@ -5,7 +5,7 @@ import { bluedot, greendot, hero2 } from "../../../public";
 function TryItSection() {
   return (
     <div className="relative bg-white w-full h-fit font-lato flex flex-col items-center text-center px-5 py-20">
-      <div className="absolute top-5 left-10 w-6 h-6 mt-2 mr-2">
+      <div className="absolute top-10 left-10 w-4 h-4 mt-2 mr-2">
         <img src={bluedot} alt="" />
       </div>
 
