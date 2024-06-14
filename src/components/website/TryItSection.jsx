@@ -8,8 +8,7 @@ function TryItSection() {
       <div className="absolute top-10 left-10 w-4 h-4 mt-2 mr-2">
         <img src={bluedot} alt="" />
       </div>
-
-      <div className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-full my-8">
+      <div className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-full my-12">
         Free Trial
       </div>
       <H1Text
