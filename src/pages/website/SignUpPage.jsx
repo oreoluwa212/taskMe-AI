@@ -27,7 +27,9 @@ const SignUpPage = () => {
         <Link to="/" className="absolute top-4 right-4 text-white text-lg">
           <img src={logo} alt="" />
         </Link>
-        <h2 className="text-2xl font-semibold mb-4 text-center">Sign Up</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">
+          Create your free account
+        </h2>
         <div className="bg-white p-8 rounded shadow-lg w-80 mt-16 md:mt-0">
           <FormComponent
             fields={fields}
