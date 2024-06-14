@@ -5,9 +5,10 @@ import FormComponent from "../../components/website/cards/FormComponent";
 
 const SignUpPage = () => {
   const fields = [
-    { type: "text", placeholder: "Username", label: "Username" },
-    { type: "email", placeholder: "Email", label: "Email" },
-    { type: "password", placeholder: "Password", label: "Password" },
+    { type: "text", label: "First Name" },
+    { type: "text", label: "Last Name" },
+    { type: "email", label: "Email Address" },
+    { type: "password", label: "Password" },
   ];
 
   const handleSubmit = (e) => {

@@ -10,8 +10,7 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
           </label>
           <input
             type={field.type}
-            placeholder={field.placeholder}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded outline-none"
           />
         </div>
       ))}
