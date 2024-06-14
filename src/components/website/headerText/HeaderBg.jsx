@@ -6,4 +6,4 @@ function HeaderBg({ headerText }) {
   );
 }
 
-export default HeaderBg
+export default HeaderBg;

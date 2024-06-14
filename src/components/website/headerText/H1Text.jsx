@@ -7,4 +7,4 @@ function H1Text({ h2Text, pText }) {
   );
 }
 
-export default H1Text
+export default H1Text;

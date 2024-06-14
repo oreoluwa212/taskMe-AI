@@ -11,11 +11,11 @@ const LandingPage = () => {
   return (
     <Fragment>
       <NavBar />
-      <HeroSection/>
-      <FeaturesSection/>
-      <HowItWorks/>
-      <TryItSection/>
-      <Footer/>
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorks />
+      <TryItSection />
+      <Footer />
     </Fragment>
   );
 };
