@@ -2,7 +2,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="bg-secondary text-white px-[10%] mt-5 w-full py-10">
+    <div className="bg-secondary text-white px-[10%] mt-5 w-full py-10 flex flex-col gap-8">
       <div className="container mx-auto flex lgss:flex-row flex-col justify-between items-start px-6">
         <div className="flex flex-col gap-8">
           <h2 className="text-2xl font-semibold mb-2">TaskMe</h2>
@@ -26,7 +26,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="text-center mt-10">
+      <div className="text-center mt-16">
         © 2024 TaskMe. All Rights Reserved.
       </div>
     </div>
