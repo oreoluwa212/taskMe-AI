@@ -13,14 +13,11 @@ const LoginPage = () => {
         />
       </div>
       <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center relative p-4">
-        <Link
-          to="/"
-          className="absolute top-4 right-4"
-        >
+        <Link to="/" className="absolute top-4 right-4">
           <img src={logo} alt="" />
         </Link>
+        <h2 className="text-2xl mb-4 text-center">Login</h2>
         <div className="bg-white p-8 rounded shadow-lg w-80 mt-16 md:mt-0">
-          <h2 className="text-2xl mb-4 text-center">Login</h2>
           <form>
             <input
               type="email"
