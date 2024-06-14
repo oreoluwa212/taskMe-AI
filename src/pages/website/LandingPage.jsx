@@ -5,6 +5,7 @@ import HeroSection from "../../components/website/HeroSection";
 import FeaturesSection from "../../components/website/FeaturesSection";
 import HowItWorks from "../../components/website/HowItWorks";
 import Footer from "../../components/website/Footer";
+import TryItSection from "../../components/website/TryItSection";
 
 const LandingPage = () => {
   return (
@@ -13,6 +14,7 @@ const LandingPage = () => {
       <HeroSection/>
       <FeaturesSection/>
       <HowItWorks/>
+      <TryItSection/>
       <Footer/>
     </Fragment>
   );
