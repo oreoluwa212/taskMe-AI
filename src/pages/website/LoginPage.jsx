@@ -5,8 +5,8 @@ import FormComponent from "../../components/website/cards/FormComponent";
 
 const LoginPage = () => {
   const fields = [
-    { type: "email", placeholder: "Email", label: "Email" },
-    { type: "password", placeholder: "Password", label: "Password" },
+    { type: "email", label: "Email Address" },
+    { type: "password", label: "Password" },
   ];
 
   const handleSubmit = (e) => {
