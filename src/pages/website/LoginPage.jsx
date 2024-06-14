@@ -26,27 +26,23 @@ const LoginPage = () => {
         <Link to="/" className="absolute top-4 right-4 text-white text-lg">
           <img src={logo} alt="" />
         </Link>
-        <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
-        <div className="bg-white p-8 rounded shadow-lg w-80 mt-16 md:mt-0">
+        <h2 className="text-2xl font-semibold mb-4 text-center">
+          Welcome back
+        </h2>
+        <div className="bg-white w-[60%] px-16 p-8 rounded shadow-lg mt-16 md:mt-0">
           <FormComponent
             fields={fields}
             buttonText="Login"
             onSubmit={handleSubmit}
           />
-          <div className="mt-4 text-center">
-            <p className="text-gray-700">Don’t have an account?</p>
-            <Link to="/signup" className="text-blue-500 hover:underline">
+          <div className="mt-4 text-center flex justify-center gap-2">
+            <p className="text-gray-700">Don&apos;t have an account?</p>
+            <Link to="/signup" className="text-primary hover:underline">
               Create an account
             </Link>
           </div>
         </div>
       </div>
-      <Link
-        to="/"
-        className="md:hidden absolute bottom-4 right-4 text-lg text-white"
-      >
-        Home
-      </Link>
     </div>
   );
 };

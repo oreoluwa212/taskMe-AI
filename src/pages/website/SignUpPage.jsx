@@ -30,15 +30,15 @@ const SignUpPage = () => {
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Create your free account
         </h2>
-        <div className="bg-white p-8 rounded shadow-lg w-80 mt-16 md:mt-0">
+        <div className="bg-white w-[60%] px-16 p-8 rounded shadow-lg mt-16 md:mt-0">
           <FormComponent
             fields={fields}
             buttonText="Sign Up"
             onSubmit={handleSubmit}
           />
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center justify-center flex gap-2">
             <p className="text-gray-700">Already have an account?</p>
-            <Link to="/login" className="text-blue-500 hover:underline">
+            <Link to="/login" className="text-primary hover:underline">
               Log in
             </Link>
           </div>
