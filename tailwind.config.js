@@ -4,14 +4,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#B42318",
-        secondary: "#475467",
+        primary: "#0034EE",
+        secondary: "#00114F",
         bg: "#F9FAFB",
-        pinkBg: "#FEF3F2",
+        dashboardBg: "#FAFAFA",
         grey: "#1D2939",
       },
       fontFamily: {
-        inter: ["Inter", "sans-serif"],
+        lato: ["Lato", "sans-serif"],
+        bricolageGrotesque: ["Bricolage Grotesque", "sans-serif"],
       },
       screens: {
         xs: "480px",
