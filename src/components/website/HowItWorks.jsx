@@ -17,11 +17,15 @@ function HowItWorks() {
         alt="Green Dot"
         className="absolute top-10 right-10 w-5 h-5"
       />
+      <div className="pt-10">
       <HeaderBg headerText={"How it works"} />
+      </div>
+      <div className="w-full mt-6">
       <H1Text
         h2Text={"Inside TaskMe's Engine"}
         pText={"Explore our very seamless process."}
-      />
+        />
+        </div>
       <div className="flex lgss:flex-row flex-col justify-around items-center w-full px-[10%] mt-10">
         <HowItWorksCard
           step={"Step 1"}
