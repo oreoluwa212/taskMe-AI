@@ -70,7 +70,7 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
           />
           {field.type === "password" && (
             <span
-              className="absolute right-2 top-9 cursor-pointer"
+              className="absolute right-4 top-11 text-[#6C7175] cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -83,7 +83,7 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
       ))}
       <button
         type="submit"
-        className="w-full bg-primary text-white p-2 rounded hover:bg-blue-600"
+        className="w-full bg-primary text-white mt-6 p-2 rounded hover:bg-blue-600"
       >
         {buttonText}
       </button>

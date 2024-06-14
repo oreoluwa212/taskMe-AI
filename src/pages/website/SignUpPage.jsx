@@ -31,7 +31,7 @@ const SignUpPage = () => {
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Create your free account
         </h2>
-        <div className="bg-white w-[60%] px-16 p-8 rounded shadow-lg mt-16 md:mt-0">
+        <div className="bg-white w-[60%] px-10 p-8 rounded shadow-lg mt-16 md:mt-0">
           <FormComponent
             fields={fields}
             buttonText="Sign Up"

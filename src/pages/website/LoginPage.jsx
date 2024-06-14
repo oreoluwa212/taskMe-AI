@@ -29,7 +29,7 @@ const LoginPage = () => {
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Welcome back
         </h2>
-        <div className="bg-white w-[60%] px-16 p-8 rounded shadow-lg mt-16 md:mt-0">
+        <div className="bg-white w-[60%] px-10 p-8 rounded shadow-custom-xl mt-16 md:mt-0">
           <FormComponent
             fields={fields}
             buttonText="Login"
