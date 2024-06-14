@@ -9,13 +9,11 @@ function Footer() {
           <p>Helping you boost your productivity level.</p>
         </div>
         <div className="flex lgss:w-[30%] w-full mt-5 justify-between">
-          <div>
             <ul className="flex flex-col gap-4">
               <li>Home</li>
               <li>About</li>
               <li>Features</li>
             </ul>
-          </div>
             <ul className="flex flex-col gap-4">
               <li>Contact</li>
               <li>Privacy Policy</li>
