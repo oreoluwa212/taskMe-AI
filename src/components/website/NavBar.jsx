@@ -10,7 +10,7 @@ function NavBar() {
         <img className="h-auto" src={logo} alt="" />
       </Link>
       <ul className="hidden lgss:flex gap-6 justify-center items-center font-semibold">
-        <Link to={"/"}>
+        <Link to={"/about"}>
           <li>About</li>
         </Link>
         <Link to={"/"}>
