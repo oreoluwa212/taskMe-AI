@@ -15,21 +15,21 @@ const LoginPage = () => {
 
   return (
     <div className="w-full h-screen flex flex-col md:flex-row">
-      <div className="w-full md:w-[50%] h-full flex overflow-hidden">
+      <div className=" hidden w-full md:w-[50%] h-full lgss:flex overflow-hidden">
         <img
           src={loginSignImg}
           className="w-full h-full object-cover"
-          alt="Login"
+          alt="Sign Up"
         />
       </div>
-      <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center relative p-4">
+      <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center relative pt-8">
         <Link to="/" className="absolute top-4 right-4 text-white text-lg">
           <img src={logo} alt="" />
         </Link>
-        <h2 className="text-2xl font-semibold mb-4 text-center">
+        <h2 className="text-lg lgss:text-2xl font-semibold lgss:mb-4 text-center">
           Welcome back
         </h2>
-        <div className="bg-white w-[60%] px-10 p-8 rounded shadow-custom-xl mt-16 md:mt-0">
+        <div className="bg-white lgss:w-[60%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
           <FormComponent
             fields={fields}
             buttonText="Login"
