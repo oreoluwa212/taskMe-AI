@@ -4,12 +4,16 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
   return (
     <form onSubmit={onSubmit}>
       {fields.map((field, index) => (
-        <input
-          key={index}
-          type={field.type}
-          placeholder={field.placeholder}
-          className="w-full p-2 mb-4 border border-gray-300 rounded"
-        />
+        <div key={index} className="mb-4">
+          <label className="block mb-2 font-semibold text-gray-700">
+            {field.label}
+          </label>
+          <input
+            type={field.type}
+            placeholder={field.placeholder}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
       ))}
       <button
         type="submit"

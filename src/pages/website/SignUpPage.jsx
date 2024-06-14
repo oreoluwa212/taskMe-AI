@@ -5,9 +5,9 @@ import FormComponent from "../../components/website/cards/FormComponent";
 
 const SignUpPage = () => {
   const fields = [
-    { type: "text", placeholder: "Username" },
-    { type: "email", placeholder: "Email" },
-    { type: "password", placeholder: "Password" },
+    { type: "text", placeholder: "Username", label: "Username" },
+    { type: "email", placeholder: "Email", label: "Email" },
+    { type: "password", placeholder: "Password", label: "Password" },
   ];
 
   const handleSubmit = (e) => {
@@ -36,14 +36,14 @@ const SignUpPage = () => {
             buttonText="Sign Up"
             onSubmit={handleSubmit}
           />
+          <div className="mt-4 text-center">
+            <p className="text-gray-700">Already have an account?</p>
+            <Link to="/login" className="text-blue-500 hover:underline">
+              Log in
+            </Link>
+          </div>
         </div>
       </div>
-      <Link
-        to="/"
-        className="md:hidden absolute bottom-4 right-4 text-lg text-white"
-      >
-        Home
-      </Link>
     </div>
   );
 };
