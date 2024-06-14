@@ -1,12 +1,12 @@
 import React from "react";
 import H1Text from "./headerText/H1Text";
-import { bluedot, hero2 } from "../../../public";
+import { bluedot, greendot, hero2 } from "../../../public";
 
 function TryItSection() {
   return (
     <div className="relative bg-white w-full h-fit font-lato flex flex-col items-center text-center px-5 py-20">
       {/* Blue dot */}
-      <div className="absolute top-5 left-5 rounded-full mt-2 mr-2">
+      <div className="absolute top-5 left-10 w-6 h-6 mt-2 mr-2">
         <img src={bluedot} alt="" />
       </div>
 
@@ -27,6 +27,11 @@ function TryItSection() {
         className="absolute inset-0 bg-no-repeat bg-right"
         style={{ backgroundImage: `url(${hero2})` }}
       ></div>
+      <img
+        src={greendot}
+        alt="Green Dot"
+        className="absolute bottom-5 right-10 w-6 h-6"
+      />
     </div>
   );
 }

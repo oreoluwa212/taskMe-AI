@@ -15,7 +15,7 @@ function HowItWorks() {
       <img
         src={greendot}
         alt="Green Dot"
-        className="absolute top-5 right-5 w-6 h-6"
+        className="absolute top-5 right-10 w-6 h-6"
       />
       <HeaderBg headerText={"How it works"} />
       <H1Text
