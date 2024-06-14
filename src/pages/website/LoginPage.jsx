@@ -1,5 +1,5 @@
 import React from "react";
-import { loginSignImg } from "../../../public";
+import { loginSignImg, logo } from "../../../public";
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
@@ -12,12 +12,12 @@ const LoginPage = () => {
           alt="Login"
         />
       </div>
-      <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center bg-secondary relative p-4">
+      <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center relative p-4">
         <Link
           to="/"
-          className="absolute top-4 right-4 md:text-white text-lg text-secondary md:block hidden"
+          className="absolute top-4 right-4"
         >
-          Home
+          <img src={logo} alt="" />
         </Link>
         <div className="bg-white p-8 rounded shadow-lg w-80 mt-16 md:mt-0">
           <h2 className="text-2xl mb-4 text-center">Login</h2>
@@ -37,12 +37,6 @@ const LoginPage = () => {
             </button>
           </form>
         </div>
-        <Link
-          to="/"
-          className="md:hidden absolute bottom-4 right-4 text-lg text-white"
-        >
-          TaskMe
-        </Link>
       </div>
     </div>
   );
