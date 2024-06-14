@@ -56,7 +56,7 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
     <form onSubmit={handleSubmit}>
       {fields.map((field, index) => (
         <div key={index} className="mb-4 relative">
-          <label className="block mb-2 font-semibold text-gray-700">
+          <label className="block text-sm mb-2 font-semibold text-gray-700">
             {field.label}
           </label>
           <input
