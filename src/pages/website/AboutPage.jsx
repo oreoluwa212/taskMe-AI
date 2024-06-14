@@ -7,6 +7,7 @@ const AboutPage = () => {
   return (
     <Fragment>
       <NavBar />
+    
       <Footer />
     </Fragment>
   );
