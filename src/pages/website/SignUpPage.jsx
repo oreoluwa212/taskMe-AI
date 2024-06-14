@@ -15,6 +15,7 @@ const SignUpPage = () => {
     console.log(formValues);
   };
 
+
   return (
     <div className="w-full h-screen flex flex-col md:flex-row">
       <div className=" hidden w-full md:w-[50%] h-full lgss:flex overflow-hidden">
