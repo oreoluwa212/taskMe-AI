@@ -7,6 +7,7 @@ module.exports = {
         primary: "#0034EE",
         secondary: "#00114F",
         bg: "#F9FAFB",
+        blueBg: "#CCD6FC",
         dashboardBg: "#FAFAFA",
         grey: "#1D2939",
         dark: "#0A1B32",
