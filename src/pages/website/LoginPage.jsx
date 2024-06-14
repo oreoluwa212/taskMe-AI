@@ -41,7 +41,7 @@ const LoginPage = () => {
           to="/"
           className="md:hidden absolute bottom-4 right-4 text-lg text-white"
         >
-          Home
+          TaskMe
         </Link>
       </div>
     </div>

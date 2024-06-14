@@ -46,7 +46,7 @@ const SignUpPage = () => {
           to="/"
           className="md:hidden absolute bottom-4 right-4 text-lg text-white"
         >
-          Home
+          Task Me
         </Link>
       </div>
     </div>
