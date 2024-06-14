@@ -9,6 +9,7 @@ module.exports = {
         bg: "#F9FAFB",
         dashboardBg: "#FAFAFA",
         grey: "#1D2939",
+        dark: "#0A1B32",
       },
       fontFamily: {
         lato: ["Lato", "sans-serif"],

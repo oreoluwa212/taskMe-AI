@@ -1,14 +1,14 @@
 import React from "react";
 import { Fragment } from "react";
-import NavBar from "../components/NavBar";
+import NavBar from "../../components/website/NavBar";
+import HeroSection from "../../components/website/HeroSection";
 
 const LandingPage = () => {
   return (
     <Fragment>
       <NavBar />
-      <div className="w-full px-[5%]">
-
-      </div>
+      <HeroSection/>
+      <div className="w-full px-[5%]"></div>
     </Fragment>
   );
 };

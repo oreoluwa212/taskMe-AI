@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import GetStartedBtn from "../components/buttons/GetStartedBtn";
-import { logo } from "../../public";
+import GetStartedBtn from "./buttons/GetStartedBtn";
+import { logo } from "../../../public";
 
 function NavBar() {
   return (
