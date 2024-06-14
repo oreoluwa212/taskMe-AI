@@ -9,8 +9,9 @@ const LoginPage = () => {
     { type: "password", label: "Password" },
   ];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (formValues) => {
+    console.log(formValues);
+    // Handle form submission logic here
   };
 
   return (
@@ -36,7 +37,7 @@ const LoginPage = () => {
             onSubmit={handleSubmit}
           />
           <div className="mt-4 text-center flex justify-center gap-2">
-            <p className="text-gray-700">Don&apos;t have an account?</p>
+            <p className="text-gray-700">Don't have an account?</p>
             <Link
               to="/signup"
               className="text-primary hover:underline font-semibold"

@@ -1,17 +1,80 @@
-import React from "react";
+import React, { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const FormComponent = ({ fields, buttonText, onSubmit }) => {
+  const [formValues, setFormValues] = useState(
+    fields.reduce((acc, field) => ({ ...acc, [field.label]: "" }), {})
+  );
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  const handleValidation = () => {
+    let tempErrors = {};
+    let isValid = true;
+
+    fields.forEach((field) => {
+      if (!formValues[field.label]) {
+        tempErrors[field.label] = `${field.label} is required`;
+        isValid = false;
+      }
+      if (field.type === "email" && formValues[field.label]) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(formValues[field.label])) {
+          tempErrors[field.label] = "Invalid email address";
+          isValid = false;
+        }
+      }
+      if (field.type === "password" && formValues[field.label]) {
+        if (formValues[field.label].length < 6) {
+          tempErrors[field.label] = "Password must be at least 6 characters";
+          isValid = false;
+        }
+      }
+    });
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (handleValidation()) {
+      onSubmit(formValues);
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit}>
       {fields.map((field, index) => (
-        <div key={index} className="mb-4">
+        <div key={index} className="mb-4 relative">
           <label className="block mb-2 font-semibold text-gray-700">
             {field.label}
           </label>
           <input
-            type={field.type}
+            type={
+              field.type === "password" && showPassword ? "text" : field.type
+            }
+            name={field.label}
+            value={formValues[field.label]}
+            onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded outline-none"
           />
+          {field.type === "password" && (
+            <span
+              className="absolute right-4 top-11 cursor-pointer text-[#6C7175]"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          )}
+          {errors[field.label] && (
+            <p className="text-red-500 text-sm">{errors[field.label]}</p>
+          )}
         </div>
       ))}
       <button
