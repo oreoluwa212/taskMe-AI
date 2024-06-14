@@ -1,12 +1,15 @@
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
-
   return (
-    <div className="flex w-full justify-center items-center">
-      <h1>Welcome</h1>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
