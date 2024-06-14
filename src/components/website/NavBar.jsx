@@ -20,7 +20,7 @@ function NavBar() {
       <nav className=" lgss:flex gap-8 justify-center items-center">
         <Link
           className="hidden lgss:flex cursor-pointer font-semibold capitalize text-[16px]"
-          to={"/"}
+          to={"/login"}
         >
           <p>log in</p>
         </Link>
