@@ -1,13 +1,15 @@
 import React from "react";
 
-const FeaturesCard = ({ title, description, icon, className }) => {
+const FeaturesCard = ({ title, description, imageUrl, className }) => {
   return (
-    <div className="bg-white shadow-lg shadow-gray-300/50 h-[280px] max-w-[300px] w-[80%] rounded-[8px] flex flex-col justify-center items-start text-center px-2">
-      {icon && (
-        <div className={className}>{icon}</div>
+    <div className="bg-white shadow-lg shadow-gray-300/50 h-[300px] max-w-[320px] w-[90%] rounded-[8px] flex flex-col justify-center items-start text-center px-6">
+      {imageUrl && (
+        <div className={`${className} p-3 rounded-[16px] bg-[#E6F0FF] mb-6`}>
+          <img src={imageUrl} alt={title} className="h-10 w-10 object-cover" />
+        </div>
       )}
-      <h2 className="text-xl text-red font-bold mb-2">{title}</h2>
-      <p className="text-left text-gray-700">{description}</p>
+      <h2 className="text-xl text-red font-bold mb-3">{title}</h2>
+      <p className="text-left text-gray-700 font-medium">{description}</p>
     </div>
   );
 };
