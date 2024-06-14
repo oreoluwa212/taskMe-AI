@@ -1,6 +1,6 @@
 import React from "react";
-import H1Text from "./headerText/H1Text";
 import HeaderBg from "../headerText/HeaderBg";
+import H1Text from "../headerText/H1Text";
 
 function JoinUsSection() {
   return (
