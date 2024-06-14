@@ -37,7 +37,10 @@ const LoginPage = () => {
           />
           <div className="mt-4 text-center flex justify-center gap-2">
             <p className="text-gray-700">Don&apos;t have an account?</p>
-            <Link to="/signup" className="text-primary hover:underline">
+            <Link
+              to="/signup"
+              className="text-primary hover:underline font-semibold"
+            >
               Create an account
             </Link>
           </div>
