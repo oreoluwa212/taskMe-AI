@@ -10,6 +10,7 @@ import icon3 from "../public/images/icon3.svg";
 import greendot from "../public/images/greendot.png";
 import bluedot from "../public/images/bluedot.svg";
 import heroAbout from "../public/images/heroAbout.svg";
+import loginSignImg from "../public/images/loginSignImg.svg";
 
 export {
   logo,
@@ -24,4 +25,5 @@ export {
   greendot,
   bluedot,
   heroAbout,
+  loginSignImg,
 };
