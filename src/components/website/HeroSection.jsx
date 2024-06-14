@@ -15,9 +15,9 @@ function HeroSection() {
             Break down project timelines into daily tasks with our AI project
             management solution.
           </p>
-          <div className="pt-10">
+          <div className="pt-10 w-full">
             <CustomBtn
-              className="w-full py-4 mt-4 rounded-xl px-6 text-white bg-primary"
+              className="w-[50%] py-4 mt-4 rounded-xl text-white bg-primary"
               btnText="Get started now"
             />
           </div>
