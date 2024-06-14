@@ -1,8 +1,8 @@
 import React from "react";
-import H1Text from "./headerText/H1Text";
-import HeaderBg from "./headerText/HeaderBg";
-import HowItWorksCard from "./cards/HowItWorksCard";
-import { greendot, hero1 } from "../../../public";
+import H1Text from "../headerText/H1Text";
+import HeaderBg from "../headerText/HeaderBg";
+import HowItWorksCard from "../cards/HowItWorksCard";
+import { greendot, hero1 } from "../../../../public";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 function HowItWorks() {

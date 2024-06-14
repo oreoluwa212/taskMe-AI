@@ -1,6 +1,6 @@
 import React from "react";
-import H1Text from "./headerText/H1Text";
-import { bluedot, greendot, hero2 } from "../../../public";
+import H1Text from "../headerText/H1Text";
+import { bluedot, greendot, hero2 } from "../../../../public";
 
 function TryItSection() {
   return (

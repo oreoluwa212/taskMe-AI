@@ -1,5 +1,11 @@
-import { hero1, hero2, hero3, heroCircle1, heroCircle2 } from "../../../public";
-import CustomBtn from "./buttons/CustomBtn";
+import {
+  hero1,
+  hero2,
+  hero3,
+  heroCircle1,
+  heroCircle2,
+} from "../../../../public";
+import CustomBtn from "../buttons/CustomBtn";
 
 function HeroSection() {
   return (

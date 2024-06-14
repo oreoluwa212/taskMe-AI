@@ -1,8 +1,8 @@
 import React from "react";
-import FeaturesCard from "./cards/FeaturesCard";
-import { icon1, icon2, icon3 } from "../../../public";
-import HeaderBg from "./headerText/HeaderBg";
-import H1Text from "./headerText/H1Text";
+import FeaturesCard from "../cards/FeaturesCard";
+import { icon1, icon2, icon3 } from "../../../../public";
+import HeaderBg from "../headerText/HeaderBg";
+import H1Text from "../headerText/H1Text";
 
 function FeaturesSection() {
   return (
