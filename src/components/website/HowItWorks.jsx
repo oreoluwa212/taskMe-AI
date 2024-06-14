@@ -3,6 +3,7 @@ import H1Text from "./headerText/H1Text";
 import HeaderBg from "./headerText/HeaderBg";
 import HowItWorksCard from "./cards/HowItWorksCard";
 import { greendot, hero1 } from "../../../public";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 function HowItWorks() {
   return (
@@ -21,7 +22,7 @@ function HowItWorks() {
         h2Text={"Inside TaskMe's Engine"}
         pText={"Explore our very seamless process."}
       />
-      <div className="flex justify-around items-start w-full px-[10%] mt-10">
+      <div className="flex lgss:flex-row flex-col justify-around items-center w-full px-[10%] mt-10">
         <HowItWorksCard
           step={"Step 1"}
           h3={"Input Your Project"}
@@ -29,6 +30,9 @@ function HowItWorks() {
             "Enter the details of your project, including the timeline and the key milestones."
           }
         />
+        <div className="bg-primary rounded-full p-2 text-white text-2xl">
+          <FaArrowRightLong />
+        </div>
         <HowItWorksCard
           step={"Step 2"}
           h3={"Get Daily Tasks"}
@@ -36,6 +40,9 @@ function HowItWorks() {
             "TaskMe will break down your project into manageable daily tasks, ensuring progress."
           }
         />
+        <div className="bg-primary rounded-full p-2 text-white text-2xl">
+          <FaArrowRightLong />
+        </div>
         <HowItWorksCard
           step={"Step 3"}
           h3={"Track Your Progress"}
