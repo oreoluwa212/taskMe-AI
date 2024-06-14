@@ -1,9 +1,10 @@
 # TaskMe AI - Simplify Your Workflow with AI Productivity Partner
+![TaskMe AI](./public/images/desktopView.png)
 
 Welcome to TaskMe AI, your AI-driven project management solution designed to simplify your workflow and enhance productivity. Created for the PipeOps 1.0 Hackathon, TaskMe AI helps you break down project timelines into manageable daily tasks, ensuring you stay on track and meet your deadlines with ease.
 
 ## Features
-
+![TaskMe AI](./public/images/dashboard.png)
 ### Task Breakdown
 - **Input your project:** Enter your project details, including timeline and key milestones.
 - **Get daily tasks:** TaskMe AI will break down your project into manageable daily tasks, making progress effortless.
