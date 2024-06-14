@@ -1,4 +1,5 @@
 import React from "react";
+import H1Text from "./headerText/H1Text";
 
 function TryItSection() {
   return (
@@ -6,10 +7,12 @@ function TryItSection() {
       <div className="bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-full mb-4">
         Free Trial
       </div>
-      <h2 className="text-4xl font-semibold mb-4">Try TaskMe For Free Today</h2>
-      <p className="text-center text-gray-700 mb-8">
-        Boost your productivity level with TaskMe today and never look back.
-      </p>
+      <H1Text
+        h2Text={"Try TaskMe For Free Today"}
+        pText={
+          "Boost your productivity level with TaskMe today and never look back."
+        }
+      />
       <button className="bg-primary text-white px-6 mt-10 py-3 rounded-lg font-semibold">
         Start your journey for free
       </button>
