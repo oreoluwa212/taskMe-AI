@@ -6,7 +6,7 @@ function JoinUsSection() {
   return (
     <div className="relative bg-white w-full h-fit font-lato flex flex-col items-center text-center px-5 py-20">
       <HeaderBg headerText={"join us"} />
-      <div className="w-[40%]">
+      <div className="w-full lgss:w-[40%]">
       <H1Text
         h2Text={"Join Us"}
         pText={
