@@ -30,8 +30,12 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
         }
       }
       if (field.type === "password" && formValues[field.label]) {
-        if (formValues[field.label].length < 6) {
-          tempErrors[field.label] = "Password must be at least 6 characters";
+        const password = formValues[field.label];
+        const passwordPattern =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordPattern.test(password)) {
+          tempErrors[field.label] =
+            "Password must contain at least 8 characters, including uppercase, lowercase, number, and special character";
           isValid = false;
         }
       }
@@ -66,7 +70,7 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
           />
           {field.type === "password" && (
             <span
-              className="absolute right-4 top-11 cursor-pointer text-[#6C7175]"
+              className="absolute right-2 top-9 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}

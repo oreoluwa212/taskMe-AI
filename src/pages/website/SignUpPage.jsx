@@ -13,7 +13,6 @@ const SignUpPage = () => {
 
   const handleSubmit = (formValues) => {
     console.log(formValues);
-    // Handle form submission logic here
   };
 
   return (
