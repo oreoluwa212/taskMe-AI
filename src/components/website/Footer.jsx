@@ -16,16 +16,13 @@ function Footer() {
               <li>Features</li>
             </ul>
           </div>
-          <div>
             <ul className="flex flex-col gap-4">
               <li>Contact</li>
               <li>Privacy Policy</li>
               <li>Terms of Use</li>
             </ul>
-          </div>
           <div>
-            <h3 className="font-semibold mb-2">Social</h3>
-            <ul>
+            <ul className="flex flex-col gap-4">
               <li>Instagram</li>
               <li>Twitter</li>
               <li>LinkedIn</li>
