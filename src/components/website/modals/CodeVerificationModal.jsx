@@ -3,12 +3,10 @@ import H1Text from "../headerText/H1Text";
 
 const CodeVerificationModal = ({ onVerify }) => {
   const [code, setCode] = useState(["", "", "", "", ""]);
-  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     if (code.join("").length === 5) {
       setTimeout(() => {
-        setIsVerified(true);
         onVerify();
       }, 1000);
     }
@@ -45,9 +43,6 @@ const CodeVerificationModal = ({ onVerify }) => {
           />
         ))}
       </div>
-      {isVerified && (
-        <p className="text-green-500 text-center">Code Verified!</p>
-      )}
     </div>
   );
 };
