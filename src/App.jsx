@@ -9,6 +9,7 @@ import ResetPasswordPage from "./pages/website/ResetPasswordPage";
 import NewPasswordPage from "./pages/website/NewPasswordPage";
 import VerifyEmailPage from "./pages/website/VerifyEmailPage";
 import SignupVerifyEmailPage from "./pages/website/SignupVerifyEmailPage";
+import ResetPwConfirm from "./pages/website/ResetPwConfirm";
 
 function App() {
   return (
@@ -19,12 +20,16 @@ function App() {
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/signup/verify-email" element={<SignupVerifyEmailPage />} />
+        <Route
+          path="/signup/verify-email"
+          element={<SignupVerifyEmailPage />}
+        />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-otp" element={<SignUpPage />} />
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/new-password" element={<NewPasswordPage />} />
+        <Route path="/new-password/login" element={<ResetPwConfirm />} />
       </Routes>
     </Router>
   );

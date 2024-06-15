@@ -13,7 +13,7 @@ const NewPasswordPage = () => {
 
   const handleSubmit = (formValues) => {
     console.log(formValues);
-    navigate("/login");
+    navigate("login");
   };
 
   return (

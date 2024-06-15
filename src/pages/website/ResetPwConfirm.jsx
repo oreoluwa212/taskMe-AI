@@ -26,12 +26,16 @@ const ResetPwConfirm = () => {
           <img src={logo} alt="" />
         </Link>
 
-        <div className="bg-white lgss:w-[60%] w-[80%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
+        <div className="bg-white lgss:w-[60%] w-[80%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0 flex flex-col gap-8">
           <H1Text
             h2Text={"You've reset your password"}
             pText={"Log into your dashboard now."}
           />
-          <CustomBtn/>
+          <CustomBtn
+            click={handleSubmit}
+            className="bg-primary w-full text-white py-2 px-4 rounded"
+            btnText="Go to Login"
+          />
         </div>
       </div>
     </div>
