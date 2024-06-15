@@ -30,9 +30,9 @@ const CodeVerificationModal = ({ onVerify }) => {
     <div className="w-[35%] bg-white py-4 px-[5%] flex flex-col mx-auto rounded shadow-lg">
       <H1Text
         h2Text={"Confirm your email address"}
-        pText={"Enter the code that was sent to d**********i@gmail.com"}
+        pText={"Enter the code that was sent to your email"}
       />
-      <div className="flex w-full  justify-between gap-2 my-8">
+      <div className="flex w-full justify-between gap-2 my-8">
         {code.map((digit, index) => (
           <input
             key={index}

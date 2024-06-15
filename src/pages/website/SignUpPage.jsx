@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import FormComponent from "../../components/website/cards/FormComponent";
 import { loginSignImg, logo, ResetPasswordBg } from "../../../public";
 import VerifyEmailModal from "../../components/website/modals/VerifyEmailModal";
+import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -28,7 +29,12 @@ const SignUpPage = () => {
 
   const handleVerified = () => {
     setStep(3);
-    navigate("/login", { state: { email: email, step: 3 } });
+    navigate("/verify-otp", { state: { email: email, step: 3 } });
+  };
+
+  const handleOTPVerified = () => {
+    setStep(4);
+    navigate("/login", { state: { email: email, step: 4 } });
   };
 
   return (
@@ -81,6 +87,18 @@ const SignUpPage = () => {
               onResend={handleResend}
               onVerified={handleVerified}
             />
+          </div>
+        </div>
+      )}
+      {step === 3 && (
+        <div className="w-full h-full flex flex-col items-center justify-center relative">
+          <img
+            src={ResetPasswordBg}
+            className="absolute w-full h-full object-cover"
+            alt="Background"
+          />
+          <div className="relative z-10 w-full flex justify-center">
+            <CodeVerificationModal onVerify={handleOTPVerified} />
           </div>
         </div>
       )}
