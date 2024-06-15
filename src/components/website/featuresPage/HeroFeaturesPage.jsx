@@ -19,7 +19,7 @@ const HeroFeaturesPage = () => {
           }
           imageUrl={icon1}
         />
-        <FeaturesCard
+        <FeaturesPageCard
           title={"Progress Tracking"}
           description={
             "Stay motivated and on track with our progress tracking feature. Visualize your progress over time and adjust your tasks as needed to ensure you meet your overall goals."
