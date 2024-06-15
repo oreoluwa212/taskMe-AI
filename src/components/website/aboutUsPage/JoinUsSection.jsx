@@ -17,10 +17,6 @@ function JoinUsSection() {
       <button className="bg-primary text-white px-6 my-14 py-3 rounded-lg font-semibold">
         Start your journey for free
       </button>
-      {/* <div
-        className="absolute inset-0 bg-no-repeat bg-right"
-        style={{ backgroundImage: `url(${hero2})` }}
-      ></div> */}
     </div>
   );
 }
