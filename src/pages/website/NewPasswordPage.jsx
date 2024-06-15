@@ -32,7 +32,7 @@ const NewPasswordPage = () => {
         <div className="bg-white lgss:w-[60%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
           <FormComponent
             fields={fields}
-            buttonText="Reset Password"
+            buttonText="Create new password"
             onSubmit={handleSubmit}
           />
         </div>
