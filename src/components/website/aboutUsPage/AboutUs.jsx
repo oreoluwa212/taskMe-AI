@@ -7,7 +7,7 @@ const Section = ({ title, children }) => {
       <h2 className="text-3xl font-bold bg-gradient-custom bg-clip-text text-transparent">
         {title}
       </h2>
-      <p className="mt-4 text-gray-700">{children}</p>
+      <p className="mt-4 text-dark">{children}</p>
     </div>
   );
 };
