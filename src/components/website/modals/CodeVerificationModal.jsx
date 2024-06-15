@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import H1Text from "../headerText/H1Text";
 
 const CodeVerificationModal = ({ onVerify }) => {
   const [code, setCode] = useState(["", "", "", "", ""]);
@@ -26,11 +27,12 @@ const CodeVerificationModal = ({ onVerify }) => {
   };
 
   return (
-    <div className="w-[30%] bg-white py-8 px-10 flex flex-col mx-auto rounded shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4 text-center">
-        Confirm your email address
-      </h2>
-      <div className="flex w-full  justify-between gap-2 mb-4">
+    <div className="w-[30%] bg-white pt-8 px-10 flex flex-col mx-auto rounded shadow-lg">
+      <H1Text
+        h2Text={"Confirm your email address"}
+        pText={"Enter the code that was sent to d**********i@gmail.com"}
+      />
+      <div className="flex w-full  justify-between gap-2 my-8">
         {code.map((digit, index) => (
           <input
             key={index}
