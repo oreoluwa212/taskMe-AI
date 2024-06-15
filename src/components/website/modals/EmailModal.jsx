@@ -9,7 +9,7 @@ const EmailModal = ({ onSubmit }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded shadow-custom-xl">
+    <div className="bg-white p-8 rounded shadow-custom-xl w-[30%]">
       <h2 className="text-2xl font-semibold mb-4 text-center">
         Reset Password
       </h2>
@@ -28,9 +28,9 @@ const EmailModal = ({ onSubmit }) => {
         </div>
         <button
           type="submit"
-          className="w-full bg-primary text-white mt-4 p-2 rounded hover:bg-blue-600"
+          className="w-full bg-primary text-white mt-4 p-2 rounded font-semibold hover:bg-blue-600"
         >
-          Submit
+          Submit email
         </button>
       </form>
     </div>

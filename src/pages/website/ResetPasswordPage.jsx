@@ -26,7 +26,7 @@ const ResetPasswordPage = () => {
           alt="Reset Password"
         />
       </div>
-      <div className="relative z-10">
+      <div className="relative z-10 w-full flex justify-center">
         {step === 1 && <EmailModal onSubmit={handleEmailSubmit} />}
         {step === 2 && (
           <CodeVerificationModal onVerify={handleCodeVerification} />
