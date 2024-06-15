@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import EmailModal from "../../components/website/modals/EmailModal";
 import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
-import { ResetPasswordBg } from "../../../public";
+import { ResetPasswordBg, logo } from "../../../public";
 
 const ResetPasswordPage = () => {
   const [step, setStep] = useState(1);
@@ -29,6 +29,9 @@ const ResetPasswordPage = () => {
           alt="Reset Password"
         />
       </div>
+      <Link to="/" className="absolute top-9 text-white text-lg">
+        <img src={logo} alt="" />
+      </Link>
       <div className="relative z-10 w-full flex justify-center">
         {step === 1 && <EmailModal onSubmit={handleEmailSubmit} />}
         {step === 2 && (
