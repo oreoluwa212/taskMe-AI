@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EmailModal from "../../components/website/modals/EmailModal";
 import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
 import { ResetPasswordBg } from "../../../public";
@@ -6,6 +7,8 @@ import { ResetPasswordBg } from "../../../public";
 const ResetPasswordPage = () => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+
 
   const handleEmailSubmit = (email) => {
     setEmail(email);
@@ -14,6 +17,7 @@ const ResetPasswordPage = () => {
 
   const handleCodeVerification = () => {
     setStep(3);
+    navigate("/new-password");
   };
 
   return (
