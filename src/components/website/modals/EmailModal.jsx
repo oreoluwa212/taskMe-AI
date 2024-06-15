@@ -9,11 +9,14 @@ const EmailModal = ({ onSubmit }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded shadow-custom-xl w-[30%]">
+    <div className="w-[30%]">
       <h2 className="text-2xl font-semibold mb-4 text-center">
         Reset Password
       </h2>
-      <form onSubmit={handleSubmit}>
+      <form
+        className="bg-white p-8 rounded shadow-custom-xl"
+        onSubmit={handleSubmit}
+      >
         <div className="mb-4">
           <label className="block text-sm mb-2 font-semibold text-gray-700">
             Email Address
