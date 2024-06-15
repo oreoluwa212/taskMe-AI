@@ -7,6 +7,7 @@ import heroCircle2 from "../public/images/heroCircle2.png";
 import icon1 from "../public/images/icon1.svg";
 import icon2 from "../public/images/icon2.svg";
 import icon3 from "../public/images/icon3.svg";
+import icon4 from "../public/images/icon4.png";
 import greendot from "../public/images/greendot.png";
 import bluedot from "../public/images/bluedot.svg";
 import heroAbout from "../public/images/heroAbout.svg";
@@ -24,6 +25,7 @@ export {
   icon1,
   icon2,
   icon3,
+  icon4,
   greendot,
   bluedot,
   heroAbout,
