@@ -29,7 +29,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center relative">
+    <div className="w-full h-screen flex flex-col md:flex-row">
       {step === 1 && (
         <div className="w-full md:flex-row flex flex-col">
           <div className="hidden w-full md:w-[50%] h-full lgss:flex overflow-hidden">
@@ -43,7 +43,7 @@ const SignUpPage = () => {
             <Link to="/" className="absolute top-4 right-4 text-white text-lg">
               <img src={logo} alt="" />
             </Link>
-            <h2 className="text-lg lgss:text-2xl font-semibold lgss:mb-4 text-center">
+            <h2 className="text-lg lgss:text-2xl font-semibold pt-8 lgss:pt-0 my-4 text-center">
               Create your free account
             </h2>
             <div className="bg-white lgss:w-[60%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
