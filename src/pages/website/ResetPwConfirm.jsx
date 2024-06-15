@@ -26,7 +26,10 @@ const ResetPwConfirm = () => {
         </Link>
 
         <div className="bg-white lgss:w-[60%] w-[80%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
-          <H1Text h2Text={"You've reset your password"} />
+          <H1Text
+            h2Text={"You've reset your password"}
+            pText={"Log into your dashboard now."}
+          />
         </div>
       </div>
     </div>
