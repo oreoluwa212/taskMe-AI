@@ -14,7 +14,7 @@ const Section = ({ title, children }) => {
 
 function AboutUs() {
   return (
-    <div className="w-full flex flex-col justify-center items-center h-fit py-20 mb-10">
+    <div className="w-full flex flex-col justify-center items-center h-fit pb-3 pt-6 lgss:py-20 mb-10">
       <HeaderBg headerText={"about us"} />
       <div className="w-[85%] text-center flex lgss:flex-row flex-col justify-between gap-6">
         <div className="lgss:w-[45%]">
