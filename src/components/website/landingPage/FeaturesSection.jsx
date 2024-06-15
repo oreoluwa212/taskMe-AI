@@ -12,7 +12,7 @@ function FeaturesSection() {
         h2Text={"Unleash the Power of TaskMe"}
         pText={"Dive into the features that make TaskMe a game changer."}
       />
-      <div className="flex lgss:flex-row flex-col gap-8 justify-between items-center w-[80%] mt-5 pb-12 pt-6">
+      <div className="flex lgss:flex-row flex-col gap-8 justify-between items-center w-[75%] mt-5 py-12">
         <FeaturesCard
           title={"Task Breakdown"}
           description={
