@@ -3,6 +3,7 @@ import FormComponent from "../../components/website/cards/FormComponent";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSignImg, logo } from "../../../public";
 import H1Text from "../../components/website/headerText/H1Text";
+import CustomBtn from "../../components/website/buttons/CustomBtn";
 
 const ResetPwConfirm = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const ResetPwConfirm = () => {
             h2Text={"You've reset your password"}
             pText={"Log into your dashboard now."}
           />
+          <CustomBtn/>
         </div>
       </div>
     </div>
