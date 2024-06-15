@@ -96,7 +96,7 @@ const FormComponent = ({
       )}
       <button
         type="submit"
-        className="w-full bg-primary text-white mt-6 p-2 rounded hover:bg-blue-600"
+        className="w-full bg-primary text-white font-semibold mt-6 p-2 rounded hover:bg-blue-600"
       >
         {buttonText}
       </button>
