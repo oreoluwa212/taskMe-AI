@@ -19,7 +19,7 @@ const SignUpPage = () => {
   const handleSubmit = (formValues) => {
     setEmail(formValues.email);
     setStep(2);
-    navigate("/signup", { state: { email: formValues.email, step: 2 } });
+    navigate("/verify-email", { state: { email: formValues.email, step: 2 } });
   };
 
   const handleResend = () => {
