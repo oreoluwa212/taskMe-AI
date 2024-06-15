@@ -25,7 +25,7 @@ const ResetPasswordPage = () => {
       <div className="w-full lgss:flex overflow-hidden absolute top-0 left-0">
         <img
           src={ResetPasswordBg}
-          className="h-1/2 object-cover"
+          className="lgss:h-1/2 h-screen object-cover"
           alt="Reset Password"
         />
       </div>

@@ -10,7 +10,7 @@ const EmailModal = ({ onSubmit }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded shadow-custom-xl w-[30%]">
+    <div className="bg-white p-8 rounded shadow-custom-xl w-[90%] lgss:w-[30%]">
       <div className="pt-3 pb-7 w-[75%] mx-auto">
       <H1Text
         h2Text={"Reset Password"}
