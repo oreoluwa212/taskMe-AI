@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EmailModal from "../../components/website/modals/EmailModal";
 import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
-import { loginSignImg } from "../../../public";
+import { ResetPasswordBg } from "../../../public";
 
 
 const ResetPasswordPage = () => {
@@ -21,7 +21,7 @@ const ResetPasswordPage = () => {
     <div className="w-full h-screen flex flex-col items-center justify-center relative">
       <div className="w-full h-full lgss:flex overflow-hidden absolute top-0 left-0">
         <img
-          src={loginSignImg}
+          src={ResetPasswordBg}
           className="w-full h-full object-cover"
           alt="Reset Password"
         />
