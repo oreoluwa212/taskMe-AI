@@ -45,7 +45,7 @@ const VerifyEmailModal = ({ email, onResend, onVerified }) => {
           onClick={onVerified}
           className="bg-primary text-white px-4 py-2 rounded"
         >
-          I've Verified
+          received code
         </button>
       </div>
     </div>
