@@ -1,6 +1,6 @@
 import React from "react";
 import FeaturesCard from "../cards/FeaturesCard";
-import { icon1, icon2, icon3 } from "../../../../public";
+import { icon1, icon2, icon3, icon4 } from "../../../../public";
 import FeaturesPageCard from "./FeaturesPageCard";
 
 const HeroFeaturesPage = () => {
@@ -24,7 +24,7 @@ const HeroFeaturesPage = () => {
           description={
             "Stay motivated and on track with our progress tracking feature. Visualize your progress over time and adjust your tasks as needed to ensure you meet your overall goals."
           }
-          imageUrl={icon2}
+          imageUrl={icon4}
         />
         <FeaturesCard
           title={"User Friendly Interface"}
