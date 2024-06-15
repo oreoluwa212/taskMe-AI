@@ -6,7 +6,6 @@ const CodeVerificationModal = ({ onVerify }) => {
 
   useEffect(() => {
     if (code.join("").length === 5) {
-      // Simulate code verification
       setTimeout(() => {
         setIsVerified(true);
         onVerify();
@@ -27,11 +26,11 @@ const CodeVerificationModal = ({ onVerify }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded shadow-lg">
+    <div className="w-[30%] bg-white py-8 px-10 flex flex-col mx-auto rounded shadow-lg">
       <h2 className="text-2xl font-semibold mb-4 text-center">
-        Enter Verification Code
+        Confirm your email address
       </h2>
-      <div className="flex justify-center gap-2 mb-4">
+      <div className="flex w-full  justify-between gap-2 mb-4">
         {code.map((digit, index) => (
           <input
             key={index}
