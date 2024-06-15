@@ -1,4 +1,3 @@
-// AboutUs.jsx
 import React from "react";
 import HeaderBg from "../headerText/HeaderBg";
 
