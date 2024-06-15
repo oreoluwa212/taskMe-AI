@@ -4,9 +4,9 @@ import HeaderBg from "../headerText/HeaderBg";
 
 const Section = ({ title, children }) => {
   return (
-    <div className="my-10">
+    <div className="my-10 text-left">
       <h2 className="text-3xl font-bold text-blue-800">{title}</h2>
-      <p className="mt-4 text-gray-700 text-left">{children}</p>
+      <p className="mt-4 text-gray-700">{children}</p>
     </div>
   );
 };
