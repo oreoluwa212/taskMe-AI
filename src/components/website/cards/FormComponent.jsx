@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const FormComponent = ({ fields, buttonText, onSubmit }) => {
+const FormComponent = ({
+  fields,
+  buttonText,
+  onSubmit,
+  showForgotPassword,
+}) => {
   const [formValues, setFormValues] = useState(
     fields.reduce((acc, field) => ({ ...acc, [field.label]: "" }), {})
   );
@@ -81,6 +87,13 @@ const FormComponent = ({ fields, buttonText, onSubmit }) => {
           )}
         </div>
       ))}
+      {showForgotPassword && (
+        <div className="text-right mb-4">
+          <Link to="/login" className="text-primary hover:underline font-semibold">
+            Forgot password?
+          </Link>
+        </div>
+      )}
       <button
         type="submit"
         className="w-full bg-primary text-white mt-6 p-2 rounded hover:bg-blue-600"

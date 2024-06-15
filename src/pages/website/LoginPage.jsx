@@ -34,6 +34,7 @@ const LoginPage = () => {
             fields={fields}
             buttonText="Login"
             onSubmit={handleSubmit}
+            showForgotPassword={true}
           />
           <div className="mt-4 text-center flex justify-center gap-2">
             <p className="text-gray-700">Don't have an account?</p>
