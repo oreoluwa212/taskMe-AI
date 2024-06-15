@@ -27,4 +27,5 @@ export {
   bluedot,
   heroAbout,
   loginSignImg,
+  ResetPasswordBg,
 };
