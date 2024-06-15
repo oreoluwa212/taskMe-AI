@@ -89,7 +89,10 @@ const FormComponent = ({
       ))}
       {showForgotPassword && (
         <div className="text-right mb-4">
-          <Link to="/reset-password" className="text-primary hover:underline font-semibold">
+          <Link
+            to="/reset-password"
+            className="text-primary hover:underline font-semibold"
+          >
             Forgot password?
           </Link>
         </div>
