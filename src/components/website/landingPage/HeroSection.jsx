@@ -14,7 +14,7 @@ function HeroSection() {
         <img className="hidden lgss:flex h-[80vh] w-[30%]" src={hero1} alt="" />
         <div className="flex flex-col justify-center items-center text-center mx-auto font-lato gap-6 px-[5%] h-[100vh] lgss:h-auto lgss:px-0">
           <h1 className="text-dark font-bold text-[26px] lgss:text-[40px] text-center flex flex-col">
-            Simplify your Workflow with AI{" "}
+            Simplify your Workflow with AI
             <span className="text-primary"> Productivity Partner.</span>
           </h1>
           <p className="text-dark font-semibold">
