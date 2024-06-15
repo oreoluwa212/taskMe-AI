@@ -25,7 +25,7 @@ function AboutUs() {
           most.
         </Section>
         <Section title="Our Approach">
-          We’re not just another task management tool, we’re your trusted
+          We're not just another task management tool, we're your trusted
           partner in productivity. Our approach is simple yet powerful; we
           combine cutting-edge technology with intuitive design to create a
           seamless task management experience. With TaskMe, you can break down
