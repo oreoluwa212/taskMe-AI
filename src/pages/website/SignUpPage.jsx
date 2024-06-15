@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormComponent from "../../components/website/cards/FormComponent";
 import { loginSignImg, logo, ResetPasswordBg } from "../../../public";
-import VerifyEmailModal from "../../components/website/modals/VerifyEmailModal";
 import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
+import SignupVerifyEmailPage from "./SignupVerifyEmailPage";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const SignUpPage = () => {
   const handleSubmit = (formValues) => {
     setEmail(formValues.email);
     setStep(2);
-    navigate("/verify-email", { state: { email: formValues.email, step: 2 } });
+    navigate("/signup/verify-email", { state: { email: formValues.email, step: 2 } });
   };
 
   const handleResend = () => {
@@ -82,7 +82,7 @@ const SignUpPage = () => {
             alt="Background"
           />
           <div className="relative z-10 w-full flex justify-center">
-            <VerifyEmailModal
+            <SignupVerifyEmailPage
               email={email}
               onResend={handleResend}
               onVerified={handleVerified}
