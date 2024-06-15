@@ -16,7 +16,7 @@ function AboutUs() {
     <div className="w-full flex flex-col justify-center items-center h-fit py-20 mb-10">
       <HeaderBg headerText={"about us"} />
       <div className="w-[85%] text-center flex lgss:flex-row flex-col justify-between gap-6">
-        <div className="w-[45%]">
+        <div className="lgss:w-[45%]">
           <Section title="Our Story">
             TaskMe was born out of the collective frustration of a group of
             passionate individuals who felt overwhelmed by the complexity of
