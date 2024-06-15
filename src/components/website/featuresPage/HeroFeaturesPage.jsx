@@ -1,6 +1,7 @@
 import React from "react";
 import FeaturesCard from "../cards/FeaturesCard";
 import { icon1, icon2, icon3 } from "../../../../public";
+import FeaturesPageCard from "./FeaturesPageCard";
 
 const HeroFeaturesPage = () => {
   return (
@@ -11,7 +12,7 @@ const HeroFeaturesPage = () => {
         </h1>
       </div>
       <div className="flex lgss:flex-row flex-col justify-between items-center w-[80%] mt-5 py-6">
-        <FeaturesCard
+        <FeaturesPageCard
           title={"Task Breakdown"}
           description={
             "TaskMe's automated task breakdown feature allows you to input your project details and let the system generate a daily task list. This ensures that you never miss a deadline and stay on top of your work."
