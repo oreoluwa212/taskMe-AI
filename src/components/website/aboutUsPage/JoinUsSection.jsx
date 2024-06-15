@@ -4,7 +4,7 @@ import H1Text from "../headerText/H1Text";
 
 function JoinUsSection() {
   return (
-    <div className="w-full flex flex-col justify-center items-center h-fit py-20 mb-10">
+    <div className="w-full flex flex-col justify-center items-center h-fit lgss:py-20 mb-10">
       <HeaderBg headerText={"join us"} />
       <div className="w-[80%] lgss:w-[40%]">
         <H1Text
