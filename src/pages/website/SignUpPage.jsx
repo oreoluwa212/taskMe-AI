@@ -4,6 +4,7 @@ import FormComponent from "../../components/website/cards/FormComponent";
 import { loginSignImg, logo, ResetPasswordBg } from "../../../public";
 import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
 import SignupVerifyEmailPage from "./SignupVerifyEmailPage";
+import H1Text from "../../components/website/headerText/H1Text";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -52,16 +53,17 @@ const SignUpPage = () => {
             <Link to="/" className="absolute top-4 right-4 text-white text-lg">
               <img src={logo} alt="" />
             </Link>
-            <h2 className="text-lg lgss:text-2xl font-semibold pt-8 lgss:pt-0 my-4 text-center">
-              Create your free account
-            </h2>
-            <div className="bg-white lgss:w-[60%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
+            <div className="mt-6 pt-8">
+            <H1Text
+            h2Text={"Create your free account"}/>
+            </div>
+            <div className="bg-white lgss:w-[60%] w-[80%] px-5 lgss:px-10 rounded shadow-custom-xl py-7 lgss:mt-4 mt-0">
               <FormComponent
                 fields={fields}
                 buttonText="Sign Up"
                 onSubmit={handleSubmit}
               />
-              <div className="mt-4 text-center justify-center flex gap-2">
+              <div className="mt-4 text-center justify-center flex gap-4">
                 <p className="text-gray-700">Already have an account?</p>
                 <Link
                   to="/login"
