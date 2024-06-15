@@ -12,6 +12,7 @@ import bluedot from "../public/images/bluedot.svg";
 import heroAbout from "../public/images/heroAbout.svg";
 import loginSignImg from "../public/images/loginSignImg.svg";
 import ResetPasswordBg from "../public/images/ResetPasswordBg.svg";
+import envelope from "../public/images/envelope.svg";
 
 export {
   logo,
