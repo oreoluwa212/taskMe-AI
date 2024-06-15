@@ -3,6 +3,13 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      backgroundImage: {
+        "gradient-custom":
+          "linear-gradient(90deg, #0034EE 0%, #142667 50%, #0A1B32 100%)",
+      },
+      textColor: {
+        "gradient-custom": "transparent",
+      },
       boxShadow: {
         "custom-xl":
           "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -15px rgba(0, 0, 0, 0.04)",
