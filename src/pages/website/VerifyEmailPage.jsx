@@ -1,6 +1,7 @@
 import React from "react";
-import { ResetPasswordBg } from "../../../public";
+import { ResetPasswordBg, logo } from "../../../public";
 import VerifyEmailModal from "../../components/website/modals/VerifyEmailModal";
+import { Link } from "react-router-dom";
 
 const VerifyEmailPage = () => {
   const email = "davidadeyemi@gmail.com";
@@ -20,6 +21,9 @@ const VerifyEmailPage = () => {
         className="absolute w-full h-full object-cover"
         alt="Background"
       />
+      <Link to="/" className="absolute top-9 text-white text-lg">
+        <img src={logo} alt="" />
+      </Link>
       <div className="relative z-10 w-full flex justify-center">
         <VerifyEmailModal
           email={email}
