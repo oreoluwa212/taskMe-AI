@@ -2,9 +2,9 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="bg-secondary text-white px-[5%] mt-5 w-full py-10 flex flex-col gap-8">
-      <div className="container mx-auto flex lgss:flex-row flex-col justify-between items-start px-6">
-        <div className="flex flex-col gap-8 pt-5">
+    <div className="bg-secondary text-white px-[10%] mt-5 w-full py-10 flex flex-col justify-between gap-8">
+      <div className="w-full flex lgss:flex-row flex-col justify-between items-start px-6">
+        <div className="flex flex-col gap-8 pt-5 lgss:w-[60%] justify-start">
           <h2 className="text-2xl font-semibold mb-2">TaskMe</h2>
           <p>Helping you boost your productivity level.</p>
         </div>
