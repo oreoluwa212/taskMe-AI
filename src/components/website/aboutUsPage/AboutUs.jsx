@@ -38,7 +38,7 @@ function AboutUs() {
         </Section>
         <Section title="Our Values">
           Transparency, simplicity and user-centricity are at the core of
-          everything we do. We’re committed to providing a product that’s not
+          everything we do. We're committed to providing a product that's not
           only easy to use, but also a joy to use.
         </Section>
       </div>
