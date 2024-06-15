@@ -11,12 +11,14 @@ const EmailModal = ({ onSubmit }) => {
 
   return (
     <div className="bg-white p-8 rounded shadow-custom-xl w-[30%]">
+      <div className="pt-3 pb-7 w-[75%] mx-auto">
       <H1Text
         h2Text={"Reset Password"}
         pText={
           "Enter your email address and we will send you a link to reset your password."
         }
-      />
+        />
+        </div>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm mb-2 font-semibold text-gray-700">
