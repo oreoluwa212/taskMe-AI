@@ -26,7 +26,7 @@ const HeroFeaturesPage = () => {
           }
           imageUrl={icon4}
         />
-        <FeaturesCard
+        <FeaturesPageCard
           title={"User Friendly Interface"}
           description={
             "Taskme is designed with the user in mind. Our intuitive interface makes it easy to manage your tasks, track your progress, and stay productive without any unnecessary complexity."
