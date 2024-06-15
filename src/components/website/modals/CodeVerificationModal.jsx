@@ -41,7 +41,7 @@ const CodeVerificationModal = ({ onVerify }) => {
             value={digit}
             onChange={(e) => handleChange(e, index)}
             maxLength={1}
-            className="w-10 p-2 border border-gray-300 rounded text-center"
+            className="w-10 p-2 border border-gray-300 rounded outline-none text-center"
           />
         ))}
       </div>
