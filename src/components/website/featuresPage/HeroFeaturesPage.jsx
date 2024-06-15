@@ -5,7 +5,7 @@ import FeaturesPageCard from "./FeaturesPageCard";
 
 const HeroFeaturesPage = () => {
   return (
-    <div className="w-full h-fit my-8 py-6 flex flex-col justify-center items-center">
+    <div className="w-full h-fit my-8 py-14 flex flex-col justify-center items-center">
       <div className="w-[50%] pt-10">
         <h1 className="text-dark font-semibold text-[26px] lgss:text-[40px] text-center flex flex-col">
           Discover how TaskMe can revolutionize your task management experience.
