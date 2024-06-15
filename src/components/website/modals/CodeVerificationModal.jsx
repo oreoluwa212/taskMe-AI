@@ -27,7 +27,7 @@ const CodeVerificationModal = ({ onVerify }) => {
   };
 
   return (
-    <div className="w-[35%] bg-white py-4 px-[5%] flex flex-col mx-auto rounded shadow-lg">
+    <div className="w-[90%] lgss:w-[35%] bg-white py-4 px-[5%] flex flex-col mx-auto rounded shadow-lg">
       <H1Text
         h2Text={"Confirm your email address"}
         pText={"Enter the code that was sent to your email"}
