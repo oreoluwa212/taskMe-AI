@@ -1,7 +1,7 @@
 import React from "react";
 import FormComponent from "../../components/website/cards/FormComponent";
 import { Link } from "react-router-dom";
-import { logo } from "../../../public";
+import { loginSignImg, logo } from "../../../public";
 
 const NewPasswordPage = () => {
   const fields = [
