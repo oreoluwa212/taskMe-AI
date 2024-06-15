@@ -29,4 +29,5 @@ export {
   heroAbout,
   loginSignImg,
   ResetPasswordBg,
+  envelope,
 };
