@@ -33,7 +33,7 @@ function AboutUs() {
             projects into manageable tasks and track your progress in real time.
           </Section>
         </div>
-        <div className="my-[4rem] w-[2px] rounded-full bg-primary lgss:flex hidden"></div>
+        <div className="mt-[4rem] w-[2px] rounded-full bg-primary lgss:flex hidden"></div>
         <div className="lgss:w-[45%] flex flex-col">
         <Section title="Our Mission">
           Our mission is clear; to empower individuals to achieve their goals
