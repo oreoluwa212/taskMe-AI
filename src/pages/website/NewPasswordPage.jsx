@@ -13,7 +13,6 @@ const NewPasswordPage = () => {
 
   const handleSubmit = (formValues) => {
     console.log(formValues);
-    // After handling form submission, navigate to /login
     navigate("/login");
   };
 
