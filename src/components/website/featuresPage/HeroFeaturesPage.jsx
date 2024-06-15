@@ -11,7 +11,7 @@ const HeroFeaturesPage = () => {
           Discover how TaskMe can revolutionize your task management experience.
         </h1>
       </div>
-      <div className="flex lgss:flex-row flex-col justify-between items-center w-[80%] mt-5 py-6">
+      <div className="flex lgss:flex-row flex-col justify-between items-center w-[80%] mt-10 py-10">
         <FeaturesPageCard
           title={"Task Breakdown"}
           description={
