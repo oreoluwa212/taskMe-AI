@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import H1Text from "../headerText/H1Text";
 
 const EmailModal = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
@@ -9,14 +10,14 @@ const EmailModal = ({ onSubmit }) => {
   };
 
   return (
-    <div className="w-[30%]">
-      <h2 className="text-2xl font-semibold mb-4 text-center">
-        Reset Password
-      </h2>
-      <form
-        className="bg-white p-8 rounded shadow-custom-xl"
-        onSubmit={handleSubmit}
-      >
+    <div className="bg-white p-8 rounded shadow-custom-xl w-[30%]">
+      <H1Text
+        h2Text={"Reset Password"}
+        pText={
+          "Enter your email address and we will send you a link to reset your password."
+        }
+      />
+      <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm mb-2 font-semibold text-gray-700">
             Email Address
