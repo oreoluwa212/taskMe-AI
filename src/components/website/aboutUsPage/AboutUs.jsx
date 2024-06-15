@@ -15,7 +15,7 @@ function AboutUs() {
   return (
     <div className="w-full flex flex-col justify-center items-center h-fit py-20 mb-10">
       <HeaderBg headerText={"about us"} />
-      <div className="w-4/5 lg:w-3/5 text-center flex gap-2">
+      <div className="w-4/5 lg:w-3/5 text-center flex lgss:flex-row flex-col gap-2">
         <div className="w-1/2">
           <Section title="Our Story">
             TaskMe was born out of the collective frustration of a group of
@@ -34,7 +34,7 @@ function AboutUs() {
           </Section>
         </div>
         <div className="my-16 w-[2px] rounded-full bg-primary"></div>
-        <div className="w-1/2">
+        <div className="w-1/2 flex flex-col">
         <Section title="Our Mission">
           Our mission is clear; to empower individuals to achieve their goals
           with ease and efficiency. We believe that everyone deserves access to
