@@ -29,14 +29,14 @@ const LoginPage = () => {
         <h2 className="text-lg lgss:text-2xl font-semibold lgss:mb-4 text-center">
           Welcome back
         </h2>
-        <div className="bg-white lgss:w-[60%] px-10 rounded shadow-custom-xl py-5 lgss:mt-4 mt-0">
+        <div className="bg-white lgss:w-[60%] w-[85%] px-5 lgss:px-10 rounded shadow-custom-xl py-8 lgss:mt-4 mt-0">
           <FormComponent
             fields={fields}
             buttonText="Login"
             onSubmit={handleSubmit}
             showForgotPassword={true}
           />
-          <div className="mt-4 text-center flex justify-center gap-2">
+          <div className="mt-4 text-center flex justify-center gap-4">
             <p className="text-gray-700">Don't have an account?</p>
             <Link
               to="/signup"
