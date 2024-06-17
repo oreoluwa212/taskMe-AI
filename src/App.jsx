@@ -10,11 +10,13 @@ import NewPasswordPage from "./pages/website/NewPasswordPage";
 import VerifyEmailPage from "./pages/website/VerifyEmailPage";
 import SignupVerifyEmailPage from "./pages/website/SignupVerifyEmailPage";
 import ResetPwConfirm from "./pages/website/ResetPwConfirm";
+import Dashboard from "./pages/webApp/Dashboard";
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* ========================== Website Routes ========================== */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/features" element={<FeaturesPage />} />
@@ -26,10 +28,12 @@ function App() {
         />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-otp" element={<SignUpPage />} />
-
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/new-password" element={<NewPasswordPage />} />
         <Route path="/new-password/login" element={<ResetPwConfirm />} />
+
+        {/* ========================== Dashboard Routes ========================== */}
+        <Route path="/overview" element={<Dashboard />} />
       </Routes>
     </Router>
   );

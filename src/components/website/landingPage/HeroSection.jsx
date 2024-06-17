@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   hero1,
   hero2,
@@ -22,10 +23,12 @@ function HeroSection() {
             management solution.
           </p>
           <div className="pt-10 w-full">
+            <Link to={"/overview"}>
             <CustomBtn
               className="w-[50%] py-4 mt-4 rounded-xl text-white bg-primary"
               btnText="Get started now"
-            />
+              />
+              </Link>
           </div>
         </div>
         <img className="hidden lgss:flex h-[80vh] w-[30%]" src={hero2} alt="" />
