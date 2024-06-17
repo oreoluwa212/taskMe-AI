@@ -94,22 +94,22 @@ const Dashboard = () => {
               <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
                 <HomeCard
                   title="Total Projects"
-                  value={"0"}
+                  value={"5"}
                   className={"text-secondary"}
                 />
                 <HomeCard
                   title="Total Tasks"
-                  value={"0"}
+                  value={"10"}
                   className={"text-[#3185FC]"}
                 />
                 <HomeCard
                   title="Completed Tasks"
-                  value={"0"}
+                  value={"7"}
                   className={"text-[#56AC60]"}
                 />
                 <HomeCard
                   title="Pending Tasks"
-                  value={"0"}
+                  value={"3"}
                   className={"text-[#CDB538]"}
                 />
               </div>
