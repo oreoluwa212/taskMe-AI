@@ -19,7 +19,7 @@ const Sidebar = () => {
   }, [location.pathname]);
 
   return (
-    <div className=" w-1/5 h-screen flex flex-col border-r pb-5 font-lato border-[#FF8C42] justify-start px-4 items-start pt-8 bg-white">
+    <div className=" w-1/5 h-screen flex flex-col border-r pb-5 font-lato border-[#19437E] justify-start px-4 items-start pt-8 bg-white">
       <div className="w-[210px] h-[40px]">
         <img src={logo} alt="" className="w-full h-full bg-cover" />
       </div>
