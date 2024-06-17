@@ -31,7 +31,7 @@ const Dashboard = () => {
     <div className="lgss:h-screen flex flex-row overflow-x-hidden">
       <Sidebar isOpen={isOpen} />
 
-      <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-white items-center font-lato justify-start">
+      <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start">
         <div className="w-full">
           <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">
             {isOpen ? (
@@ -47,7 +47,7 @@ const Dashboard = () => {
             )}
           </div>
           <Header userName={userName} />
-            <div className="w-full flex flex-col px-[5%]">
+          <div className="w-full flex flex-col px-[5%] pt-5">
             <div className="w-full flex lgss:flex-row flex-col gap-4 py-2">
               <div
                 className={activeTab === "empty" ? "active" : ""}
@@ -63,33 +63,65 @@ const Dashboard = () => {
               </div>
             </div>
             {activeTab === "empty" ? (
+               <div className="w-full flex flex-col gap-7">
               <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
                 <HomeCard
-                  title="Available Balance"
-                  value={"#0.00"}
-                  img={icon1}
+                  title="Total Projects"
+                  value={"0"}
+                  className={"text-secondary"}
                 />
-                <HomeCard title="Total Orders" value={"0"} img={icon1} />
-                <HomeCard title="Total Orders" value={"Tier 1"} img={icon1} />
+                <HomeCard
+                  title="Total Tasks"
+                  value={"0"}
+                  className={"text-[#3185FC]"}
+                />
+                <HomeCard
+                  title="Completed Tasks"
+                  value={"0"}
+                  className={"text-[#56AC60]"}
+                />
+                <HomeCard
+                  title="Pending Tasks"
+                  value={"0"}
+                  className={"text-[#CDB538]"}
+                />
+              </div>
+              <div className="flex flex-col font-semibold text-lg pt-7 w-full">
+               <h2>Current Projects</h2>
+              </div>
               </div>
             ) : (
               <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
                 <HomeCard
-                  title="Available Balance"
-                  value={"#123,583"}
-                  img={icon1}
+                  title="Total Projects"
+                  value={"0"}
+                  className={"text-secondary"}
                 />
-                <HomeCard title="Total Orders" value={"323"} img={icon1} />
-                <HomeCard title="Total Orders" value={"Tier 3"} img={icon1} />
+                <HomeCard
+                  title="Total Tasks"
+                  value={"0"}
+                  className={"text-[#3185FC]"}
+                />
+                <HomeCard
+                  title="Completed Tasks"
+                  value={"0"}
+                  className={"text-[#56AC60]"}
+                />
+                <HomeCard
+                  title="Pending Tasks"
+                  value={"0"}
+                  className={"text-[#CDB538]"}
+                />
               </div>
             )}
+
+            {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
-              <div className="w-full flex flex-col justify-center items-center pt-6">
-              </div>
-            ): (
-               <div className=""></div>
+              <div className="w-full flex flex-col justify-center items-center pt-6"></div>
+            ) : (
+              <div className=""></div>
             )}
-        </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,17 +1,17 @@
 import { CiCircleInfo } from "react-icons/ci";
+import { HiMiniQueueList } from "react-icons/hi2";
 
-function HomeCard({title, value, img }) {
+function HomeCard({ title, value, className }) {
   return (
-    <div className="bg-white shadow-sm border-[1px] rounded-[8px] h-[150px] w-full lgss:w-[32%] flex justify-between items-center px-6">
-      <div className="flex flex-col gap-6">
-        <h3 className="flex gap-3 justify-center items-center text-secondary">
-          {title}
-          <CiCircleInfo />
-        </h3>
-        <h1 className="text-left text-[26px] font-bold">{value}</h1>
+    <div className="bg-white shadow-custom-xl rounded-[8px] h-[150px] w-full lgss:w-[22%] flex gap-5 items-center px-6 text-dark">
+      <div className="">
+        <HiMiniQueueList className={`text-5xl ${className}`} />
       </div>
-      <div className="bg-[#F6F6F6] h-14 w-14 rounded-full flex justify-center items-center">
-        {img && <img src={img} alt="Card image" className="h-8 w-8" />}
+      <div className="flex flex-col gap-6">
+        <h3 className="font-bold text-xl">
+          {title}
+        </h3>
+        <h1 className="text-left text-lg font-bold">{value}</h1>
       </div>
     </div>
   );
