@@ -12,8 +12,6 @@ const Dashboard = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("empty");
 
-
-
   useEffect(() => {
     const fetchUserName = async () => {
       try {
@@ -63,32 +61,29 @@ const Dashboard = () => {
               </div>
             </div>
             {activeTab === "empty" ? (
-               <div className="w-full flex flex-col gap-7">
-              <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
-                <HomeCard
-                  title="Total Projects"
-                  value={"0"}
-                  className={"text-secondary"}
-                />
-                <HomeCard
-                  title="Total Tasks"
-                  value={"0"}
-                  className={"text-[#3185FC]"}
-                />
-                <HomeCard
-                  title="Completed Tasks"
-                  value={"0"}
-                  className={"text-[#56AC60]"}
-                />
-                <HomeCard
-                  title="Pending Tasks"
-                  value={"0"}
-                  className={"text-[#CDB538]"}
-                />
-              </div>
-              <div className="flex flex-col font-semibold text-lg pt-7 w-full">
-               <h2>Current Projects</h2>
-              </div>
+              <div className="w-full flex flex-col gap-7">
+                <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
+                  <HomeCard
+                    title="Total Projects"
+                    value={"0"}
+                    className={"text-secondary"}
+                  />
+                  <HomeCard
+                    title="Total Tasks"
+                    value={"0"}
+                    className={"text-[#3185FC]"}
+                  />
+                  <HomeCard
+                    title="Completed Tasks"
+                    value={"0"}
+                    className={"text-[#56AC60]"}
+                  />
+                  <HomeCard
+                    title="Pending Tasks"
+                    value={"0"}
+                    className={"text-[#CDB538]"}
+                  />
+                </div>
               </div>
             ) : (
               <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
@@ -117,7 +112,15 @@ const Dashboard = () => {
 
             {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
-              <div className="w-full flex flex-col justify-center items-center pt-6"></div>
+              <div className="flex flex-col font-semibold text-lg pt-10 mt-5 w-full">
+                <h2>Current Projects</h2>
+                <div className="w-full rounded-[20px] bg-white h-fit py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center">
+                  <p>You don&apos;t have any current project.</p>
+                  <div className="w-[30%] pt-6">
+                  <CustomBtn title={"Add a new project"} />
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className=""></div>
             )}
