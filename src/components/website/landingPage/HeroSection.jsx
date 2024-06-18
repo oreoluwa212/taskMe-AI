@@ -23,7 +23,7 @@ function HeroSection() {
             management solution.
           </p>
           <div className="pt-10 w-full">
-            <Link to={"/overview"}>
+            <Link to={"/signup"}>
             <CustomBtn
               className="w-[50%] py-4 mt-4 rounded-xl text-white bg-primary"
               btnText="Get started now"
