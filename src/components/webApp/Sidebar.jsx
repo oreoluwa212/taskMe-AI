@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen }) => {
 
   return (
     <>
-      <div className="w-1/5 hidden lgss:flex h-screen flex-col border-r pb-5 font-lato border-[#19437E] justify-start px-4 items-start pt-8 bg-white">
+      <div className="w-1/5 hidden lgss:flex h-screen flex-col border-r-[1px] pb-5 font-lato border-[#19437E] shadow-lg justify-start px-4 items-start pt-8 bg-white">
         <div className="w-[210px] h-[40px]">
           <img src={logo} alt="" className="w-full h-full bg-cover" />
         </div>

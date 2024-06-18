@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Sidebar from "../../components/webApp/Sidebar";
 import Header from "../../components/webApp/Header";
 import { FaBars, FaTimes } from "react-icons/fa";
-import ProjectCard from "../../components/webApp/cards/ProjectCard";
 import CustomBtn from "../../components/webApp/buttons/CustomBtn";
 import HeaderTexts from "../../components/webApp/HeaderTexts";
+import ProjectDetailCard from "../../components/webApp/cards/ProjectDetailCard";
 
 const Projects = () => {
   const [userName, setUserName] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("empty");
+  const [projects, setProjects] = useState([]);
+  const cardContainerRef = useRef(null);
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -23,7 +25,53 @@ const Projects = () => {
     };
 
     fetchUserName();
+
+    const mockProjects = [
+      {
+        projectName: "Website Redesign Project",
+        dueDate: "22nd, June 2024",
+        dueDays: 30,
+        startDate: "12th, May 2024",
+        progress: 40,
+      },
+      {
+        projectName: "Mobile App Development",
+        dueDate: "1st, July 2024",
+        dueDays: 45,
+        startDate: "15th, May 2024",
+        progress: 60,
+      },
+      {
+        projectName: "Mobile App Development",
+        dueDate: "1st, July 2024",
+        dueDays: 45,
+        startDate: "15th, May 2024",
+        progress: 60,
+      },
+      {
+        projectName: "Marketing Campaign",
+        dueDate: "30th, June 2024",
+        dueDays: 20,
+        startDate: "10th, June 2024",
+        progress: 20,
+      },
+      {
+        projectName: "Marketing Campaign",
+        dueDate: "30th, June 2024",
+        dueDays: 10,
+        startDate: "10th, June 2024",
+        progress: 20,
+      },
+    ];
+
+    setProjects(mockProjects);
   }, []);
+
+  const handleCardClick = () => {
+    if (cardContainerRef.current) {
+      cardContainerRef.current.scrollLeft += 300;
+    }
+  };
 
   return (
     <div className="lgss:h-screen flex flex-row overflow-x-hidden">
@@ -45,14 +93,17 @@ const Projects = () => {
             )}
           </div>
           <Header userName={userName} />
-          <div className="w-full flex flex-col px-[5%] pt-10">
-            <div className="pb-6">
-            <HeaderTexts
-              h2={"My Projects"}
-              p={"View the list of projects you have"}
+          <div className="w-full flex flex-col px-[5%] pt-6">
+            <div className="flex pt-6 flex-row justify-between items-center w-full">
+              <HeaderTexts
+                h2={"My Projects"}
+                p={"View the list of projects you have"}
               />
+              <div className="w-[25%]">
+                <CustomBtn title={"Add new project"} />
               </div>
-            <div className="w-full flex lgss:flex-row flex-col gap-4 py-2">
+            </div>
+            <div className="w-full flex lgss:flex-row flex-col gap-4 pt-4">
               <div
                 className={activeTab === "empty" ? "active" : ""}
                 onClick={() => setActiveTab("empty")}
@@ -70,20 +121,37 @@ const Projects = () => {
             {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
               <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
-                <h2>Current Project</h2>
-                <div className="w-full rounded-[20px] bg-white h-fit py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center text-sm">
+                <div className="w-full rounded-[20px] bg-white h-[300px] py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center text-sm">
                   <p>You don&apos;t have any current project.</p>
-                  <div className="w-[30%] pt-3">
+                  <div className="w-[30%] pt-5">
                     <CustomBtn title={"Add a new project"} />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
-                <div className="w-full flex lgss:flex-row flex-col items-start justify-between">
-                  <div className="w-full flex flex-col gap-6">
-                    <h2>Current Project</h2>
-                    
+              <div className="flex flex-col font-semibold text-lg pt-14 w-full">
+                <div className="w-full flex flex-col gap-6">
+                  <h2>Current Project</h2>
+                  <div
+                    className="flex flex-row gap-8 pb-5 pl-1 overflow-x-auto custom-scrollbar"
+                    ref={cardContainerRef}
+                  >
+                    {projects.map((project, index) => (
+                      <div
+                        key={index}
+                        onClick={
+                          index === projects.length - 1 ? handleCardClick : null
+                        }
+                      >
+                        <ProjectDetailCard
+                          projectName={project.projectName}
+                          dueDate={project.dueDate}
+                          dueDays={project.dueDays}
+                          startDate={project.startDate}
+                          progress={project.progress}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

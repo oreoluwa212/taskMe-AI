@@ -1,1 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+/* styles.css or the corresponding CSS file */
+
+.custom-scrollbar {
+   overflow-x: scroll;
+   scrollbar-width: thin;
+   scrollbar-color: #b7c5f7 #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+   height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+   background: #888;
+   border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+   background: #f1f1f1;
+   border-radius: 10px;
+}
+
+.card-container {
+   display: flex;
+   gap: 16px;
+   padding-bottom: 20px;
+   margin-bottom: 20px;
+   border-bottom: 2px solid #eee;
+}
+
+.card-container:last-child {
+   border-bottom: none;
+}
+
+.project-detail-card {
+   min-width: 300px;
+   flex-shrink: 0;
+   border-radius: 12px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   padding: 16px;
+   background-color: white;
+}
