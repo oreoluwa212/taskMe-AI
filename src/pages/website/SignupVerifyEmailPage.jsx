@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { loginSignImg, logo } from "../../../public";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormComponent from "../../components/website/cards/FormComponent";
 
 const LoginPage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const fields = [
@@ -28,17 +28,14 @@ const LoginPage = () => {
       if (response.status === 200) {
         console.log("Login successful:", response.data);
         toast.success("Login successful!");
-        // Assuming successful login, redirect to dashboard or any other page
-        history.push("/dashboard");
+        navigate("/dashboard");
       } else {
         console.error("Login failed:", response.data);
         toast.error("Login failed. Please check your credentials.");
-        // Handle login failure, display error message
       }
     } catch (error) {
       console.error("Error during login:", error);
       toast.error("Error during login. Please try again later.");
-      // Handle network errors or other exceptions
     } finally {
       setLoading(false);
     }
