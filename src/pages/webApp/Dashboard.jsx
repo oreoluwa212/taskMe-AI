@@ -5,7 +5,6 @@ import Header from "../../components/webApp/Header";
 import { FaBars, FaTimes } from "react-icons/fa";
 import CustomBtn from "../../components/webApp/buttons/CustomBtn";
 import HomeCard from "../../components/webApp/cards/HomeCard";
-import { icon1 } from "../../../public";
 import ProjectCard from "../../components/webApp/cards/ProjectCard";
 
 const Dashboard = () => {

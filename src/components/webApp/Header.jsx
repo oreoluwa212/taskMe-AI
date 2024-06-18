@@ -24,7 +24,7 @@ const Header = ({ userName }) => {
   const userInitials = userName ? getInitials(userName) : null;
 
   return (
-    <div className="w-full h-[80px] py-4 font-lato border-b border-[#19437E] flex justify-between items-center px-7">
+    <div className="lgss:w-full h-[80px] py-4 font-lato border-b border-[#19437E] flex justify-between items-center px-[10%] lgss:px-7">
       <h4 className="text-xl font-medium text-[#6B7276]">{formattedDate}</h4>
       <div className="flex justify-between items-center gap-2 w-[21%] px-8">
         <HiOutlineBell className="text-3xl text-[#19437E]" />
