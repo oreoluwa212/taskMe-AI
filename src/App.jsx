@@ -11,6 +11,8 @@ import VerifyEmailPage from "./pages/website/VerifyEmailPage";
 import SignupVerifyEmailPage from "./pages/website/SignupVerifyEmailPage";
 import ResetPwConfirm from "./pages/website/ResetPwConfirm";
 import Dashboard from "./pages/webApp/Dashboard";
+import Projects from "./pages/webApp/Projects";
+import Settings from "./pages/webApp/Settings";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
 
         {/* ========================== Dashboard Routes ========================== */}
         <Route path="/overview" element={<Dashboard />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
   );

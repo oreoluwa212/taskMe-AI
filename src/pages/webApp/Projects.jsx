@@ -3,12 +3,11 @@ import axios from "axios";
 import Sidebar from "../../components/webApp/Sidebar";
 import Header from "../../components/webApp/Header";
 import { FaBars, FaTimes } from "react-icons/fa";
-import CustomBtn from "../../components/webApp/buttons/CustomBtn";
-import HomeCard from "../../components/webApp/cards/HomeCard";
 import ProjectCard from "../../components/webApp/cards/ProjectCard";
+import CustomBtn from "../../components/webApp/buttons/CustomBtn";
 import HeaderTexts from "../../components/webApp/HeaderTexts";
 
-const Dashboard = () => {
+const Projects = () => {
   const [userName, setUserName] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("empty");
@@ -46,16 +45,13 @@ const Dashboard = () => {
             )}
           </div>
           <Header userName={userName} />
-          <div className="w-full flex flex-col px-[5%] pt-5">
-            <div className="flex py-8 flex-row justify-between items-center w-full">
-              <HeaderTexts
-                h2={"Welcome back David!"}
-                p={"Here's what's on your plate today."}
+          <div className="w-full flex flex-col px-[5%] pt-10">
+            <div className="pb-6">
+            <HeaderTexts
+              h2={"My Projects"}
+              p={"View the list of projects you have"}
               />
-              <div className="w-[25%]">
-                <CustomBtn title={"Add new project"} />
               </div>
-            </div>
             <div className="w-full flex lgss:flex-row flex-col gap-4 py-2">
               <div
                 className={activeTab === "empty" ? "active" : ""}
@@ -70,55 +66,6 @@ const Dashboard = () => {
                 <CustomBtn title="Active Tab" />
               </div>
             </div>
-            {activeTab === "empty" ? (
-              <div className="w-full flex flex-col gap-7">
-                <div className="flex flex-row flex-wrap w-full gap-3 justify-between pt-6">
-                  <HomeCard
-                    title="Total Projects"
-                    value={"0"}
-                    className={"text-secondary"}
-                  />
-                  <HomeCard
-                    title="Total Tasks"
-                    value={"0"}
-                    className={"text-[#3185FC]"}
-                  />
-                  <HomeCard
-                    title="Completed Tasks"
-                    value={"0"}
-                    className={"text-[#56AC60]"}
-                  />
-                  <HomeCard
-                    title="Pending Tasks"
-                    value={"0"}
-                    className={"text-[#CDB538]"}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-6">
-                <HomeCard
-                  title="Total Projects"
-                  value={"5"}
-                  className={"text-secondary"}
-                />
-                <HomeCard
-                  title="Total Tasks"
-                  value={"10"}
-                  className={"text-[#3185FC]"}
-                />
-                <HomeCard
-                  title="Completed Tasks"
-                  value={"7"}
-                  className={"text-[#56AC60]"}
-                />
-                <HomeCard
-                  title="Pending Tasks"
-                  value={"3"}
-                  className={"text-[#CDB538]"}
-                />
-              </div>
-            )}
 
             {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
@@ -134,22 +81,9 @@ const Dashboard = () => {
             ) : (
               <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
                 <div className="w-full flex lgss:flex-row flex-col items-start justify-between">
-                  <div className="lgss:w-[60%] flex flex-col gap-6">
+                  <div className="w-full flex flex-col gap-6">
                     <h2>Current Project</h2>
-                    <ProjectCard
-                      projectName={"Website Redesign"}
-                      percent={"75"}
-                      dueDate={"June 15th, 2024"}
-                    />
-                    <h2>Today's Task</h2>
-                    <ProjectCard
-                      projectName={"Website Redesign"}
-                      percent={"75"}
-                      dueDate={"June 15th, 2024"}
-                    />
-                  </div>
-                  <div className="w-[30%] bg-white h-[200px] shadow-custom-xl pl-5 pt-6">
-                    <h2>Upcoming Deadline</h2>
+                    
                   </div>
                 </div>
               </div>
@@ -161,4 +95,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Projects;
