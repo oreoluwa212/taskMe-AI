@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormComponent from "../../components/website/cards/FormComponent";
 import { loginSignImg, logo, ResetPasswordBg } from "../../../public";
-import CodeVerificationModal from "../../components/website/modals/CodeVerificationModal";
 import SignupVerifyEmailPage from "./SignupVerifyEmailPage";
 import H1Text from "../../components/website/headerText/H1Text";
 
@@ -56,9 +55,6 @@ const SignUpPage = () => {
       setEmail(formValues["Email Address"]);
       toast.success("Account created successfully! Please verify your email.");
       setStep(2);
-      navigate("/signup/verify-email", {
-        state: { email: formValues["Email Address"], step: 2 },
-      });
     } catch (error) {
       setError("An error occurred. Please try again.");
       toast.error("An error occurred. Please try again.");
@@ -66,20 +62,6 @@ const SignUpPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleResend = () => {
-    console.log("Resend email to", email);
-  };
-
-  const handleVerified = () => {
-    setStep(3);
-    navigate("/verify-otp", { state: { email: email, step: 3 } });
-  };
-
-  const handleOTPVerified = () => {
-    setStep(4);
-    navigate("/login", { state: { email: email, step: 4 } });
   };
 
   return (
@@ -121,34 +103,7 @@ const SignUpPage = () => {
           </div>
         </div>
       )}
-      {step === 2 && (
-        <div className="w-full h-full flex flex-col items-center justify-center relative">
-          <img
-            src={ResetPasswordBg}
-            className="absolute w-full h-full object-cover"
-            alt="Background"
-          />
-          <div className="relative z-10 w-full flex justify-center">
-            <SignupVerifyEmailPage
-              email={email}
-              onResend={handleResend}
-              onVerified={handleVerified}
-            />
-          </div>
-        </div>
-      )}
-      {step === 3 && (
-        <div className="w-full h-full flex flex-col items-center justify-center relative">
-          <img
-            src={ResetPasswordBg}
-            className="absolute w-full h-full object-cover"
-            alt="Background"
-          />
-          <div className="relative z-10 w-full flex justify-center">
-            <CodeVerificationModal onVerify={handleOTPVerified} />
-          </div>
-        </div>
-      )}
+      {step === 2 && <SignupVerifyEmailPage email={email} />}
     </div>
   );
 };

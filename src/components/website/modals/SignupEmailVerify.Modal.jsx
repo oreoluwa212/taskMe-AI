@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import H1Text from "../headerText/H1Text";
 
-const SignupEmailVerify = ({ onVerify }) => {
+const SignupEmailVerify = ({ email }) => {
   const [code, setCode] = useState(["", "", "", "", ""]);
-  const [isVerified, setIsVerified] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (code.join("").length === 5) {
-      setTimeout(() => {
-        console.log("Code verified, calling onVerify and navigate");
-        setIsVerified(true);
-        // onVerify();
-        navigate("/login");
-      }, 1000);
-    }
-  }, [code, onVerify, navigate]);
 
   const handleChange = (e, index) => {
     const { value } = e.target;
@@ -30,12 +20,51 @@ const SignupEmailVerify = ({ onVerify }) => {
     }
   };
 
+  const handleVerify = async () => {
+    try {
+      const response = await fetch(
+        "https://pink-trees-demonic-ticket-production.pipeops.app/v1/auth/verify",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            otp: code.join(""),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || "Invalid OTP. Please try again.");
+        toast.error(errorData.message || "Invalid OTP. Please try again.");
+        return;
+      }
+
+      toast.success("Email verified successfully!");
+      navigate("/login");
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (code.join("").length === 5) {
+      handleVerify();
+    }
+  }, [code]);
+
   return (
     <div className="lgss:w-[35%] bg-white py-4 px-[5%] flex flex-col mx-auto rounded shadow-lg">
       <H1Text
         h2Text={"Confirm your email address"}
         pText={"Enter the code that was sent to your email"}
       />
+      {error && <p className="text-red-500 mb-4">{error}</p>}
       <div className="flex w-full justify-between gap-3 my-8">
         {code.map((digit, index) => (
           <input
@@ -49,11 +78,6 @@ const SignupEmailVerify = ({ onVerify }) => {
           />
         ))}
       </div>
-      {isVerified && (
-        <Link to={'/login'}>
-        <p className="text-green-500 text-center">Code Verified!</p>
-        </Link>
-      )}
     </div>
   );
 };

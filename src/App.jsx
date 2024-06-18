@@ -7,7 +7,6 @@ import LoginPage from "./pages/website/LoginPage";
 import SignUpPage from "./pages/website/SignUpPage";
 import ResetPasswordPage from "./pages/website/ResetPasswordPage";
 import NewPasswordPage from "./pages/website/NewPasswordPage";
-import VerifyEmailPage from "./pages/website/VerifyEmailPage";
 import SignupVerifyEmailPage from "./pages/website/SignupVerifyEmailPage";
 import ResetPwConfirm from "./pages/website/ResetPwConfirm";
 import Dashboard from "./pages/webApp/Dashboard";
@@ -28,7 +27,6 @@ function App() {
           path="/signup/verify-email"
           element={<SignupVerifyEmailPage />}
         />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-otp" element={<SignUpPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/new-password" element={<NewPasswordPage />} />
