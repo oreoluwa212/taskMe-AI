@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormComponent from "../../components/website/cards/FormComponent";
-import { loginSignImg, logo, ResetPasswordBg } from "../../../public";
+import { loginSignImg, logo } from "../../../public";
 import SignupVerifyEmailPage from "./SignupVerifyEmailPage";
 import H1Text from "../../components/website/headerText/H1Text";
 

@@ -1,32 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { loginSignImg, logo } from "../../../public";
 import { Link, useNavigate } from "react-router-dom";
 import FormComponent from "../../components/website/cards/FormComponent";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ClipLoader } from "react-spinners";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const fields = [
     { type: "email", label: "Email Address" },
     { type: "password", label: "Password" },
   ];
 
-  const handleSubmit = (formValues) => {
-    console.log(formValues);
-    navigate("/overview")
+  const handleSubmit = async (formValues) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "https://pink-trees-demonic-ticket-production.pipeops.app/v1/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formValues["Email Address"],
+            password: formValues["Password"],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Login failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      toast.success("Login successful!");
+      navigate("/overview");
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full h-screen flex flex-col md:flex-row">
-      <div className=" hidden w-full md:w-[50%] h-full lgss:flex overflow-hidden">
+      <div className="hidden w-full md:w-[50%] h-full lgss:flex overflow-hidden">
         <img
           src={loginSignImg}
           className="w-full h-full object-cover"
-          alt="Sign Up"
+          alt="Login"
         />
       </div>
       <div className="w-full md:w-[50%] h-full flex flex-col items-center justify-center relative pt-8">
         <Link to="/" className="absolute top-4 right-4 text-white text-lg">
-          <img src={logo} alt="" />
+          <img src={logo} alt="Logo" />
         </Link>
         <h2 className="text-lg lgss:text-2xl font-semibold lgss:mb-4 text-center">
           Welcome back
@@ -34,7 +68,9 @@ const LoginPage = () => {
         <div className="bg-white lgss:w-[60%] w-[85%] px-5 lgss:px-10 rounded shadow-custom-xl py-8 lgss:mt-4 mt-0">
           <FormComponent
             fields={fields}
-            buttonText="Login"
+            buttonText={
+              loading ? <ClipLoader color={"#123abc"} size={20} /> : "Login"
+            }
             onSubmit={handleSubmit}
             showForgotPassword={true}
           />
@@ -49,6 +85,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
