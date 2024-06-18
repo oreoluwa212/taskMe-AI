@@ -27,8 +27,8 @@ const Sidebar = ({ isOpen }) => {
               to="/overview"
               className={
                 activebutton === 1
-                  ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
+                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
+                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
               }
             >
               <h4 className="">Overview</h4>
@@ -38,8 +38,8 @@ const Sidebar = ({ isOpen }) => {
               to="/projects"
               className={
                 activebutton === 2
-                  ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
+                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
+                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
               }
             >
               <h4 className="">Projects</h4>
@@ -49,8 +49,8 @@ const Sidebar = ({ isOpen }) => {
               to="/settings"
               className={
                 activebutton === 3
-                  ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
+                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
+                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
               }
             >
               <h4 className="">Settings</h4>
@@ -60,7 +60,7 @@ const Sidebar = ({ isOpen }) => {
 
           <button
             onClick={() => navigate("/login")}
-            className="flex justify-between text-[20px] mt-4 text-[#B82323] items-center  font-medium  px-4  w-full "
+            className="flex justify-between text-lg mt-4 text-[#B82323] items-center  font-medium  px-6  w-full "
           >
             Logout
             <HiOutlineLogout />
@@ -116,7 +116,7 @@ const Sidebar = ({ isOpen }) => {
               </div>
               <button
                 onClick={() => navigate("/login")}
-                className="flex gap-5 text-[18px] text-[#B82323] items-center  font-medium pl-12 h-[40%] w-full"
+                className="flex gap-5 text-[18px] text-[#B82323] items-center font-medium pl-12 h-[40%] w-full"
               >
                 Sign Out
                 <HiOutlineLogout />

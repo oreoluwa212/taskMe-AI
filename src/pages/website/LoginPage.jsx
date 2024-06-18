@@ -1,9 +1,10 @@
 import React from "react";
 import { loginSignImg, logo } from "../../../public";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FormComponent from "../../components/website/cards/FormComponent";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const fields = [
     { type: "email", label: "Email Address" },
     { type: "password", label: "Password" },
@@ -11,6 +12,7 @@ const LoginPage = () => {
 
   const handleSubmit = (formValues) => {
     console.log(formValues);
+    navigate("/overview")
   };
 
   return (

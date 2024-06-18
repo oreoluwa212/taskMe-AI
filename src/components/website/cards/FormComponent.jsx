@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
 const FormComponent = ({
   fields,
   buttonText,
   onSubmit,
   showForgotPassword,
+  loading,
 }) => {
   const [formValues, setFormValues] = useState(
     fields.reduce((acc, field) => ({ ...acc, [field.label]: "" }), {})
@@ -99,9 +101,10 @@ const FormComponent = ({
       )}
       <button
         type="submit"
-        className="w-full bg-primary text-white font-semibold mt-6 p-2 rounded hover:bg-blue-600"
+        className="w-full bg-primary text-white font-semibold mt-6 p-2 rounded hover:bg-blue-600 flex justify-center items-center"
+        disabled={loading}
       >
-        {buttonText}
+        {loading ? <ClipLoader color="#ffffff" size={20} /> : buttonText}
       </button>
     </form>
   );

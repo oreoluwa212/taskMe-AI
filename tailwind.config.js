@@ -12,7 +12,7 @@ module.exports = {
       },
       boxShadow: {
         "custom-xl":
-          "0 10px 15px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          "0 5px 5px -5px rgba(0, 0, 0, 0.1), 0 5px 5px -5px rgba(0, 0, 0, 0.04)",
       },
       colors: {
         primary: "#0034EE",

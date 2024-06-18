@@ -6,6 +6,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import CustomBtn from "../../components/webApp/buttons/CustomBtn";
 import HomeCard from "../../components/webApp/cards/HomeCard";
 import { icon1 } from "../../../public";
+import ProjectCard from "../../components/webApp/cards/ProjectCard";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState(null);
@@ -62,7 +63,7 @@ const Dashboard = () => {
             </div>
             {activeTab === "empty" ? (
               <div className="w-full flex flex-col gap-7">
-                <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
+                <div className="flex flex-row flex-wrap w-full gap-3 justify-between pt-6">
                   <HomeCard
                     title="Total Projects"
                     value={"0"}
@@ -86,7 +87,7 @@ const Dashboard = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-12">
+              <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-6">
                 <HomeCard
                   title="Total Projects"
                   value={"5"}
@@ -112,17 +113,35 @@ const Dashboard = () => {
 
             {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
-              <div className="flex flex-col font-semibold text-lg pt-10 mt-5 w-full">
-                <h2>Current Projects</h2>
-                <div className="w-full rounded-[20px] bg-white h-fit py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center">
+              <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
+                <h2>Current Project</h2>
+                <div className="w-full rounded-[20px] bg-white h-fit py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center text-sm">
                   <p>You don&apos;t have any current project.</p>
-                  <div className="w-[30%] pt-6">
-                  <CustomBtn title={"Add a new project"} />
+                  <div className="w-[30%] pt-3">
+                    <CustomBtn title={"Add a new project"} />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className=""></div>
+              <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
+                <div className="w-full flex lgss:flex-row flex-col items-start justify-between">
+                  <div className="lgss:w-[60%] flex flex-col gap-6">
+                    <h2>Current Project</h2>
+                    <ProjectCard
+                    projectName={"Website Redesign"}
+                    percent={"75"}
+                    dueDate={"June 15th, 2024"}/>
+                    <h2>Today's Task</h2>
+                    <ProjectCard
+                    projectName={"Website Redesign"}
+                    percent={"75"}
+                    dueDate={"June 15th, 2024"}/>
+                  </div>
+                  <div className="w-[30%] bg-white h-[200px] shadow-custom-xl pl-5 pt-6">
+                    <h2>Upcoming Deadline</h2>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>

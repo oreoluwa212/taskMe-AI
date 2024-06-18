@@ -12,7 +12,7 @@ const SignupEmailVerify = ({ onVerify }) => {
       setTimeout(() => {
         console.log("Code verified, calling onVerify and navigate");
         setIsVerified(true);
-        onVerify();
+        // onVerify();
         navigate("/login");
       }, 1000);
     }
