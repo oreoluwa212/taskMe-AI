@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import H1Text from "../headerText/H1Text";
 
 const SignupEmailVerify = ({ email }) => {
@@ -42,11 +42,9 @@ const SignupEmailVerify = ({ email }) => {
         toast.error(errorData.message || "Invalid OTP. Please try again.");
         return;
       }else{
-
-        toast.success("Email verified successfully!");
+      toast.success("Email verification successful!");
         navigate("/login");
       }
-
     } catch (error) {
       setError("An error occurred. Please try again.");
       toast.error("An error occurred. Please try again.");

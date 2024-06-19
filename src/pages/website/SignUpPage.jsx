@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormComponent from "../../components/website/cards/FormComponent";
 import { loginSignImg, logo } from "../../../public";
@@ -7,7 +7,6 @@ import SignupVerifyEmailPage from "./SignupVerifyEmailPage";
 import H1Text from "../../components/website/headerText/H1Text";
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);

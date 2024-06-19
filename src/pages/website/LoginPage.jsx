@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { loginSignImg, logo } from "../../../public";
 import { Link, useNavigate } from "react-router-dom";
 import FormComponent from "../../components/website/cards/FormComponent";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const fields = [
     { type: "email", label: "Email Address" },
@@ -33,7 +34,12 @@ const LoginPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || "Login failed. Please try again.");
+        setError(
+          errorData.message || "Something went wrong. Please try again."
+        );
+        toast.error(
+          errorData.message || "Something went wrong. Please try again."
+        );
         setLoading(false);
         return;
       }
@@ -85,7 +91,6 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };
