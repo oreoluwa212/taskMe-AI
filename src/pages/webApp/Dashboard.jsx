@@ -5,7 +5,7 @@ import Header from "../../components/webApp/Header";
 import { FaBars, FaTimes } from "react-icons/fa";
 import CustomBtn from "../../components/webApp/buttons/CustomBtn";
 import HomeCard from "../../components/webApp/cards/HomeCard";
-import ProjectCard from "../../components/webApp/cards/ProjectCard";
+import ProjectDetailCard from "../../components/webApp/cards/ProjectDetailCard";
 import HeaderTexts from "../../components/webApp/HeaderTexts";
 import ProjectModal from "../../components/webApp/modals/ProjectModal";
 
@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [userName, setUserName] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("empty");
+  const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const cardContainerRef = useRef(null);
 
@@ -27,7 +28,19 @@ const Dashboard = () => {
     };
 
     fetchUserName();
+
+    const savedProjects = JSON.parse(localStorage.getItem("projects")) || [];
+    setProjects(savedProjects);
+    if (savedProjects.length > 0) {
+      setActiveTab("active");
+    }
   }, []);
+
+  const handleCardClick = () => {
+    if (cardContainerRef.current) {
+      cardContainerRef.current.scrollLeft += 300;
+    }
+  };
 
   const handleAddProject = (newProject) => {
     const updatedProjects = [...projects, newProject];
@@ -59,7 +72,7 @@ const Dashboard = () => {
           <div className="w-full flex flex-col px-[5%] pt-5">
             <div className="flex py-8 flex-row justify-between items-center w-full">
               <HeaderTexts
-                h2={"Welcome back David!"}
+                h2={`Welcome back ${userName || "Guest"}!`}
                 p={"Here's what's on your plate today."}
               />
               <div className="w-[35%] lgss:w-[25%]">
@@ -90,7 +103,7 @@ const Dashboard = () => {
                 <div className="flex flex-row flex-wrap w-full gap-3 justify-between pt-6">
                   <HomeCard
                     title="Total Projects"
-                    value={"0"}
+                    value={projects.length}
                     className={"text-secondary"}
                   />
                   <HomeCard
@@ -114,22 +127,22 @@ const Dashboard = () => {
               <div className="flex flex-row flex-wrap w-full gap-4 justify-between pt-6">
                 <HomeCard
                   title="Total Projects"
-                  value={"5"}
+                  value={projects.length}
                   className={"text-secondary"}
                 />
                 <HomeCard
                   title="Total Tasks"
-                  value={"10"}
+                  value={projects.length}
                   className={"text-[#3185FC]"}
                 />
                 <HomeCard
                   title="Completed Tasks"
-                  value={"7"}
+                  value={"0"}
                   className={"text-[#56AC60]"}
                 />
                 <HomeCard
                   title="Pending Tasks"
-                  value={"3"}
+                  value={projects.length}
                   className={"text-[#CDB538]"}
                 />
               </div>
