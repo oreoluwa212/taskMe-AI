@@ -54,7 +54,6 @@ const Projects = () => {
 
       <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start">
         <div className="w-full">
-
           {/* ================ FaTime et FaBars ================ */}
           <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">
             {isOpen ? (

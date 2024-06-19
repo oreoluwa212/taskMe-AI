@@ -29,12 +29,12 @@ const Dashboard = () => {
     fetchUserName();
   }, []);
 
-    const handleAddProject = (newProject) => {
-      const updatedProjects = [...projects, newProject];
-      setProjects(updatedProjects);
-      localStorage.setItem("projects", JSON.stringify(updatedProjects));
-      setActiveTab("active");
-    };
+  const handleAddProject = (newProject) => {
+    const updatedProjects = [...projects, newProject];
+    setProjects(updatedProjects);
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    setActiveTab("active");
+  };
 
   return (
     <div className="lgss:h-screen flex flex-row overflow-x-hidden">
