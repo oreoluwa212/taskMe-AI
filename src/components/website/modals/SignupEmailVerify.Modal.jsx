@@ -23,7 +23,7 @@ const SignupEmailVerify = ({ email }) => {
   const handleVerify = async () => {
     try {
       const response = await fetch(
-        "https://pink-trees-demonic-ticket-production.pipeops.app/v1/auth/verify",
+        "https://taskai-backend.onrender.com/v1/auth/verify",
         {
           method: "PUT",
           headers: {
@@ -41,10 +41,12 @@ const SignupEmailVerify = ({ email }) => {
         setError(errorData.message || "Invalid OTP. Please try again.");
         toast.error(errorData.message || "Invalid OTP. Please try again.");
         return;
+      }else{
+
+        toast.success("Email verified successfully!");
+        navigate("/login");
       }
 
-      toast.success("Email verified successfully!");
-      navigate("/login");
     } catch (error) {
       setError("An error occurred. Please try again.");
       toast.error("An error occurred. Please try again.");

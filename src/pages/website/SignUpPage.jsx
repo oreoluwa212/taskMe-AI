@@ -24,7 +24,7 @@ const SignUpPage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://pink-trees-demonic-ticket-production.pipeops.app/v1/auth",
+        "https://taskai-backend.onrender.com/v1/auth",
         {
           method: "POST",
           headers: {

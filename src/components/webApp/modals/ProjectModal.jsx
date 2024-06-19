@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import FormInput from "../input/FormInput";
 import CustomBtn from "../buttons/CustomBtn";
 import { LiaTimesSolid } from "react-icons/lia";
+import axios from "axios";
 
 const ProjectModal = ({ isOpen, onClose, onSave }) => {
   const [projectName, setProjectName] = useState("");
@@ -11,19 +12,40 @@ const ProjectModal = ({ isOpen, onClose, onSave }) => {
   const [dueTime, setDueTime] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("High");
+  const [loading, setLoading] = useState(false)
 
   const handleSave = (e) => {
     e.preventDefault();
-    const dueDays = calculateDueDays(startDate, dueDate);
-    const newProject = {
-      projectName,
-      dueDate: formatDate(dueDate),
-      dueDays,
-      startDate: formatDate(startDate),
-      progress: 0, // Initial progress value
-    };
-    onSave(newProject);
-    onClose();
+    setLoading(true)
+    axios
+      .post(
+        `https://taskai-backend.onrender.com/v1/project`,
+        {
+
+    "id": "",
+    "name": projectName,
+    "timeline": projectTimeline,
+    "startDate": startDate,
+    "dueDate": dueDate,
+    "dueTime": dueTime,
+    "priority": priority,
+    "description": description,
+
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((r) => {
+        console.log(r);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   };
 
   const calculateDueDays = (start, end) => {
@@ -40,6 +62,10 @@ const ProjectModal = ({ isOpen, onClose, onSave }) => {
 
   if (!isOpen) {
     return null;
+  }
+
+  const addProject = () => {
+
   }
 
   return (
