@@ -13,7 +13,7 @@ const Projects = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("empty");
   const [projects, setProjects] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const cardContainerRef = useRef(null);
 
   useEffect(() => {
@@ -54,6 +54,8 @@ const Projects = () => {
 
       <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start">
         <div className="w-full">
+
+          {/* ================ FaTime et FaBars ================ */}
           <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">
             {isOpen ? (
               <FaTimes
@@ -140,6 +142,8 @@ const Projects = () => {
           </div>
         </div>
       </div>
+
+      {/* =========== Project Modal ============ */}
       <ProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
