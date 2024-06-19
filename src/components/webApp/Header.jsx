@@ -24,9 +24,11 @@ const Header = ({ userName }) => {
   const userInitials = userName ? getInitials(userName) : null;
 
   return (
-    <div className="lgss:w-full h-[80px] py-4 font-lato border-b-[1px] shadow-sm border-[#19437E] flex justify-between bg-white items-center px-[10%] lgss:px-7">
-      <h4 className="text-xl font-medium text-[#6B7276]">{formattedDate}</h4>
-      <div className="flex justify-between items-center gap-2 w-[21%] px-8">
+    <div className="w-full h-fit py-8 font-lato border-b-[1px] shadow-sm border-[#19437E] flex justify-between bg-white items-start px-[5%] lgss:px-7">
+      <div className="w-[70%]">
+        <h4 className="text-xl font-medium text-[#6B7276]">{formattedDate}</h4>
+      </div>
+      <div className="flex justify-between items-center gap-2 w-[31%] px-8">
         <HiOutlineBell className="text-3xl text-[#19437E]" />
         {userInitials ? (
           <div className="flex items-center justify-center w-[40px] h-[40px] bg-[#82B0C8] rounded-full text-white text-[22px]">
@@ -35,12 +37,13 @@ const Header = ({ userName }) => {
         ) : (
           <BiSolidUserCircle className="text-3xl text-[#19437E]" />
         )}
-        <p className="text-2xl text-[#6B7276] inline-flex justify-center items-center gap-3">
-          {userName || "Guest"}
-          <span>
-            <LiaAngleDownSolid className="text-lg text-[#3B3F42]" />
-          </span>
-        </p>
+        <div className="inline-flex justify-center items-center gap-3">
+
+        <p className="text-2xl text-[#6B7276] ">{userName || "Guest"}</p>
+        <span>
+          <LiaAngleDownSolid className="text-lg text-[#3B3F42]" />
+        </span>
+        </div>
       </div>
     </div>
   );

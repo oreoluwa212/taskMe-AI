@@ -10,9 +10,15 @@ function NavBar() {
   return (
     <div className="w-full relative">
       <header className="flex items-center justify-between gap-4 px-[5%] py-7 w-full shadow-lg">
+        <div className="flex gap-6">
+
+        <Link to={"/overview"}>
+          <div className="w-2 h-2 rounded-full bg-primary bg-opacity-5 -top-4"></div>
+        </Link>
         <Link to={"/"}>
           <img className="h-auto" src={logo} alt="Logo" />
         </Link>
+        </div>
         <ul className="hidden lgss:flex gap-6 justify-center items-center font-semibold">
           <Link to={"/about"}>
             <li>About</li>
@@ -23,18 +29,15 @@ function NavBar() {
         </ul>
         <nav className="">
           <div className="lgss:flex gap-8 justify-center items-center">
-
-          <Link
-            className="hidden lgss:flex cursor-pointer font-semibold capitalize text-[16px]"
-            to={"/login"}
-          >
-            <p>Log in</p>
-          </Link>
-          <GetStartedBtn />
+            <Link
+              className="hidden lgss:flex cursor-pointer font-semibold capitalize text-[16px]"
+              to={"/login"}
+            >
+              <p>Log in</p>
+            </Link>
+            <GetStartedBtn />
           </div>
-          <Link to={"/overview"}>
-            <div className="w-2 h-2 rounded-full bg-primary bg-opacity-5"></div>
-          </Link>
+
           <div className="lgss:hidden flex">
             {isOpen ? (
               <FaTimes

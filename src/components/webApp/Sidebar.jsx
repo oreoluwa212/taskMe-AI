@@ -70,7 +70,7 @@ const Sidebar = ({ isOpen }) => {
 
       {isOpen && (
         <div
-          className={`absolute top-0 left-0  h-screen bg-[#F0EDE7] w-[70%] mds:w-1/2 lgss:hidden flex flex-col px-[5%] pt-10 transform transition-transform duration-300 ${
+          className={`absolute top-0 left-0 z-50 h-screen bg-[#F0EDE7] w-[70%] mds:w-1/2 lgss:hidden flex flex-col px-[5%] pt-10 transform transition-transform duration-300 ${
             isOpen ? "translate-x-0 " : "-translate-x-full"
           }`}
         >

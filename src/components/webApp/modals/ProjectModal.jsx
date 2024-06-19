@@ -44,7 +44,7 @@ const ProjectModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg px-6 w-1/3">
+      <div className="bg-white rounded-lg px-6 lgss:w-1/3">
         <div className="w-full pt-2 flex justify-end">
           <LiaTimesSolid
             className="cursor-pointer text-2xl"
