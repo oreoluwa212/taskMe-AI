@@ -34,7 +34,7 @@ function FormInput({
   };
 
   return (
-    <div className="flex flex-col gap-2 relative">
+    <div className="flex w-full flex-col gap-2 relative">
       {label && (
         <label
           className="font-semibold text-[0.9rem] text-[#344054]"
