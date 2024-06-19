@@ -176,6 +176,7 @@ const Dashboard = () => {
                         }
                       >
                         <ProjectDetailCard
+                          projectId={project.id}
                           projectName={project.projectName}
                           dueDate={project.dueDate}
                           dueDays={project.dueDays}

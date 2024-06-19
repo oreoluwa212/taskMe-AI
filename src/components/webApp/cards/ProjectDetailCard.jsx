@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function ProjectDetailCard({
+  projectId,
   projectName,
   dueDate,
   dueDays,
@@ -27,9 +29,9 @@ function ProjectDetailCard({
         <span className="text-gray-700">{progress}%</span>
       </div>
       <div className="text-right text-sm mt-2">
-        <a href="#" className="text-blue-600 hover:underline">
-          View Tasks
-        </a>
+        <Link to={`/project/${projectId}`}>
+          <button className="text-blue-600 hover:underline">View Tasks</button>
+        </Link>
       </div>
     </div>
   );

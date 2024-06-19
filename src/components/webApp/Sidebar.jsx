@@ -11,7 +11,11 @@ const Sidebar = ({ isOpen }) => {
   const [activebutton, setActiveButton] = useState(1);
   useEffect(() => {
     if (location.pathname === "/overview") setActiveButton(1);
-    else if (location.pathname === "/projects") setActiveButton(2);
+    else if (
+      location.pathname === "/projects" ||
+      location.pathname === "/project/undefined"
+    )
+      setActiveButton(2);
     else if (location.pathname === "/settings") setActiveButton(3);
   }, [location.pathname]);
 

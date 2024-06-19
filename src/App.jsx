@@ -12,6 +12,7 @@ import ResetPwConfirm from "./pages/website/ResetPwConfirm";
 import Dashboard from "./pages/webApp/Dashboard";
 import Projects from "./pages/webApp/Projects";
 import Settings from "./pages/webApp/Settings";
+import ProjectOverview from "./pages/webApp/ProjectOverview";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         {/* ========================== Dashboard Routes ========================== */}
         <Route path="/overview" element={<Dashboard />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/project/:id" element={<ProjectOverview />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>

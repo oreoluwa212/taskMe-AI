@@ -54,7 +54,6 @@ const Projects = () => {
 
       <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start">
         <div className="w-full">
-          {/* ================ FaTime et FaBars ================ */}
           <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">
             {isOpen ? (
               <FaTimes
@@ -97,7 +96,6 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* =============================== Content =============================== */}
             {activeTab === "empty" ? (
               <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
                 <div className="w-full rounded-[20px] bg-white h-[300px] py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center text-sm">
@@ -126,6 +124,7 @@ const Projects = () => {
                         }
                       >
                         <ProjectDetailCard
+                          projectId={project.id}
                           projectName={project.projectName}
                           dueDate={project.dueDate}
                           dueDays={project.dueDays}
@@ -142,7 +141,6 @@ const Projects = () => {
         </div>
       </div>
 
-      {/* =========== Project Modal ============ */}
       <ProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
