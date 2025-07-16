@@ -1,12 +1,28 @@
 // src/components/forms/VerificationCodeInput.jsx
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 
 const VerificationCodeInput = forwardRef(
-  ({ length = 5, onComplete, error, className = "", disabled = false }, ref) => {
+  (
+    {
+      length = 5,
+      onComplete,
+      error,
+      className = "",
+      disabled = false,
+      inputDisabled = false,
+    },
+    ref
+  ) => {
     const [code, setCode] = useState(Array(length).fill(""));
     const inputRefs = useRef([]);
 
-    // Expose reset function to parent
+    // Expose reset to parent
     useImperativeHandle(ref, () => ({
       reset: () => {
         setCode(Array(length).fill(""));
@@ -16,11 +32,17 @@ const VerificationCodeInput = forwardRef(
 
     useEffect(() => {
       if (code.every((char) => char !== "")) {
-        onComplete(code.join(""));
+        const timer = setTimeout(() => {
+          onComplete(code.join(""));
+        }, 200);
+
+        return () => clearTimeout(timer);
       }
     }, [code, onComplete]);
 
     const handleChange = (e, index) => {
+      if (disabled || inputDisabled) return;
+
       const val = e.target.value;
       if (!/^\d?$/.test(val)) return;
 
@@ -34,6 +56,8 @@ const VerificationCodeInput = forwardRef(
     };
 
     const handleKeyDown = (e, index) => {
+      if (disabled || inputDisabled) return;
+
       if (e.key === "Backspace") {
         if (code[index]) {
           const newCode = [...code];
@@ -50,8 +74,13 @@ const VerificationCodeInput = forwardRef(
     };
 
     const handlePaste = (e) => {
+      if (disabled || inputDisabled) return;
+
       e.preventDefault();
-      const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
+      const pasted = e.clipboardData
+        .getData("text")
+        .replace(/\D/g, "")
+        .slice(0, length);
       const newCode = Array(length).fill("");
 
       for (let i = 0; i < pasted.length; i++) {
@@ -78,13 +107,19 @@ const VerificationCodeInput = forwardRef(
               onPaste={handlePaste}
               ref={(el) => (inputRefs.current[index] = el)}
               className={`w-12 h-12 text-center text-lg font-semibold border-2 rounded-md focus:outline-none transition-all
-                ${error ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-primary"}
+                ${
+                  error
+                    ? "border-red-500 focus:ring-red-400"
+                    : "border-gray-300 focus:ring-primary"
+                }
                 ${disabled ? "bg-gray-100 cursor-not-allowed" : "focus:ring-2"}
               `}
             />
           ))}
         </div>
-        {error && <p className="text-sm text-red-500 text-center mt-2">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-500 text-center mt-2">{error}</p>
+        )}
       </div>
     );
   }

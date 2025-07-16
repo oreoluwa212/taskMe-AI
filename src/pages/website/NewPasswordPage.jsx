@@ -111,11 +111,7 @@ const NewPasswordPage = () => {
 
       // Add a delay to show the success message and smooth transition
       setTimeout(() => {
-        navigate("/reset-password/confirm", {
-          state: {
-            email: email,
-          },
-        });
+        navigate(`/reset-password/confirm?email=${encodeURIComponent(email)}`);
       }, 2000);
     } catch (error) {
       setIsProcessing(false);

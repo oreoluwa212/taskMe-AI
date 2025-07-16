@@ -99,7 +99,10 @@ const SignUpPage = () => {
 
         {/* Header */}
         <div className="mb-6 lg:mb-8 text-center">
-          <H1Text h2Text="Create your free account" />
+          <H1Text
+            h2Text="Create your free account"
+            className="text-white lg:text-gray-900"
+          />
         </div>
 
         {/* Form Container */}

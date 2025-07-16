@@ -1,9 +1,9 @@
 // src/pages/website/ResetPasswordPage.jsx
+
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
-import FormInput from "../../components/input/FormInput";
 import Button from "../../components/ui/Button";
 import VerificationCodeInput from "../../components/forms/VerificationCodeInput";
 import { validationRules } from "../../utils/validations";
@@ -17,21 +17,22 @@ const ResetPasswordPage = () => {
     code: "",
   });
   const [errors, setErrors] = useState({});
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [resendingCode, setResendingCode] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const { forgotPassword, loading, error, clearError } = useAuthStore();
+  const { forgotPassword, clearError, loading } = useAuthStore();
   const navigate = useNavigate();
   const emailInputRef = useRef(null);
-
   const codeInputRef = useRef();
 
-  // Clear error on component mount
+  // Clear store error on mount
   useEffect(() => {
     clearError();
   }, [clearError]);
 
-  // Auto-focus email input when component mounts
   useEffect(() => {
     if (step === 1 && emailInputRef.current) {
       emailInputRef.current.focus();
@@ -42,7 +43,6 @@ const ResetPasswordPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear field-specific error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -64,10 +64,7 @@ const ResetPasswordPage = () => {
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear any existing errors
     setErrors({});
-
-    // Validate email
     const emailError = validationRules.email(formData.email);
     if (emailError !== true) {
       setErrors({ email: emailError });
@@ -75,60 +72,59 @@ const ResetPasswordPage = () => {
       return;
     }
 
-    try {
-      setIsTransitioning(true);
+    setSendingEmail(true);
+    setIsTransitioning(true);
 
-      // Show loading toast
+    try {
       const loadingToast = toast.loading("Sending reset code...");
 
       await forgotPassword(formData.email);
 
-      // Dismiss loading toast and show success
       toast.dismiss(loadingToast);
       toast.success("Password reset code sent to your email!");
 
-      // Wait a moment before transitioning for better UX
       setTimeout(() => {
         setStep(2);
         setIsTransitioning(false);
         startResendCooldown();
       }, 1500);
     } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to send reset code"
+      );
       setIsTransitioning(false);
-      const errorMessage =
-        error.response?.data?.message || "Failed to send reset code";
-      toast.error(errorMessage);
+    } finally {
+      setSendingEmail(false);
     }
   };
 
   const handleResendCode = async () => {
-    if (resendCooldown > 0) return;
+    if (resendCooldown > 0 || resendingCode) return;
+
+    setResendingCode(true);
 
     try {
       const loadingToast = toast.loading("Resending code...");
-
       await forgotPassword(formData.email);
-
       toast.dismiss(loadingToast);
-      toast.success("New reset code sent to your email!");
+      toast.success("New reset code sent!");
       startResendCooldown();
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Failed to resend code";
-      toast.error(errorMessage);
+      toast.error(error?.response?.data?.message || "Failed to resend code");
+    } finally {
+      setResendingCode(false);
     }
   };
 
   const handleCodeComplete = async (code) => {
-    if (code.length !== 5) return;
-
-    setFormData((prev) => ({ ...prev, code }));
-    setErrors({});
+    if (verifying) return;
+    setVerifying(true);
+    setErrors((prev) => ({ ...prev, code: "" }));
+    clearError();
 
     const loadingToast = toast.loading("Verifying code...");
 
     try {
-      // Attempt password reset with dummy password to verify code only
       await useAuthStore
         .getState()
         .resetPassword(formData.email, code, "Dummy123!@#");
@@ -136,7 +132,6 @@ const ResetPasswordPage = () => {
       toast.dismiss(loadingToast);
       toast.success("Code verified! Redirecting...");
 
-      // Redirect with email and code
       setTimeout(() => {
         navigate("/new-password", {
           state: { email: formData.email, code },
@@ -144,10 +139,13 @@ const ResetPasswordPage = () => {
       }, 1000);
     } catch (error) {
       toast.dismiss(loadingToast);
-      const errMsg = error.response?.data?.message || "Invalid or expired code";
-      setErrors({ code: errMsg });
+      const errMsg =
+        error?.response?.data?.message || "Invalid or expired code";
+      setErrors((prev) => ({ ...prev, code: errMsg }));
       codeInputRef.current?.reset();
       toast.error(errMsg);
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -157,11 +155,12 @@ const ResetPasswordPage = () => {
     setErrors({});
     setResendCooldown(0);
 
-    // Focus email input after transition
     setTimeout(() => {
       emailInputRef.current?.focus();
     }, 100);
   };
+
+  /** UI Steps */
 
   const EmailStep = () => (
     <div
@@ -179,12 +178,6 @@ const ResetPasswordPage = () => {
         </p>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded animate-shake">
-          {error}
-        </div>
-      )}
-
       <form onSubmit={handleEmailSubmit} className="space-y-6">
         <InputField
           name="email"
@@ -194,8 +187,9 @@ const ResetPasswordPage = () => {
           onChange={handleInputChange}
           placeholder="Enter your email"
           required
-          disabled={loading || isTransitioning}
+          disabled={sendingEmail || isTransitioning}
           autoFocus
+          inputRef={emailInputRef}
         />
 
         {errors.email && (
@@ -205,8 +199,8 @@ const ResetPasswordPage = () => {
         <Button
           type="submit"
           className="w-full"
-          loading={loading || isTransitioning}
-          disabled={loading || isTransitioning || !formData.email.trim()}
+          loading={sendingEmail || isTransitioning}
+          disabled={sendingEmail || isTransitioning || !formData.email.trim()}
         >
           {isTransitioning ? "Sending..." : "Send Reset Code"}
         </Button>
@@ -235,11 +229,10 @@ const ResetPasswordPage = () => {
 
       <div className="mb-6">
         <VerificationCodeInput
-          ref={codeInputRef}
           length={5}
           onComplete={handleCodeComplete}
           error={errors.code}
-          disabled={loading}
+          disabled={loading || verifying}
         />
       </div>
 
@@ -247,11 +240,13 @@ const ResetPasswordPage = () => {
         <p className="text-sm text-gray-600">Didn't receive the code?</p>
         <button
           onClick={handleResendCode}
-          disabled={resendCooldown > 0 || loading}
+          disabled={resendCooldown > 0 || resendingCode}
           className="text-sm text-primary hover:text-primary-dark disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           {resendCooldown > 0
             ? `Resend code in ${resendCooldown}s`
+            : resendingCode
+            ? "Resending..."
             : "Resend code"}
         </button>
 
