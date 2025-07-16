@@ -1,151 +1,162 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import Sidebar from "../../components/webApp/Sidebar";
-import Header from "../../components/webApp/Header";
-import { FaBars, FaTimes } from "react-icons/fa";
-import CustomBtn from "../../components/webApp/buttons/CustomBtn";
-import HeaderTexts from "../../components/webApp/HeaderTexts";
-import ProjectDetailCard from "../../components/webApp/cards/ProjectDetailCard";
+// src/pages/webApp/Projects.jsx
+import React, { useState, useEffect } from "react";
+import useAuthStore from "../../store/authStore";
+import { useProjectStore } from "../../store/projectStore";
+import PageHeader from "../../components/webApp/PageHeader";
+import SearchAndFilters from "../../components/webApp/SearchAndFilters";
+import ProjectGrid from "../../components/webApp/ProjectGrid";
 import ProjectModal from "../../components/webApp/modals/ProjectModal";
+import ErrorMessage from "../../components/ui/ErrorMessage";
+import Toast from "../../components/ui/Toast";
+import useProjectSearch from "../../hooks/useProjectSearch";
+import { formatDate } from "../../utils/dateUtils";
 
 const Projects = () => {
-  const [userName, setUserName] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("empty");
-  const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const cardContainerRef = useRef(null);
+  const [toast, setToast] = useState(null);
+  const [viewMode, setViewMode] = useState("grid");
 
+  // Store hooks
+  const { user } = useAuthStore();
+  const {
+    projects,
+    loading: projectLoading,
+    error: projectError,
+    fetchProjects,
+    resetStore,
+  } = useProjectStore();
+
+  // Search hook
+  const {
+    searchQuery,
+    setSearchQuery,
+    showFilters,
+    setShowFilters,
+    filters,
+    setFilters,
+    filteredProjects,
+    isSearching,
+    clearSearch,
+    hasActiveFilters,
+  } = useProjectSearch(projects);
+
+  // Initialize data
   useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const response = await axios.get("/api/user");
-        setUserName(response.data.name);
-      } catch (error) {
-        console.error("Error fetching user name:", error);
-      }
-    };
+    resetStore();
+    fetchProjects();
+  }, [fetchProjects, resetStore]);
 
-    fetchUserName();
-
-    const savedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-    setProjects(savedProjects);
-    if (savedProjects.length > 0) {
-      setActiveTab("active");
-    }
-  }, []);
-
-  const handleCardClick = () => {
-    if (cardContainerRef.current) {
-      cardContainerRef.current.scrollLeft += 300;
-    }
+  // Event handlers
+  const handleRetryProjects = () => {
+    fetchProjects();
   };
 
-  const handleAddProject = (newProject) => {
-    const updatedProjects = [...projects, newProject];
-    setProjects(updatedProjects);
-    localStorage.setItem("projects", JSON.stringify(updatedProjects));
-    setActiveTab("active");
+  const handleProjectCreated = async (newProject) => {
+    setToast({
+      type: "success",
+      message: `Project "${newProject.name}" created successfully!`,
+    });
+    setIsModalOpen(false);
+    await fetchProjects();
   };
+
+  const handleProjectError = (error) => {
+    setToast({
+      type: "error",
+      message: error.message || "Failed to create project",
+    });
+  };
+
+  const handleCreateProject = () => {
+    setIsModalOpen(true);
+  };
+
+  // Ensure arrays are properly formatted
+  const projectsArray = Array.isArray(projects) ? projects : [];
+  const displayProjects = Array.isArray(filteredProjects)
+    ? filteredProjects
+    : projectsArray;
 
   return (
-    <div className="lgss:h-screen flex flex-row overflow-x-hidden">
-      <Sidebar isOpen={isOpen} />
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
+      {/* Main Content Area */}
+      <div className="flex-1 lg:w-4/5 h-screen overflow-hidden flex flex-col bg-dashboardBg font-lato">
+        {/* Scrollable Content Container */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="w-full max-w-none">
+            {/* Header Section - Fixed spacing */}
+            <div className="px-4 sm:px-6 lg:px-[5%] pt-4 sm:pt-6 pb-4">
+              <PageHeader
+                title="My Projects"
+                subtitle="Manage and track all your projects in one place"
+                onCreateProject={handleCreateProject}
+                isMobileMenuOpen={isOpen}
+                setMobileMenuOpen={setIsOpen}
+                showMobileMenu={true}
+              />
+            </div>
 
-      <div className="lgss:w-4/5 w-full h-full overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start">
-        <div className="w-full">
-          <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">
-            {isOpen ? (
-              <FaTimes
-                onClick={() => setIsOpen(false)}
-                className=" cursor-pointer text-secondary text-xl"
-              />
-            ) : (
-              <FaBars
-                onClick={() => setIsOpen(true)}
-                className=" cursor-pointer text-secondary text-xl"
-              />
-            )}
-          </div>
-          <Header userName={userName} />
-          <div className="w-full flex flex-col px-[5%] pt-6">
-            <div className="flex pt-6 flex-row justify-between items-center w-full">
-              <HeaderTexts
-                h2={"My Projects"}
-                p={"View the list of projects you have"}
-              />
-              <div className="w-[25%]">
-                <CustomBtn
-                  title={"Add new project"}
-                  onClick={() => setIsModalOpen(true)}
+            {/* Error Message */}
+            {projectError && (
+              <div className="px-4 sm:px-6 lg:px-[5%] pb-4">
+                <ErrorMessage
+                  message={projectError}
+                  onRetry={handleRetryProjects}
                 />
               </div>
-            </div>
-            <div className="w-full flex lgss:flex-row flex-col gap-4 pt-4">
-              <div
-                className={activeTab === "empty" ? "active" : ""}
-                onClick={() => setActiveTab("empty")}
-              >
-                <CustomBtn title="Empty Tab" />
-              </div>
-              <div
-                className={activeTab === "active" ? "active" : ""}
-                onClick={() => setActiveTab("active")}
-              >
-                <CustomBtn title="Active Tab" />
-              </div>
+            )}
+
+            {/* Search and Filters Section */}
+            <div className="px-4 sm:px-6 lg:px-[5%] pb-4">
+              <SearchAndFilters
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                showFilters={showFilters}
+                setShowFilters={setShowFilters}
+                filters={filters}
+                setFilters={setFilters}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+                clearSearch={clearSearch}
+                isSearching={isSearching}
+                resultsCount={displayProjects.length}
+                showViewToggle={true}
+              />
             </div>
 
-            {activeTab === "empty" ? (
-              <div className="flex flex-col font-semibold text-lg pt-5 mt-5 w-full">
-                <div className="w-full rounded-[20px] bg-white h-[300px] py-9 mt-5 shadow-custom-xl flex flex-col justify-center items-center text-sm">
-                  <p>You don&apos;t have any current project.</p>
-                  <div className="w-[30%] pt-5">
-                    <CustomBtn
-                      title={"Add a new project"}
-                      onClick={() => setIsModalOpen(true)}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col font-semibold text-lg pt-14 w-full">
-                <div className="w-full flex flex-col gap-6 pb-8">
-                  <h2>Current Project</h2>
-                  <div
-                    className="flex flex-row gap-8 pb-5 pl-1 overflow-x-auto custom-scrollbar"
-                    ref={cardContainerRef}
-                  >
-                    {projects.map((project, index) => (
-                      <div
-                        key={index}
-                        onClick={
-                          index === projects.length - 1 ? handleCardClick : null
-                        }
-                      >
-                        <ProjectDetailCard
-                          projectId={project.id}
-                          projectName={project.projectName}
-                          dueDate={project.dueDate}
-                          dueDays={project.dueDays}
-                          startDate={project.startDate}
-                          progress={project.progress}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Projects Content Section */}
+            <div className="px-4 sm:px-6 lg:px-[5%] pb-6">
+              <ProjectGrid
+                projects={displayProjects}
+                viewMode={viewMode}
+                formatDate={formatDate}
+                isLoading={projectLoading}
+                isSearching={isSearching}
+                searchQuery={searchQuery}
+                hasActiveFilters={hasActiveFilters}
+                onCreateProject={handleCreateProject}
+              />
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Modals and Notifications - Fixed positioning */}
       <ProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleAddProject}
+        onSuccess={handleProjectCreated}
+        onError={handleProjectError}
       />
+
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

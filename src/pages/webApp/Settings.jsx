@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "../../components/webApp/Sidebar";
-import Header from "../../components/webApp/Header";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { HiMiniUser } from "react-icons/hi2";
@@ -48,7 +46,6 @@ const Settings = () => {
 
   return (
     <div className="lgss:h-screen flex flex-row overflow-x-hidden relative">
-      <Sidebar isOpen={isOpen} />
       <div
         className={`lgss:w-4/5 w-full h-screen overflow-auto flex flex-col bg-dashboardBg items-center font-lato justify-start ${
           isModalOpen || isSuccessModalOpen ? "blur-sm" : ""
@@ -68,7 +65,6 @@ const Settings = () => {
               />
             )}
           </div>
-          <Header userName={userName} />
           <div className="w-full pt-8">
             <div className="flex flex-row px-8 justify-between lgss:px-[10%] text-[#19437E] font-medium h-full  border-b">
               <button

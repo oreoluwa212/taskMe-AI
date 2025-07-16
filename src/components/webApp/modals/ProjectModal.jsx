@@ -1,164 +1,196 @@
+// src/components/webApp/modals/ProjectModal.jsx
 import React, { useState } from "react";
+import { LiaTimesSolid } from "react-icons/lia";
+import { useProjectStore } from "../../../store/projectStore";
 import FormInput from "../input/FormInput";
 import CustomBtn from "../buttons/CustomBtn";
-import { LiaTimesSolid } from "react-icons/lia";
-import axios from "axios";
 
-const ProjectModal = ({ isOpen, onClose, onSave }) => {
-  const [projectName, setProjectName] = useState("");
-  const [projectTimeline, setProjectTimeline] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [dueTime, setDueTime] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("High");
-  const [loading, setLoading] = useState(false)
+const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    timeline: "",
+    startDate: "",
+    dueDate: "",
+    dueTime: "",
+    description: "",
+    priority: "High",
+  });
 
-  const handleSave = (e) => {
+  const { createProject, loading } = useProjectStore();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    axios
-      .post(
-        `https://taskai-backend.onrender.com/v1/project`,
-        {
 
-    "id": "",
-    "name": projectName,
-    "timeline": projectTimeline,
-    "startDate": startDate,
-    "dueDate": dueDate,
-    "dueTime": dueTime,
-    "priority": priority,
-    "description": description,
+    try {
+      // Validate required fields
+      if (!formData.name || !formData.startDate || !formData.dueDate) {
+        throw new Error("Please fill in all required fields");
+      }
 
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((r) => {
-        console.log(r);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
+      // Prepare project data
+      const projectData = {
+        name: formData.name,
+        description: formData.description,
+        timeline: parseInt(formData.timeline) || 0,
+        startDate: formData.startDate,
+        dueDate: formData.dueDate,
+        dueTime: formData.dueTime,
+        priority: formData.priority,
+        progress: 0,
+      };
+
+      console.log("Submitting project data:", projectData);
+
+      // Create project
+      const newProject = await createProject(projectData);
+
+      // Reset form
+      setFormData({
+        name: "",
+        timeline: "",
+        startDate: "",
+        dueDate: "",
+        dueTime: "",
+        description: "",
+        priority: "High",
       });
+
+      // Notify parent component
+      if (onSuccess) {
+        onSuccess(newProject);
+      }
+    } catch (error) {
+      console.error("Project creation error:", error);
+      if (onError) {
+        onError(error);
+      }
+    }
   };
 
-  const calculateDueDays = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate - startDate);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const formatDate = (date) => {
-    const options = { day: "numeric", month: "long", year: "numeric" };
-    return new Date(date).toLocaleDateString("en-US", options);
+  const handleClose = () => {
+    // Reset form when closing
+    setFormData({
+      name: "",
+      timeline: "",
+      startDate: "",
+      dueDate: "",
+      dueTime: "",
+      description: "",
+      priority: "High",
+    });
+    onClose();
   };
 
   if (!isOpen) {
     return null;
   }
 
-  const addProject = () => {
-
-  }
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg px-6 lgss:w-1/3">
-        <div className="w-full pt-2 flex justify-end">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg px-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="w-full pt-4 flex justify-between items-center sticky top-0 bg-white">
+          <h2 className="text-xl font-semibold">New Project</h2>
           <LiaTimesSolid
-            className="cursor-pointer text-2xl"
-            onClick={onClose}
+            className="cursor-pointer text-2xl hover:text-gray-600 transition-colors"
+            onClick={handleClose}
           />
         </div>
-        <h2 className="text-xl font-semibold">New Project</h2>
-        <form onSubmit={handleSave} className="flex pt-5 flex-col w-full gap-2">
+
+        <form
+          onSubmit={handleSubmit}
+          className="flex pt-5 pb-6 flex-col w-full gap-4"
+        >
           <FormInput
-            name="projectName"
-            label="Project Name"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
+            name="name"
+            label="Project Name *"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+            placeholder="Enter project name"
           />
+
           <FormInput
-            name="projectTimeline"
+            name="timeline"
             label="Project Timeline (In days)"
-            value={projectTimeline}
-            onChange={(e) => setProjectTimeline(e.target.value)}
+            type="number"
+            value={formData.timeline}
+            onChange={handleInputChange}
+            placeholder="30"
+            min="1"
           />
-          <div className="flex w-full gap-7 justify-between">
+
+          <div className="flex w-full gap-4">
             <FormInput
               name="startDate"
-              label="Start Date"
+              label="Start Date *"
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={formData.startDate}
+              onChange={handleInputChange}
+              required
             />
             <FormInput
               name="dueDate"
-              label="Due Date"
+              label="Due Date *"
               type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              value={formData.dueDate}
+              onChange={handleInputChange}
+              required
             />
           </div>
+
           <FormInput
             name="dueTime"
             label="Due Time"
             type="time"
-            value={dueTime}
-            onChange={(e) => setDueTime(e.target.value)}
+            value={formData.dueTime}
+            onChange={handleInputChange}
           />
+
           <FormInput
             name="description"
             label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={formData.description}
+            onChange={handleInputChange}
+            placeholder="Project description..."
           />
-          <div className="flex flex-col">
+
+          <div className="flex flex-col gap-2">
             <label className="font-semibold text-[0.9rem] text-[#344054]">
               Priority Level
             </label>
-            <div className="flex justify-between w-[60%]">
-              <label className="flex gap-2">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="High"
-                  checked={priority === "High"}
-                  onChange={() => setPriority("High")}
-                />
-                High
-              </label>
-              <label className="flex gap-2">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="Medium"
-                  checked={priority === "Medium"}
-                  onChange={() => setPriority("Medium")}
-                />
-                Medium
-              </label>
-              <label className="flex gap-2">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="Low"
-                  checked={priority === "Low"}
-                  onChange={() => setPriority("Low")}
-                />
-                Low
-              </label>
+            <div className="flex justify-between w-full">
+              {["High", "Medium", "Low"].map((priority) => (
+                <label key={priority} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="priority"
+                    value={priority}
+                    checked={formData.priority === priority}
+                    onChange={handleInputChange}
+                    className="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm">{priority}</span>
+                </label>
+              ))}
             </div>
           </div>
-          <div className="pt-5 pb-10">
-            <CustomBtn title="Save Project" type="submit" />
+
+          <div className="pt-4">
+            <CustomBtn
+              title={loading ? "Creating..." : "Create Project"}
+              type="submit"
+              disabled={
+                loading ||
+                !formData.name ||
+                !formData.startDate ||
+                !formData.dueDate
+              }
+            />
           </div>
         </form>
       </div>

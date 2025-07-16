@@ -29,8 +29,10 @@ function ProjectDetailCard({
         <span className="text-gray-700">{progress}%</span>
       </div>
       <div className="text-right text-sm mt-2">
-        <Link to={`/project/${projectId}`}>
-          <button className="text-blue-600 hover:underline">View Tasks</button>
+        <Link to={`/project/${projectId}/details`}>
+          <button className="text-blue-600 hover:underline">
+            View Project
+          </button>
         </Link>
       </div>
     </div>

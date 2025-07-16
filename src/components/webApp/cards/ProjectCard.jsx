@@ -1,10 +1,11 @@
-import React from 'react'
+import React from "react";
+import { Link } from "react-router-dom";
 
-const ProjectCard = ({ projectName, percent, dueDate }) => {
+const ProjectCard = ({ projectId, projectName, percent, dueDate }) => {
   return (
     <div className="w-full rounded-[20px] bg-white h-fit py-5 shadow-custom-xl flex justify-between px-7 items-center text-sm">
       <div className="flex flex-col gap-2 w-[25%] border-r-2 border-primary text-left">
-        <h3 className='text-grey font-medium'>Project Name</h3>
+        <h3 className="text-grey font-medium">Project Name</h3>
         <p>{projectName}</p>
       </div>
       <div className="flex flex-col gap-2 w-[20%] border-r-2 border-primary ">
@@ -15,9 +16,14 @@ const ProjectCard = ({ projectName, percent, dueDate }) => {
         <h3>Deadline</h3>
         <p>{dueDate}</p>
       </div>
-      <a className='text-primary font-semibold hover:underline' href="#">View Project</a>
+      <Link
+        to={`/project/${projectId}/details`}
+        className="text-primary font-semibold hover:underline"
+      >
+        View Project
+      </Link>
     </div>
   );
 };
 
-export default ProjectCard
+export default ProjectCard;

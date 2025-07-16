@@ -1,20 +1,25 @@
-import { CiCircleInfo } from "react-icons/ci";
-import { HiMiniQueueList } from "react-icons/hi2";
+// src/components/webApp/cards/HomeCard.jsx
+import React from "react";
 
-function HomeCard({ title, value, className }) {
+const HomeCard = ({ title, value, className, icon }) => {
   return (
-    <div className="bg-white shadow-custom-xl rounded-[12px] h-[150px] w-full lgss:w-[22%] flex gap-5 items-center pl-4 text-dark">
-      <div className="">
-        <HiMiniQueueList className={`text-4xl ${className}`} />
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center text-center min-h-[120px] w-full">
+      {/* Icon */}
+      <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">{icon}</div>
+
+      {/* Value */}
+      <div
+        className={`text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 ${className}`}
+      >
+        {value || 0}
       </div>
-      <div className="flex flex-col gap-6">
-        <h3 className="font-bold text-lg">
-          {title}
-        </h3>
-        <h1 className="text-left text-lg font-bold">{value}</h1>
-      </div>
+
+      {/* Title */}
+      <p className="text-xs sm:text-sm text-gray-600 font-medium leading-tight">
+        {title}
+      </p>
     </div>
   );
-}
+};
 
-export default HomeCard
+export default HomeCard;

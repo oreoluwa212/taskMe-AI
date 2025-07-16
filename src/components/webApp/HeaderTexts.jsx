@@ -1,10 +1,16 @@
-function HeaderTexts({ h2, p}) {
+import React from "react";
+
+const HeaderTexts = ({ h2, p, className = "" }) => {
   return (
-    <div className="flex flex-col gap-2 justify-left items-left">
-      <h2 className="text-2xl font-semibold">{h2}</h2>
-      <p>{p}</p>
+    <div className={`space-y-2 ${className}`}>
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+        {h2}
+      </h2>
+      <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
+        {p}
+      </p>
     </div>
   );
-}
+};
 
-export default HeaderTexts
+export default HeaderTexts;

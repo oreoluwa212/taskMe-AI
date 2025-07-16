@@ -1,134 +1,206 @@
 import React, { useEffect, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
 import { HiOutlineLogout } from "react-icons/hi";
-import { HiClipboardDocumentCheck, HiSquares2X2 } from "react-icons/hi2";
+import { HiOutlineViewGrid, HiOutlineFolder, HiOutlineX } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/authStore";
 import { logo } from "../../../public";
 
-const Sidebar = ({ isOpen }) => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activebutton, setActiveButton] = useState(1);
+  const { user, logout } = useAuthStore();
+  const [activeButton, setActiveButton] = useState(1);
+
+  // Update active button based on current route
   useEffect(() => {
-    if (location.pathname === "/overview") setActiveButton(1);
-    else if (
-      location.pathname === "/projects" ||
-      location.pathname === "/project/undefined"
-    )
+    if (location.pathname === "/dashboard" || location.pathname === "/") {
+      setActiveButton(1);
+    } else if (location.pathname.startsWith("/projects")) {
       setActiveButton(2);
-    else if (location.pathname === "/settings") setActiveButton(3);
+    } else if (location.pathname === "/settings") {
+      setActiveButton(3);
+    }
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force navigation even if logout fails
+      navigate("/login");
+    }
+  };
+
+  const closeSidebar = () => {
+    setIsOpen(false);
+  };
+
+  // Helper function to get user data
+  const getUserData = () => {
+    if (!user) return { firstname: "User", email: "", initials: "U" };
+
+    // Handle different possible user data structures
+    let userData = user;
+
+    // If user has a data property, use that
+    if (user.data) {
+      userData = user.data;
+    }
+
+    const firstname = userData.firstname || "User";
+    const email = userData.email || "";
+    const initials = firstname[0]?.toUpperCase() || "U";
+
+    return { firstname, email, initials };
+  };
+
+  const { firstname, email, initials } = getUserData();
+
+  const navigationItems = [
+    {
+      id: 1,
+      title: "Overview",
+      path: "/dashboard",
+      icon: HiOutlineViewGrid,
+    },
+    {
+      id: 2,
+      title: "Projects",
+      path: "/projects",
+      icon: HiOutlineFolder,
+    },
+    {
+      id: 3,
+      title: "Settings",
+      path: "/settings",
+      icon: IoIosSettings,
+    },
+  ];
+
+  const NavItem = ({ item, isActive, isMobile = false }) => (
+    <Link
+      to={item.path}
+      onClick={isMobile ? closeSidebar : undefined}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+        isActive
+          ? "bg-blue-600 text-white shadow-md"
+          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+      }`}
+    >
+      <item.icon size={20} />
+      <span className="font-medium">{item.title}</span>
+    </Link>
+  );
 
   return (
     <>
-      <div className="w-1/5 hidden lgss:flex h-screen flex-col border-r-[1px] pb-5 font-lato border-[#19437E] shadow-lg justify-start px-4 items-start pt-8 bg-white">
-        <div className="w-[210px] h-[40px]">
-          <img src={logo} alt="" className="w-full h-full bg-cover" />
-        </div>
-        <div className="mt-10 w-full flex flex-col gap-2 justify-between h-full items-center py-[40%]">
-          <div className="w-full flex flex-col ">
-            <Link
-              to="/overview"
-              className={
-                activebutton === 1
-                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-              }
-            >
-              <h4 className="">Overview</h4>
-              <HiSquares2X2 />
-            </Link>
-            <Link
-              to="/projects"
-              className={
-                activebutton === 2
-                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-              }
-            >
-              <h4 className="">Projects</h4>
-              <HiClipboardDocumentCheck />
-            </Link>
-            <Link
-              to="/settings"
-              className={
-                activebutton === 3
-                  ? "flex justify-between text-lg text-white items-center font-medium  rounded-full px-6 bg-primary w-full h-[60px]"
-                  : "flex justify-between text-lg text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-              }
-            >
-              <h4 className="">Settings</h4>
-              <IoIosSettings />
-            </Link>
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200">
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* Logo */}
+          <div className="flex items-center h-16 px-6 border-b border-gray-200">
+            <img src={logo} alt="Logo" className="h-8 w-auto" />
           </div>
 
-          <button
-            onClick={() => navigate("/login")}
-            className="flex justify-between text-lg mt-4 text-[#B82323] items-center  font-medium  px-6  w-full "
-          >
-            Logout
-            <HiOutlineLogout />
-          </button>
+          {/* Navigation */}
+          <nav className="flex-1 px-4 py-6 space-y-2">
+            {navigationItems.map((item) => (
+              <NavItem
+                key={item.id}
+                item={item}
+                isActive={activeButton === item.id}
+              />
+            ))}
+          </nav>
+
+          {/* User Section */}
+          <div className="border-t border-gray-200 p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                {initials}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {firstname}
+                </p>
+                <p className="text-xs text-gray-500 truncate">{email}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <HiOutlineLogout size={20} />
+              <span className="font-medium">Logout</span>
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Mobile Sidebar Overlay */}
       {isOpen && (
-        <div
-          className={`absolute top-0 left-0 z-50 h-screen bg-[#F0EDE7] w-[70%] mds:w-1/2 lgss:hidden flex flex-col px-[5%] pt-10 transform transition-transform duration-300 ${
-            isOpen ? "translate-x-0 " : "-translate-x-full"
-          }`}
-        >
-          <div className="lgss:mt-12 flex flex-col lgss:hidden">
-            <div className="">
-              <img src={logo} alt="logo" className="bg-cover" />
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={closeSidebar}
+          />
+
+          {/* Sidebar */}
+          <div className="relative flex flex-col w-64 bg-white shadow-xl">
+            {/* Header */}
+            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+              <img src={logo} alt="Logo" className="h-8 w-auto" />
+              <button
+                onClick={closeSidebar}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <HiOutlineX size={20} />
+              </button>
             </div>
-            <div className="mt-12 w-full flex flex-col justify-between h-screen items-start font-manrope py-[30%]">
-              <div className="flex flex-col w-full">
-                <Link
-                  to="/overview"
-                  className={
-                    activebutton === 1
-                      ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                      : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-                  }
-                >
-                  <h4 className="">Overview</h4>
-                  <HiSquares2X2 />
-                </Link>
-                <Link
-                  to="/projects"
-                  className={
-                    activebutton === 2
-                      ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                      : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-                  }
-                >
-                  <h4 className="">Projects</h4>
-                  <HiClipboardDocumentCheck />
-                </Link>
-                <Link
-                  to="/settings"
-                  className={
-                    activebutton === 3
-                      ? "flex justify-between text-[20px] text-white items-center font-medium  rounded-full px-4 bg-primary w-full h-[60px]"
-                      : "flex justify-between text-[20px] text-[#6B7276] items-center font-medium  px-4  w-full h-[60px]"
-                  }
-                >
-                  <h4 className="">Settings</h4>
-                  <IoIosSettings />
-                </Link>
+
+            {/* Navigation */}
+            <nav className="flex-1 px-4 py-6 space-y-2">
+              {navigationItems.map((item) => (
+                <NavItem
+                  key={item.id}
+                  item={item}
+                  isActive={activeButton === item.id}
+                  isMobile={true}
+                />
+              ))}
+            </nav>
+
+            {/* User Section */}
+            <div className="border-t border-gray-200 p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                  {initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {firstname}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">{email}</p>
+                </div>
               </div>
               <button
-                onClick={() => navigate("/login")}
-                className="flex gap-5 text-[18px] text-[#B82323] items-center font-medium pl-12 h-[40%] w-full"
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
-                Sign Out
-                <HiOutlineLogout />
+                <HiOutlineLogout size={20} />
+                <span className="font-medium">Logout</span>
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Desktop content spacer */}
+      <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" />
     </>
   );
 };
