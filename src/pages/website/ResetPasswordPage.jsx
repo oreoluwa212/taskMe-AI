@@ -5,28 +5,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
 import Button from "../../components/ui/Button";
-import VerificationCodeInput from "../../components/forms/VerificationCodeInput";
 import { validationRules } from "../../utils/validations";
 import { ResetPasswordBg, logo } from "../../../public";
 import InputField from "../../components/forms/InputField";
+import VerificationCodeInput from "../../components/forms/VerificationCodeInput";
 
 const ResetPasswordPage = () => {
   const [step, setStep] = useState(1); // 1: email, 2: code verification
   const [formData, setFormData] = useState({
     email: "",
-    code: "",
   });
   const [errors, setErrors] = useState({});
+  const [inputKey, setInputKey] = useState(0);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [resendingCode, setResendingCode] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const { forgotPassword, clearError, loading } = useAuthStore();
+  const verificationCodeRef = useRef(null);
+  const { forgotPassword, clearError } = useAuthStore();
   const navigate = useNavigate();
   const emailInputRef = useRef(null);
-  const codeInputRef = useRef();
 
   // Clear store error on mount
   useEffect(() => {
@@ -84,10 +84,12 @@ const ResetPasswordPage = () => {
       toast.success("Password reset code sent to your email!");
 
       setTimeout(() => {
+        setVerifying(false);
+        setInputKey((prev) => prev + 1);
         setStep(2);
         setIsTransitioning(false);
         startResendCooldown();
-      }, 1500);
+      }, 100);
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Failed to send reset code"
@@ -109,6 +111,14 @@ const ResetPasswordPage = () => {
       toast.dismiss(loadingToast);
       toast.success("New reset code sent!");
       startResendCooldown();
+
+      // Reset the verification code input
+      if (verificationCodeRef.current) {
+        verificationCodeRef.current.reset();
+      }
+
+      // Clear any previous errors
+      setErrors((prev) => ({ ...prev, code: "" }));
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to resend code");
     } finally {
@@ -116,8 +126,9 @@ const ResetPasswordPage = () => {
     }
   };
 
-  const handleCodeComplete = async (code) => {
-    if (verifying) return;
+  const handleCodeVerification = async (code) => {
+    if (verifying || code.length !== 5) return;
+
     setVerifying(true);
     setErrors((prev) => ({ ...prev, code: "" }));
     clearError();
@@ -136,13 +147,18 @@ const ResetPasswordPage = () => {
         navigate("/new-password", {
           state: { email: formData.email, code },
         });
-      }, 1000);
+      }, 500);
     } catch (error) {
       toast.dismiss(loadingToast);
       const errMsg =
         error?.response?.data?.message || "Invalid or expired code";
       setErrors((prev) => ({ ...prev, code: errMsg }));
-      codeInputRef.current?.reset();
+
+      // Reset verification code input
+      if (verificationCodeRef.current) {
+        verificationCodeRef.current.reset();
+      }
+
       toast.error(errMsg);
     } finally {
       setVerifying(false);
@@ -151,12 +167,15 @@ const ResetPasswordPage = () => {
 
   const handleBackToEmail = () => {
     setStep(1);
-    setFormData((prev) => ({ ...prev, code: "" }));
     setErrors({});
     setResendCooldown(0);
+    setVerifying(false);
+    setInputKey((prev) => prev + 1);
 
     setTimeout(() => {
-      emailInputRef.current?.focus();
+      if (emailInputRef.current) {
+        emailInputRef.current.focus();
+      }
     }, 100);
   };
 
@@ -229,10 +248,12 @@ const ResetPasswordPage = () => {
 
       <div className="mb-6">
         <VerificationCodeInput
+          key={inputKey}
+          ref={verificationCodeRef}
           length={5}
-          onComplete={handleCodeComplete}
+          onComplete={handleCodeVerification}
           error={errors.code}
-          disabled={loading || verifying}
+          disabled={verifying}
         />
       </div>
 

@@ -1,5 +1,5 @@
 // src/pages/website/NewPasswordPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAuthStore from "../../store/authStore";
@@ -19,10 +19,15 @@ const NewPasswordPage = () => {
     newPassword: false,
     confirmPassword: false,
   });
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    suggestions: [],
+  });
 
   const { resetPassword, loading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const newPasswordRef = useRef(null);
 
   // Get email and code from navigation state
   const { email, code } = location.state || {};
@@ -40,13 +45,62 @@ const NewPasswordPage = () => {
       return;
     }
 
-    // Show entry toast
+    // Show entry toast and focus password input
     toast.info("Please create your new password");
+    
+    setTimeout(() => {
+      if (newPasswordRef.current) {
+        newPasswordRef.current.focus();
+      }
+    }, 100);
   }, [email, code, navigate, clearError]);
+
+  // Password strength checker
+  const checkPasswordStrength = (password) => {
+    let score = 0;
+    const suggestions = [];
+
+    if (password.length >= 8) score += 1;
+    else suggestions.push("At least 8 characters");
+
+    if (/[a-z]/.test(password)) score += 1;
+    else suggestions.push("Lowercase letter");
+
+    if (/[A-Z]/.test(password)) score += 1;
+    else suggestions.push("Uppercase letter");
+
+    if (/\d/.test(password)) score += 1;
+    else suggestions.push("Number");
+
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1;
+    else suggestions.push("Special character");
+
+    return { score, suggestions };
+  };
+
+  const getStrengthColor = (score) => {
+    if (score <= 2) return "bg-red-500";
+    if (score <= 3) return "bg-yellow-500";
+    if (score <= 4) return "bg-blue-500";
+    return "bg-green-500";
+  };
+
+  const getStrengthText = (score) => {
+    if (score <= 2) return "Weak";
+    if (score <= 3) return "Fair";
+    if (score <= 4) return "Good";
+    return "Strong";
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Check password strength for new password
+    if (name === "newPassword") {
+      const strength = checkPasswordStrength(value);
+      setPasswordStrength(strength);
+    }
 
     // Clear field-specific error when user starts typing
     if (errors[name]) {
@@ -80,13 +134,6 @@ const NewPasswordPage = () => {
     }
 
     setErrors(newErrors);
-
-    // Show validation errors as toasts
-    if (Object.keys(newErrors).length > 0) {
-      const firstError = Object.values(newErrors)[0];
-      toast.error(firstError);
-    }
-
     return Object.keys(newErrors).length === 0;
   };
 
@@ -94,7 +141,19 @@ const NewPasswordPage = () => {
     e.preventDefault();
 
     if (!validateForm()) {
+      const firstError = Object.values(errors)[0];
+      if (firstError) {
+        toast.error(firstError);
+      }
       return;
+    }
+
+    // Warn about weak passwords
+    if (passwordStrength.score < 3) {
+      const proceed = window.confirm(
+        "Your password is weak. Are you sure you want to continue?"
+      );
+      if (!proceed) return;
     }
 
     try {
@@ -109,15 +168,18 @@ const NewPasswordPage = () => {
       toast.dismiss(processingToast);
       toast.success("Password reset successfully!");
 
-      // Add a delay to show the success message and smooth transition
+      // Navigate to confirmation page
       setTimeout(() => {
-        navigate(`/reset-password/confirm?email=${encodeURIComponent(email)}`);
+        navigate("/reset-password/confirm", {
+          state: { email },
+        });
       }, 2000);
     } catch (error) {
-      setIsProcessing(false);
       const errorMessage =
         error.response?.data?.message || "Failed to reset password";
       toast.error(errorMessage);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -175,6 +237,7 @@ const NewPasswordPage = () => {
                 placeholder="Enter new password"
                 required
                 disabled={loading || isProcessing}
+                inputRef={newPasswordRef}
               />
               <button
                 type="button"
@@ -182,8 +245,35 @@ const NewPasswordPage = () => {
                 className="absolute right-3 top-8 text-gray-500 hover:text-gray-700"
                 disabled={loading || isProcessing}
               >
-                {showPasswords.newPassword ? "👁️" : "🙈"}
+                {showPasswords.newPassword ? "🙈" : "👁️"}
               </button>
+              
+              {/* Password Strength Indicator */}
+              {formData.newPassword && (
+                <div className="mt-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all duration-300 ${getStrengthColor(
+                          passwordStrength.score
+                        )}`}
+                        style={{
+                          width: `${(passwordStrength.score / 5) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {getStrengthText(passwordStrength.score)}
+                    </span>
+                  </div>
+                  {passwordStrength.suggestions.length > 0 && (
+                    <div className="mt-1 text-xs text-gray-600">
+                      Missing: {passwordStrength.suggestions.join(", ")}
+                    </div>
+                  )}
+                </div>
+              )}
+              
               {errors.newPassword && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.newPassword}
@@ -208,8 +298,30 @@ const NewPasswordPage = () => {
                 className="absolute right-3 top-8 text-gray-500 hover:text-gray-700"
                 disabled={loading || isProcessing}
               >
-                {showPasswords.confirmPassword ? "👁️" : "🙈"}
+                {showPasswords.confirmPassword ? "🙈" : "👁️"}
               </button>
+              
+              {/* Password Match Indicator */}
+              {formData.confirmPassword && (
+                <div className="mt-2 text-sm">
+                  {formData.newPassword === formData.confirmPassword ? (
+                    <span className="text-green-600 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Passwords match
+                    </span>
+                  ) : (
+                    <span className="text-red-600 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                      Passwords don't match
+                    </span>
+                  )}
+                </div>
+              )}
+              
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.confirmPassword}
@@ -239,6 +351,19 @@ const NewPasswordPage = () => {
             >
               ← Back to Reset Password
             </Link>
+          </div>
+
+          {/* Password Tips */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-md">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              Password Requirements:
+            </h3>
+            <ul className="text-xs text-gray-600 space-y-1">
+              <li>• At least 8 characters long</li>
+              <li>• Contains uppercase and lowercase letters</li>
+              <li>• Contains at least one number</li>
+              <li>• Contains at least one special character</li>
+            </ul>
           </div>
         </div>
       </div>
