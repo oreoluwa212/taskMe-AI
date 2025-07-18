@@ -10,19 +10,37 @@ export const useProjectStore = create(
             loading: false,
             error: null,
             currentProject: null,
-            initialized: false, // Track if store has been initialized
-            lastFetch: null, // Track last fetch time
+            initialized: false,
+            lastFetch: null,
+
+            // Add stats state
+            stats: {
+                total: 0,
+                pending: 0,
+                inProgress: 0,
+                completed: 0,
+                averageProgress: 0,
+                highPriorityCount: 0,
+                overdueCount: 0,
+                additionalStats: {
+                    totalEstimatedHours: 0,
+                    averageTimeline: 0,
+                    projectsThisMonth: 0
+                },
+                categoryStats: []
+            },
+            statsLoading: false,
+            statsError: null,
+            lastStatsUpdate: null,
 
             // Initialize store - prevents empty state flash
             initialize: async (force = false) => {
                 const { initialized, lastFetch, projects } = get();
 
-                // If already initialized and has data, and not forcing, skip
                 if (initialized && projects.length > 0 && !force) {
                     return projects;
                 }
 
-                // If last fetch was recent (< 5 minutes), skip unless forced
                 const now = Date.now();
                 if (lastFetch && (now - lastFetch) < 300000 && !force) {
                     return projects;
@@ -41,7 +59,6 @@ export const useProjectStore = create(
                     const response = await api.get('/projects');
                     console.log('Fetch projects response:', response.data);
 
-                    // Handle different response structures
                     let projects = [];
                     if (response.data) {
                         if (response.data.data && Array.isArray(response.data.data)) {
@@ -80,6 +97,125 @@ export const useProjectStore = create(
                 }
             },
 
+            // Fetch project stats from API
+            fetchProjectStats: async () => {
+                set({ statsLoading: true, statsError: null });
+
+                try {
+                    const response = await api.get('/projects/stats');
+                    console.log('Fetch project stats response:', response.data);
+
+                    const statsData = response.data.data || response.data;
+
+                    set({
+                        stats: {
+                            total: statsData.total || 0,
+                            pending: statsData.pending || 0,
+                            inProgress: statsData.inProgress || 0,
+                            completed: statsData.completed || 0,
+                            averageProgress: statsData.averageProgress || 0,
+                            highPriorityCount: statsData.highPriorityCount || 0,
+                            overdueCount: statsData.overdueCount || 0,
+                            additionalStats: {
+                                totalEstimatedHours: statsData.additionalStats?.totalEstimatedHours || 0,
+                                averageTimeline: statsData.additionalStats?.averageTimeline || 0,
+                                projectsThisMonth: statsData.additionalStats?.projectsThisMonth || 0
+                            },
+                            categoryStats: statsData.categoryStats || []
+                        },
+                        statsLoading: false,
+                        lastStatsUpdate: Date.now()
+                    });
+
+                    return get().stats;
+                } catch (error) {
+                    console.error('Fetch project stats error:', error);
+                    const errorMessage = error.response?.data?.message ||
+                        error.response?.data?.error ||
+                        error.message ||
+                        'Failed to fetch project stats';
+
+                    set({
+                        statsError: errorMessage,
+                        statsLoading: false
+                    });
+
+                    // Return calculated stats as fallback
+                    return get().getProjectStats();
+                }
+            },
+
+            // Calculate stats from current projects (fallback)
+            getProjectStats: () => {
+                const { projects } = get();
+                const projectsArray = Array.isArray(projects) ? projects : [];
+
+                const stats = {
+                    total: projectsArray.length,
+                    pending: projectsArray.filter(p => p.status === 'Pending').length,
+                    inProgress: projectsArray.filter(p => p.status === 'In Progress').length,
+                    completed: projectsArray.filter(p => p.status === 'Completed').length,
+                    averageProgress: projectsArray.length > 0
+                        ? Math.round(projectsArray.reduce((acc, p) => acc + (p.progress || 0), 0) / projectsArray.length)
+                        : 0,
+                    highPriorityCount: projectsArray.filter(p => p.priority === 'High').length,
+                    overdueCount: projectsArray.filter(p => {
+                        if (!p.dueDate) return false;
+                        return new Date(p.dueDate) < new Date() && p.status !== 'Completed';
+                    }).length,
+                    additionalStats: {
+                        totalEstimatedHours: projectsArray.reduce((acc, p) => acc + (p.subtaskStats?.totalEstimatedHours || 0), 0),
+                        averageTimeline: projectsArray.length > 0
+                            ? Math.round(projectsArray.reduce((acc, p) => acc + (p.timeline || 0), 0) / projectsArray.length * 10) / 10
+                            : 0,
+                        projectsThisMonth: projectsArray.filter(p => {
+                            if (!p.createdAt) return false;
+                            const projectDate = new Date(p.createdAt);
+                            const now = new Date();
+                            return projectDate.getMonth() === now.getMonth() && projectDate.getFullYear() === now.getFullYear();
+                        }).length
+                    },
+                    categoryStats: []
+                };
+
+                return stats;
+            },
+
+            // Fetch single project by ID
+            fetchProjectById: async (projectId) => {
+                set({ loading: true, error: null });
+
+                try {
+                    console.log('Fetching project by ID:', projectId);
+                    const response = await api.get(`/projects/${projectId}`);
+                    console.log('Fetch project by ID response:', response.data);
+
+                    const projectData = response.data?.data || response.data;
+
+                    set({
+                        currentProject: projectData?.project || projectData,
+                        loading: false,
+                        error: null
+                    });
+
+                    return projectData;
+                } catch (error) {
+                    console.error('Fetch project by ID error:', error);
+                    const errorMessage = error.response?.data?.message ||
+                        error.response?.data?.error ||
+                        error.message ||
+                        'Failed to fetch project';
+
+                    set({
+                        error: errorMessage,
+                        loading: false,
+                        currentProject: null
+                    });
+
+                    throw error;
+                }
+            },
+
             // Create project with optimistic update
             createProject: async (projectData) => {
                 set({ loading: true, error: null });
@@ -99,6 +235,9 @@ export const useProjectStore = create(
                         lastFetch: Date.now()
                     }));
 
+                    // Refresh stats after creating project
+                    get().fetchProjectStats();
+
                     return newProject;
                 } catch (error) {
                     console.error('Create project error:', error);
@@ -113,7 +252,6 @@ export const useProjectStore = create(
 
             // Update project with optimistic update
             updateProject: async (projectId, projectData) => {
-                // Optimistic update
                 set(state => ({
                     projects: Array.isArray(state.projects)
                         ? state.projects.map(p =>
@@ -121,7 +259,11 @@ export const useProjectStore = create(
                                 ? { ...p, ...projectData }
                                 : p
                         )
-                        : []
+                        : [],
+                    currentProject: state.currentProject &&
+                        (state.currentProject.id === projectId || state.currentProject._id === projectId)
+                        ? { ...state.currentProject, ...projectData }
+                        : state.currentProject
                 }));
 
                 try {
@@ -139,14 +281,20 @@ export const useProjectStore = create(
                                     : p
                             )
                             : [updatedProject],
+                        currentProject: state.currentProject &&
+                            (state.currentProject.id === projectId || state.currentProject._id === projectId)
+                            ? { ...state.currentProject, ...updatedProject }
+                            : state.currentProject,
                         loading: false,
                         lastFetch: Date.now()
                     }));
 
+                    // Refresh stats after updating project
+                    get().fetchProjectStats();
+
                     return updatedProject;
                 } catch (error) {
                     console.error('Update project error:', error);
-                    // Revert optimistic update on error
                     await get().fetchProjects(false);
 
                     const errorMessage = error.response?.data?.message ||
@@ -160,7 +308,6 @@ export const useProjectStore = create(
 
             // Update project progress with optimistic update
             updateProjectProgress: async (projectId, progress) => {
-                // Optimistic update
                 set(state => ({
                     projects: Array.isArray(state.projects)
                         ? state.projects.map(p =>
@@ -168,7 +315,11 @@ export const useProjectStore = create(
                                 ? { ...p, progress }
                                 : p
                         )
-                        : []
+                        : [],
+                    currentProject: state.currentProject &&
+                        (state.currentProject.id === projectId || state.currentProject._id === projectId)
+                        ? { ...state.currentProject, progress }
+                        : state.currentProject
                 }));
 
                 try {
@@ -185,14 +336,20 @@ export const useProjectStore = create(
                                     : p
                             )
                             : [updatedProject],
+                        currentProject: state.currentProject &&
+                            (state.currentProject.id === projectId || state.currentProject._id === projectId)
+                            ? { ...state.currentProject, progress }
+                            : state.currentProject,
                         loading: false,
                         lastFetch: Date.now()
                     }));
 
+                    // Refresh stats after updating progress
+                    get().fetchProjectStats();
+
                     return updatedProject;
                 } catch (error) {
                     console.error('Update project progress error:', error);
-                    // Revert optimistic update on error
                     await get().fetchProjects(false);
 
                     const errorMessage = error.response?.data?.message ||
@@ -206,26 +363,32 @@ export const useProjectStore = create(
 
             // Delete project with optimistic update
             deleteProject: async (projectId) => {
-                // Store original projects for potential revert
-                const originalProjects = get().projects;
-
-                // Optimistic update
                 set(state => ({
                     projects: Array.isArray(state.projects)
                         ? state.projects.filter(p => p.id !== projectId && p._id !== projectId)
-                        : []
+                        : [],
+                    currentProject: state.currentProject &&
+                        (state.currentProject.id === projectId || state.currentProject._id === projectId)
+                        ? null
+                        : state.currentProject
                 }));
 
                 try {
                     await api.delete(`/projects/${projectId}`);
-                    set({
+                    console.log('Project deleted successfully');
+
+                    set(state => ({
                         loading: false,
                         lastFetch: Date.now()
-                    });
+                    }));
+
+                    // Refresh stats after deleting project
+                    get().fetchProjectStats();
+
+                    return true;
                 } catch (error) {
                     console.error('Delete project error:', error);
-                    // Revert optimistic update on error
-                    set({ projects: originalProjects });
+                    await get().fetchProjects(false);
 
                     const errorMessage = error.response?.data?.message ||
                         error.response?.data?.error ||
@@ -236,78 +399,34 @@ export const useProjectStore = create(
                 }
             },
 
-            // Get single project
-            fetchProjectById: async (projectId) => {
-                set({ loading: true, error: null });
-                try {
-                    const response = await api.get(`/projects/${projectId}`);
-                    console.log('Fetch project by ID response:', response.data);
-
-                    const project = response.data?.data || response.data;
-                    set({ currentProject: project, loading: false });
-                    return project;
-                } catch (error) {
-                    console.error('Fetch project by ID error:', error);
-                    const errorMessage = error.response?.data?.message ||
-                        error.response?.data?.error ||
-                        error.message ||
-                        'Failed to fetch project';
-                    set({ error: errorMessage, loading: false });
-                    throw error;
-                }
-            },
-
-            // Get project statistics
-            getProjectStats: () => {
-                const { projects } = get();
-                const projectsArray = Array.isArray(projects) ? projects : [];
-
-                const totalProjects = projectsArray.length;
-                const completedProjects = projectsArray.filter(p =>
-                    p.progress === 100 || p.progress === "100" || p.status === "Completed"
-                ).length;
-                const pendingProjects = projectsArray.filter(p =>
-                    p.status === "Pending" || (!p.progress || p.progress === 0 || p.progress === "0")
-                ).length;
-                const inProgressProjects = projectsArray.filter(p =>
-                    p.status === "In Progress" || (p.progress > 0 && p.progress < 100)
-                ).length;
-
-                return {
-                    total: totalProjects,
-                    completed: completedProjects,
-                    pending: pendingProjects,
-                    inProgress: inProgressProjects
-                };
-            },
-
-            // Fetch project stats from API
-            fetchProjectStats: async () => {
-                try {
-                    const response = await api.get('/projects/stats');
-                    console.log('Fetch project stats response:', response.data);
-                    return response.data?.data || response.data;
-                } catch (error) {
-                    console.error('Fetch project stats error:', error);
-                    // Fallback to calculated stats
-                    return get().getProjectStats();
-                }
-            },
-
-            // Get project by ID from store
-            getProjectById: (projectId) => {
-                const { projects } = get();
-                const projectsArray = Array.isArray(projects) ? projects : [];
-                return projectsArray.find(p =>
-                    p.id === projectId ||
-                    p.id === parseInt(projectId) ||
-                    p._id === projectId
-                );
-            },
-
-            // Set current project
-            setCurrentProject: (project) => {
-                set({ currentProject: project });
+            // Reset store completely
+            resetStore: () => {
+                set({
+                    projects: [],
+                    loading: false,
+                    error: null,
+                    currentProject: null,
+                    initialized: false,
+                    lastFetch: null,
+                    stats: {
+                        total: 0,
+                        pending: 0,
+                        inProgress: 0,
+                        completed: 0,
+                        averageProgress: 0,
+                        highPriorityCount: 0,
+                        overdueCount: 0,
+                        additionalStats: {
+                            totalEstimatedHours: 0,
+                            averageTimeline: 0,
+                            projectsThisMonth: 0
+                        },
+                        categoryStats: []
+                    },
+                    statsLoading: false,
+                    statsError: null,
+                    lastStatsUpdate: null
+                });
             },
 
             // Clear current project
@@ -315,47 +434,30 @@ export const useProjectStore = create(
                 set({ currentProject: null });
             },
 
-            // Clear projects
-            clearProjects: () => set({
-                projects: [],
-                error: null,
-                currentProject: null,
-                initialized: false,
-                lastFetch: null
-            }),
-
             // Clear error
-            clearError: () => set({ error: null }),
-
-            // Reset store
-            resetStore: () => set({
-                projects: [],
-                loading: false,
-                error: null,
-                currentProject: null,
-                initialized: false,
-                lastFetch: null
-            }),
-
-            // Refresh projects
-            refreshProjects: async () => {
-                return await get().fetchProjects(true);
+            clearError: () => {
+                set({ error: null });
             },
 
-            // Check if should show loading
-            shouldShowLoading: () => {
-                const { loading, initialized, projects } = get();
-                return loading && (!initialized || projects.length === 0);
+            // Clear stats error
+            clearStatsError: () => {
+                set({ statsError: null });
+            },
+
+            // Set loading state
+            setLoading: (loading) => {
+                set({ loading });
             }
         }),
         {
-            name: 'project-storage',
+            name: 'project-store',
             partialize: (state) => ({
-                projects: Array.isArray(state.projects) ? state.projects : [],
-                currentProject: state.currentProject,
+                projects: state.projects,
                 initialized: state.initialized,
-                lastFetch: state.lastFetch
-            }),
+                lastFetch: state.lastFetch,
+                stats: state.stats,
+                lastStatsUpdate: state.lastStatsUpdate
+            })
         }
     )
 );
