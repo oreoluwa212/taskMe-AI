@@ -58,9 +58,7 @@ const NavBar = () => {
         <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-[5%] w-full">
           {/* Logo Section */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link to="/overview" className="group">
-              <div className="w-2 h-2 rounded-full bg-primary bg-opacity-20 group-hover:bg-opacity-40 transition-all duration-300 transform group-hover:scale-110"></div>
-            </Link>
+            <div className="w-2 h-2 rounded-full bg-primary bg-opacity-20 group-hover:bg-opacity-40 transition-all duration-300 transform group-hover:scale-110"></div>
             <Link to="/" className="group">
               <img
                 className={`w-auto transition-all duration-300 group-hover:scale-105 ${
