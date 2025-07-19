@@ -12,7 +12,7 @@ const PageHeader = ({
   showMobileMenu = false,
 }) => {
   return (
-    <div className="w-full">
+    <div className="w-full pt-4 pb-8">
       {/* Mobile Menu Toggle */}
       {showMobileMenu && (
         <div className="lgss:hidden pt-5 px-[5%] flex w-full justify-end">

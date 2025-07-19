@@ -12,13 +12,19 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuthStore();
   const [activeButton, setActiveButton] = useState(1);
 
-  // Update active button based on current route
   useEffect(() => {
-    if (location.pathname === "/dashboard" || location.pathname === "/") {
+    const currentPath = location.pathname;
+
+    if (currentPath === "/dashboard" || currentPath === "/") {
       setActiveButton(1);
-    } else if (location.pathname.startsWith("/projects")) {
+    } else if (
+      currentPath.startsWith("/projects") ||
+      currentPath.startsWith("/project/") ||
+      currentPath.includes("/project/") ||
+      currentPath.includes("subtask")
+    ) {
       setActiveButton(2);
-    } else if (location.pathname === "/settings") {
+    } else if (currentPath === "/settings") {
       setActiveButton(3);
     }
   }, [location.pathname]);
@@ -29,7 +35,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
-      // Force navigation even if logout fails
       navigate("/login");
     }
   };

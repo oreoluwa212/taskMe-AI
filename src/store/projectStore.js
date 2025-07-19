@@ -33,27 +33,111 @@ export const useProjectStore = create(
             statsError: null,
             lastStatsUpdate: null,
 
+            // Get current project based on business logic
+            getCurrentProject: () => {
+                const { projects } = get();
+                const projectsArray = Array.isArray(projects) ? projects : [];
+
+                if (projectsArray.length === 0) return null;
+
+                // Option 1: Most recent project that's not completed
+                const activeProjects = projectsArray.filter(p => p.status !== 'Completed');
+                if (activeProjects.length > 0) {
+                    // Sort by creation date (most recent first) or due date (nearest first)
+                    return activeProjects.sort((a, b) => {
+                        // If both have due dates, sort by nearest due date
+                        if (a.dueDate && b.dueDate) {
+                            return new Date(a.dueDate) - new Date(b.dueDate);
+                        }
+                        // If only one has due date, prioritize it
+                        if (a.dueDate) return -1;
+                        if (b.dueDate) return 1;
+
+                        // Fall back to creation date or progress
+                        const aDate = new Date(a.createdAt || a.startDate);
+                        const bDate = new Date(b.createdAt || b.startDate);
+                        return bDate - aDate; // Most recent first
+                    })[0];
+                }
+
+                // If no active projects, return the most recent one
+                return projectsArray.sort((a, b) => {
+                    const aDate = new Date(a.createdAt || a.startDate);
+                    const bDate = new Date(b.createdAt || b.startDate);
+                    return bDate - aDate;
+                })[0];
+            },
+
+            // Alternative: Get current project based on highest priority + nearest due date
+            getCurrentProjectByPriority: () => {
+                const { projects } = get();
+                const projectsArray = Array.isArray(projects) ? projects : [];
+
+                if (projectsArray.length === 0) return null;
+
+                const activeProjects = projectsArray.filter(p => p.status !== 'Completed');
+                if (activeProjects.length === 0) return null;
+
+                // Priority weights
+                const priorityWeight = { 'High': 3, 'Medium': 2, 'Low': 1 };
+
+                return activeProjects.sort((a, b) => {
+                    const aPriority = priorityWeight[a.priority] || 1;
+                    const bPriority = priorityWeight[b.priority] || 1;
+
+                    // First sort by priority
+                    if (aPriority !== bPriority) {
+                        return bPriority - aPriority; // Higher priority first
+                    }
+
+                    // Then by due date (nearest first)
+                    if (a.dueDate && b.dueDate) {
+                        return new Date(a.dueDate) - new Date(b.dueDate);
+                    }
+                    if (a.dueDate) return -1;
+                    if (b.dueDate) return 1;
+
+                    // Finally by progress (less complete first)
+                    return (a.progress || 0) - (b.progress || 0);
+                })[0];
+            },
+
             // Initialize store - prevents empty state flash
             initialize: async (force = false) => {
                 const { initialized, lastFetch, projects } = get();
 
-                if (initialized && projects.length > 0 && !force) {
+                // If already initialized and we have projects, and not forcing, return early
+                if (initialized && Array.isArray(projects) && projects.length > 0 && !force) {
+                    console.log('Store already initialized with projects, skipping');
                     return projects;
                 }
 
+                // Check cache timeout (5 minutes)
                 const now = Date.now();
-                if (lastFetch && (now - lastFetch) < 300000 && !force) {
+                if (lastFetch && (now - lastFetch) < 300000 && !force && Array.isArray(projects) && projects.length > 0) {
+                    console.log('Using cached projects within timeout');
+                    set({ initialized: true });
                     return projects;
                 }
 
+                console.log('Initializing store - fetching projects');
                 return await get().fetchProjects();
             },
 
             // Fetch projects with better UX
             fetchProjects: async (showLoader = true) => {
+                const currentState = get();
+
+                // Always set loading state, but preserve projects during refresh
                 if (showLoader) {
-                    set({ loading: true, error: null });
+                    set({
+                        loading: true,
+                        error: null
+                        // Don't clear projects here to prevent empty state flash
+                    });
                 }
+
+                console.log('Fetching projects, current loading state:', currentState.loading);
 
                 try {
                     const response = await api.get('/projects');
@@ -69,6 +153,8 @@ export const useProjectStore = create(
                             projects = response.data.projects;
                         }
                     }
+
+                    console.log('Setting projects in store:', projects.length);
 
                     set({
                         projects,
@@ -91,6 +177,7 @@ export const useProjectStore = create(
                         loading: false,
                         initialized: true,
                         lastFetch: Date.now()
+                        // Keep existing projects on error
                     });
 
                     throw error;
@@ -401,6 +488,7 @@ export const useProjectStore = create(
 
             // Reset store completely
             resetStore: () => {
+                console.log('Resetting project store');
                 set({
                     projects: [],
                     loading: false,
@@ -446,6 +534,7 @@ export const useProjectStore = create(
 
             // Set loading state
             setLoading: (loading) => {
+                console.log('Setting loading state:', loading);
                 set({ loading });
             }
         }),

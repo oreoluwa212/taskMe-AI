@@ -1,12 +1,14 @@
 // src/components/webApp/modals/ProjectModal.jsx
 import React, { useState, useEffect } from "react";
 import { LiaTimesSolid } from "react-icons/lia";
+import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "../../../store/projectStore";
 import useSubtaskStore from "../../../store/subtaskStore";
 import FormInput from "../input/FormInput";
 import CustomBtn from "../buttons/CustomBtn";
 
 const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     startDate: "",
@@ -120,6 +122,10 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
           // Reset form and close modal
           resetForm();
 
+          // Navigate to subtask table page
+          const projectId = newProject.id || newProject._id;
+          navigate(`/project/${projectId}/details`);
+
           // Notify parent component with both project and subtasks
           if (onSuccess) {
             onSuccess({ project: newProject, subtasks: generatedSubtasks });
@@ -128,6 +134,11 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
           console.error("Subtask generation error:", subtaskError);
           // Even if subtask generation fails, the project was created successfully
           resetForm();
+
+          // Navigate to subtask table page anyway
+          const projectId = newProject.id || newProject._id;
+          navigate(`/project/${projectId}/details`);
+
           if (onSuccess) {
             onSuccess({ project: newProject, subtasks: [] });
           }
@@ -140,6 +151,10 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
       } else {
         // Reset form and close modal
         resetForm();
+
+        // Navigate to subtask table page
+        const projectId = newProject.id || newProject._id;
+        navigate(`/project/${projectId}/details`);
 
         // Notify parent component
         if (onSuccess) {
