@@ -60,11 +60,15 @@ const SubtaskTable = ({ projectId, projectName }) => {
     console.log("Error:", error);
   }, [projectId, subtasks, projectSubtasks, subtaskStats, loading, error]);
 
-  const handleStatusChange = async (subtaskId, newStatus) => {
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      await updateSubtask(subtaskId, { status: newStatus });
+      await updateSubtaskStatus(id, { status: newStatus });
+      toast.success("Subtask status updated successfully");
+
+      // ✅ Refresh the subtasks list
+      getSubtasks(projectId);
     } catch (error) {
-      console.error("Failed to update subtask status:", error);
+      toast.error("Failed to update subtask status");
     }
   };
 
@@ -219,10 +223,10 @@ const SubtaskTable = ({ projectId, projectName }) => {
             {projectName} - Subtasks
           </h2>
           <p className="text-gray-600 mt-1">
-            {completedTasks} of {totalTasks} tasks completed (
-            {progressPercentage}%)
+            {completedTasks ?? 0} of {totalTasks ?? 0} tasks completed (
+            {progressPercentage ?? 0}%)
           </p>
-          {subtaskStats && (
+          {subtaskStats && typeof subtaskStats.progress === "number" && (
             <p className="text-sm text-gray-500">
               API Progress: {subtaskStats.progress}% • Total:{" "}
               {subtaskStats.count}
