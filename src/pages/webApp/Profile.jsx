@@ -14,9 +14,10 @@ import {
   HiOutlineTrash,
 } from "react-icons/hi";
 import { useUserStore } from "../../store/userStore";
+import useAuthStore from "../../store/authStore"; // Import auth store
 
 const Profile = () => {
-  // Zustand store
+  // Zustand stores
   const {
     user,
     loading,
@@ -31,6 +32,11 @@ const Profile = () => {
     deleteAvatar,
     clearError,
   } = useUserStore();
+
+  // Add auth store to sync user data - with safe destructuring
+  const authStore = useAuthStore();
+  const authUser = authStore?.user;
+  const setAuthUser = authStore?.setUser;
 
   // Local state for editing
   const [editableProfile, setEditableProfile] = useState({});
@@ -69,6 +75,22 @@ const Profile = () => {
     }
   }, [user]);
 
+  // Sync user data between stores when profile updates - with safety check
+  useEffect(() => {
+    if (user && authUser && typeof setAuthUser === "function") {
+      // Update auth store with latest user data from user store
+      setAuthUser({
+        ...authUser,
+        ...user,
+        // Preserve any auth-specific data structure
+        data: {
+          ...authUser.data,
+          ...user,
+        },
+      });
+    }
+  }, [user, authUser, setAuthUser]);
+
   // Load user profile on mount
   useEffect(() => {
     if (!user) {
@@ -76,7 +98,7 @@ const Profile = () => {
         showToast("error", "Failed to load profile");
       });
     }
-  }, []);
+  }, [user, fetchProfile]);
 
   // Clear store errors and show toast
   useEffect(() => {
@@ -162,7 +184,7 @@ const Profile = () => {
     }
   };
 
-  // Handle avatar upload
+  // Handle avatar upload with auth store sync
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -180,17 +202,45 @@ const Profile = () => {
     }
 
     try {
-      await uploadAvatar(file);
+      const result = await uploadAvatar(file);
+
+      // Immediately update auth store with new avatar - with safety check
+      if (authUser && result && typeof setAuthUser === "function") {
+        const updatedUser = {
+          ...authUser,
+          avatar: result.avatar || user.avatar,
+          data: {
+            ...authUser.data,
+            avatar: result.avatar || user.avatar,
+          },
+        };
+        setAuthUser(updatedUser);
+      }
+
       showToast("success", "Avatar uploaded successfully!");
     } catch (error) {
       showToast("error", error.message);
     }
   };
 
-  // Handle avatar deletion
+  // Handle avatar deletion with auth store sync
   const handleAvatarDelete = async () => {
     try {
       await deleteAvatar();
+
+      // Immediately update auth store to remove avatar - with safety check
+      if (authUser && typeof setAuthUser === "function") {
+        const updatedUser = {
+          ...authUser,
+          avatar: null,
+          data: {
+            ...authUser.data,
+            avatar: null,
+          },
+        };
+        setAuthUser(updatedUser);
+      }
+
       showToast("success", "Avatar removed successfully!");
     } catch (error) {
       showToast("error", error.message);
