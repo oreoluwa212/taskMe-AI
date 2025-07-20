@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
 import { HiOutlineLogout } from "react-icons/hi";
 import { HiOutlineViewGrid, HiOutlineFolder, HiOutlineX } from "react-icons/hi";
+import { MessageSquare } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { logo } from "../../../public";
@@ -24,8 +25,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       currentPath.includes("subtask")
     ) {
       setActiveButton(2);
-    } else if (currentPath === "/settings") {
+    } else if (
+      currentPath.startsWith("/chats") ||
+      currentPath.includes("/chat/")
+    ) {
       setActiveButton(3);
+    } else if (currentPath === "/settings") {
+      setActiveButton(4);
     }
   }, [location.pathname]);
 
@@ -81,6 +87,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     },
     {
       id: 3,
+      title: "Chats",
+      path: "/chats",
+      icon: MessageSquare,
+    },
+    {
+      id: 4,
       title: "Settings",
       path: "/settings",
       icon: IoIosSettings,

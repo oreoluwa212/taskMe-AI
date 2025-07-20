@@ -1,4 +1,4 @@
-// src/App.jsx (Updated Routes Section)
+// src/App.jsx (Updated with Chats Route)
 import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -34,6 +34,7 @@ import ProjectOverview from "./pages/webApp/ProjectOverview";
 import ProjectDetails from "./pages/webApp/ProjectDetails";
 import Search from "./pages/webApp/Search";
 import Profile from "./pages/webApp/Profile";
+import Chats from "./pages/webApp/Chats";
 import ResetPasswordConfirmPage from "./pages/website/ResetPwConfirm";
 
 function App() {
@@ -102,6 +103,16 @@ function App() {
               <ProtectedRoute>
                 <DashboardLayout>
                   <ProjectDetails />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chats"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Chats />
                 </DashboardLayout>
               </ProtectedRoute>
             }
