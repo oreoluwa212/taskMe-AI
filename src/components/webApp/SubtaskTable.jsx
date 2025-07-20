@@ -9,9 +9,10 @@ import {
   FaRobot,
   FaSync,
 } from "react-icons/fa";
+import { toast } from "react-toastify";
 import useSubtaskStore from "../../store/subtaskStore";
 
-const SubtaskTable = ({ projectId, projectName }) => {
+const SubtaskTable = ({ projectId, projectName, onSubtaskChange }) => {
   const [isEditing, setIsEditing] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
@@ -60,15 +61,30 @@ const SubtaskTable = ({ projectId, projectName }) => {
     console.log("Error:", error);
   }, [projectId, subtasks, projectSubtasks, subtaskStats, loading, error]);
 
+  // Helper function to trigger parent refresh
+  const triggerParentRefresh = async () => {
+    if (onSubtaskChange && typeof onSubtaskChange === "function") {
+      try {
+        await onSubtaskChange();
+      } catch (error) {
+        console.error("Error in parent refresh callback:", error);
+      }
+    }
+  };
+
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await updateSubtaskStatus(id, { status: newStatus });
+      await updateSubtask(id, { status: newStatus });
       toast.success("Subtask status updated successfully");
 
-      // ✅ Refresh the subtasks list
-      getSubtasks(projectId);
+      // Refresh the subtasks list
+      await getProjectSubtasks(projectId);
+
+      // Trigger parent component refresh
+      await triggerParentRefresh();
     } catch (error) {
       toast.error("Failed to update subtask status");
+      console.error("Status update error:", error);
     }
   };
 
@@ -86,10 +102,18 @@ const SubtaskTable = ({ projectId, projectName }) => {
   const handleSaveEdit = async () => {
     try {
       await updateSubtask(isEditing, editFormData);
+      toast.success("Subtask updated successfully");
       setIsEditing(null);
       setEditFormData({});
+
+      // Refresh the subtasks list
+      await getProjectSubtasks(projectId);
+
+      // Trigger parent component refresh
+      await triggerParentRefresh();
     } catch (error) {
       console.error("Failed to update subtask:", error);
+      toast.error("Failed to update subtask");
     }
   };
 
@@ -102,20 +126,29 @@ const SubtaskTable = ({ projectId, projectName }) => {
     if (window.confirm("Are you sure you want to delete this subtask?")) {
       try {
         await deleteSubtask(subtaskId);
+        toast.success("Subtask deleted successfully");
+
+        // Refresh the subtasks list
+        await getProjectSubtasks(projectId);
+
+        // Trigger parent component refresh
+        await triggerParentRefresh();
       } catch (error) {
         console.error("Failed to delete subtask:", error);
+        toast.error("Failed to delete subtask");
       }
     }
   };
 
   const handleAddSubtask = async () => {
     if (!newSubtask.title.trim()) {
-      alert("Please enter a title for the subtask");
+      toast.error("Please enter a title for the subtask");
       return;
     }
 
     try {
       await createSubtask(projectId, newSubtask);
+      toast.success("Subtask created successfully");
       setNewSubtask({
         title: "",
         description: "",
@@ -124,16 +157,31 @@ const SubtaskTable = ({ projectId, projectName }) => {
         status: "Pending",
       });
       setShowAddForm(false);
+
+      // Refresh the subtasks list
+      await getProjectSubtasks(projectId);
+
+      // Trigger parent component refresh
+      await triggerParentRefresh();
     } catch (error) {
       console.error("Failed to create subtask:", error);
+      toast.error("Failed to create subtask");
     }
   };
 
   const handleGenerateAI = async () => {
     try {
       await generateAISubtasks(projectId, false);
+      toast.success("AI subtasks generated successfully");
+
+      // Refresh the subtasks list
+      await getProjectSubtasks(projectId);
+
+      // Trigger parent component refresh
+      await triggerParentRefresh();
     } catch (error) {
       console.error("Failed to generate AI subtasks:", error);
+      toast.error("Failed to generate AI subtasks");
     }
   };
 
@@ -145,8 +193,16 @@ const SubtaskTable = ({ projectId, projectName }) => {
     ) {
       try {
         await generateAISubtasks(projectId, true);
+        toast.success("AI subtasks regenerated successfully");
+
+        // Refresh the subtasks list
+        await getProjectSubtasks(projectId);
+
+        // Trigger parent component refresh
+        await triggerParentRefresh();
       } catch (error) {
         console.error("Failed to regenerate AI subtasks:", error);
+        toast.error("Failed to regenerate AI subtasks");
       }
     }
   };

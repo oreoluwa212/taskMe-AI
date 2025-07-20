@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProjectStore } from "../../store/projectStore";
 import { toast } from "react-toastify";
@@ -18,6 +18,24 @@ import {
 } from "lucide-react";
 import SubtaskTable from "../../components/webApp/SubtaskTable";
 
+// Add the formatDate utility function
+const formatDate = (dateString) => {
+  if (!dateString) return "Not set";
+
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid date";
+
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch (error) {
+    return "Invalid date";
+  }
+};
+
 const ProjectDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,30 +53,37 @@ const ProjectDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
   const [projectStats, setProjectStats] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key to force re-renders
 
-  useEffect(() => {
+  const refreshProjectData = useCallback(async () => {
     if (id) {
-      fetchProjectById(id)
-        .then((response) => {
-          console.log("Full project response:", response);
+      try {
+        console.log("Refreshing project data for ID:", id);
+        const response = await fetchProjectById(id);
+        console.log("Refreshed project data:", response);
 
-          // Handle subtasks - they're directly in the response data
-          if (response?.subtasks && Array.isArray(response.subtasks)) {
-            setSubtasks(response.subtasks);
-          }
+        if (response?.subtasks && Array.isArray(response.subtasks)) {
+          setSubtasks(response.subtasks);
+        }
 
-          // Handle project stats
-          if (response?.stats) {
-            setProjectStats(response.stats);
-          }
-        })
-        .catch((err) => {
-          toast.error("Failed to fetch project details");
-          console.error("Error fetching project:", err);
-        });
+        if (response?.stats) {
+          setProjectStats(response.stats);
+        }
+
+        // Force a re-render by updating the refresh key
+        setRefreshKey((prev) => prev + 1);
+      } catch (err) {
+        console.error("Error refreshing project:", err);
+      }
     }
   }, [id, fetchProjectById]);
 
+  // Single useEffect for initial data loading
+  useEffect(() => {
+    refreshProjectData();
+  }, [id]); // Only depend on id, not refreshProjectData to avoid loops
+
+  // Separate useEffect for updating edit data when currentProject changes
   useEffect(() => {
     if (currentProject) {
       setEditData({
@@ -79,7 +104,7 @@ const ProjectDetails = () => {
         dueTime: currentProject.dueTime || "12:00",
       });
     }
-  }, [currentProject]);
+  }, [currentProject, refreshKey]); // Add refreshKey as dependency
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -90,6 +115,8 @@ const ProjectDetails = () => {
       await updateProject(id, editData);
       setIsEditing(false);
       toast.success("Project updated successfully");
+      // Refresh project data to get updated information
+      await refreshProjectData();
     } catch (error) {
       toast.error("Failed to update project");
     }
@@ -122,8 +149,13 @@ const ProjectDetails = () => {
     try {
       await updateProjectProgress(id, newProgress);
       toast.success("Progress updated successfully");
+      // Add a small delay to ensure backend has processed the update
+      setTimeout(async () => {
+        await refreshProjectData();
+      }, 100);
     } catch (error) {
       toast.error("Failed to update progress");
+      console.error("Progress update error:", error);
     }
   };
 
@@ -137,14 +169,10 @@ const ProjectDetails = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "Not set";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  const handleSubtaskChange = useCallback(async () => {
+    console.log("Subtask change detected, refreshing project data...");
+    await refreshProjectData();
+  }, [refreshProjectData]);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -216,19 +244,6 @@ const ProjectDetails = () => {
       .map((tag) => tag.trim())
       .filter((tag) => tag);
     setEditData({ ...editData, tags: tagsArray });
-  };
-
-  const getSubtaskStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "in progress":
-        return "bg-blue-100 text-blue-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
   };
 
   if (loading) {
@@ -596,19 +611,7 @@ const ProjectDetails = () => {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-blue-100">
-                    <svg
-                      className="w-6 h-6 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <Clock className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-500">
@@ -622,19 +625,7 @@ const ProjectDetails = () => {
 
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-green-100">
-                    <svg
-                      className="w-6 h-6 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-500">
@@ -648,19 +639,7 @@ const ProjectDetails = () => {
 
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-purple-100">
-                    <svg
-                      className="w-6 h-6 text-purple-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
+                    <Zap className="w-6 h-6 text-purple-600" />
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-500">Created</p>
@@ -673,19 +652,7 @@ const ProjectDetails = () => {
                 {subtasks.length > 0 && (
                   <div className="flex items-center">
                     <div className="p-3 rounded-full bg-indigo-100">
-                      <svg
-                        className="w-6 h-6 text-indigo-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                        />
-                      </svg>
+                      <ClipboardList className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-500">
@@ -752,11 +719,15 @@ const ProjectDetails = () => {
           </div>
         </div>
       </div>
-      {/* Individual Subtasks - Show if available */}
+
+      {/* Individual Subtasks - Show if available with refresh callback */}
       <SubtaskTable
+        key={refreshKey} // Force re-render when refreshKey changes
         projectId={currentProject.id || currentProject._id}
         projectName={currentProject.name}
+        onSubtaskChange={handleSubtaskChange}
       />
+
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
