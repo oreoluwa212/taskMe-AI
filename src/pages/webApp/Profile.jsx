@@ -5,7 +5,6 @@ import {
   HiOutlinePhone,
   HiOutlineCamera,
   HiOutlineLockClosed,
-  HiOutlineBell,
   HiOutlineShieldCheck,
   HiOutlineEye,
   HiOutlineEyeOff,
@@ -13,7 +12,6 @@ import {
   HiOutlineX,
   HiOutlineExclamationCircle,
 } from "react-icons/hi";
-import { BiSolidUserCircle } from "react-icons/bi";
 
 const Profile = () => {
   // Profile state
@@ -26,16 +24,6 @@ const Profile = () => {
     bio: "Software engineer passionate about building great user experiences.",
     location: "San Francisco, CA",
     timezone: "America/Los_Angeles",
-  });
-
-  // Settings state
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    projectUpdates: true,
-    securityAlerts: true,
-    darkMode: false,
-    language: "en",
   });
 
   // Password state
@@ -134,11 +122,6 @@ const Profile = () => {
     }
   };
 
-  // Handle settings change
-  const handleSettingsChange = (key, value) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
   // Get user initials
   const getUserInitials = () => {
     return `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase();
@@ -190,7 +173,7 @@ const Profile = () => {
                 Profile & Settings
               </h1>
               <p className="text-gray-600 mt-1">
-                Manage your account and preferences
+                Manage your account information and security
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -253,19 +236,6 @@ const Profile = () => {
               <div className="flex items-center gap-2">
                 <HiOutlineShieldCheck size={18} />
                 Security
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab("preferences")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "preferences"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <HiOutlineBell size={18} />
-                Preferences
               </div>
             </button>
           </nav>
@@ -617,166 +587,6 @@ const Profile = () => {
                   >
                     {loading ? "Changing Password..." : "Change Password"}
                   </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Preferences Tab */}
-          {activeTab === "preferences" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Notification Settings
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        Email Notifications
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Receive notifications via email
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={settings.emailNotifications}
-                        onChange={(e) =>
-                          handleSettingsChange(
-                            "emailNotifications",
-                            e.target.checked
-                          )
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        Push Notifications
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Receive push notifications on your device
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={settings.pushNotifications}
-                        onChange={(e) =>
-                          handleSettingsChange(
-                            "pushNotifications",
-                            e.target.checked
-                          )
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        Project Updates
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Get notified about project status changes
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={settings.projectUpdates}
-                        onChange={(e) =>
-                          handleSettingsChange(
-                            "projectUpdates",
-                            e.target.checked
-                          )
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between py-3">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        Security Alerts
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Important security notifications
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={settings.securityAlerts}
-                        onChange={(e) =>
-                          handleSettingsChange(
-                            "securityAlerts",
-                            e.target.checked
-                          )
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Display Settings
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Dark Mode</h3>
-                      <p className="text-sm text-gray-500">
-                        Toggle dark mode theme
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={settings.darkMode}
-                        onChange={(e) =>
-                          handleSettingsChange("darkMode", e.target.checked)
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between py-3">
-                    <div>
-                      <h3 className="font-medium text-gray-900">Language</h3>
-                      <p className="text-sm text-gray-500">
-                        Choose your preferred language
-                      </p>
-                    </div>
-                    <select
-                      value={settings.language}
-                      onChange={(e) =>
-                        handleSettingsChange("language", e.target.value)
-                      }
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                    </select>
-                  </div>
                 </div>
               </div>
             </div>
