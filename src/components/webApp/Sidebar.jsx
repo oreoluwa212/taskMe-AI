@@ -45,7 +45,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   // Helper function to get user data
   const getUserData = () => {
-    if (!user) return { firstname: "User", email: "", initials: "U" };
+    if (!user)
+      return { firstname: "User", email: "", initials: "U", avatar: null };
 
     // Handle different possible user data structures
     let userData = user;
@@ -58,11 +59,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const firstname = userData.firstname || "User";
     const email = userData.email || "";
     const initials = firstname[0]?.toUpperCase() || "U";
+    const avatar = userData.avatar?.url || null; // Extract avatar URL
 
-    return { firstname, email, initials };
+    return { firstname, email, initials, avatar };
   };
 
-  const { firstname, email, initials } = getUserData();
+  const { firstname, email, initials, avatar } = getUserData();
 
   const navigationItems = [
     {
@@ -100,6 +102,33 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     </Link>
   );
 
+  // Avatar component for reuse
+  const Avatar = ({ size = "w-10 h-10" }) => (
+    <div
+      className={`${size} rounded-full flex items-center justify-center overflow-hidden`}
+    >
+      {avatar ? (
+        <img
+          src={avatar}
+          alt={firstname}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fallback to initials if image fails to load
+            e.target.style.display = "none";
+            e.target.nextSibling.style.display = "flex";
+          }}
+        />
+      ) : null}
+      <div
+        className={`w-full h-full bg-blue-600 rounded-full flex items-center justify-center text-white font-medium ${
+          avatar ? "hidden" : "flex"
+        }`}
+      >
+        {initials}
+      </div>
+    </div>
+  );
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -124,9 +153,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           {/* User Section */}
           <div className="border-t border-gray-200 p-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-                {initials}
-              </div>
+              <Avatar />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
                   {firstname}
@@ -182,9 +209,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             {/* User Section */}
             <div className="border-t border-gray-200 p-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-                  {initials}
-                </div>
+                <Avatar />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {firstname}

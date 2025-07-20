@@ -100,7 +100,7 @@ const Header = () => {
   }, [searchQuery, searchFilters]);
 
   const getUserData = () => {
-    if (!user) return { name: "Guest", email: "", initials: "G" };
+    if (!user) return { name: "Guest", email: "", initials: "G", avatar: null };
 
     // Handle different possible user data structures
     let userData = user;
@@ -113,6 +113,7 @@ const Header = () => {
     let name = "Guest";
     let email = userData.email || "";
     let initials = "G";
+    let avatar = userData.avatar?.url || null; // Extract avatar URL
 
     // Get name from different possible formats
     if (userData.firstname && userData.lastname) {
@@ -133,7 +134,7 @@ const Header = () => {
       }
     }
 
-    return { name, email, initials };
+    return { name, email, initials, avatar };
   };
 
   const handleLogout = async () => {
@@ -168,7 +169,7 @@ const Header = () => {
     });
   };
 
-  const { name, email, initials } = getUserData();
+  const { name, email, initials, avatar } = getUserData();
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -332,8 +333,26 @@ const Header = () => {
                 className="flex items-center gap-3 p-2 text-sm rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  {initials}
+                <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt={name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "flex";
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className={`w-full h-full bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                      avatar ? "hidden" : "flex"
+                    }`}
+                  >
+                    {initials}
+                  </div>
                 </div>
 
                 {/* User info - hidden on mobile */}

@@ -11,20 +11,29 @@ import {
   HiOutlineCheck,
   HiOutlineX,
   HiOutlineExclamationCircle,
+  HiOutlineTrash,
 } from "react-icons/hi";
+import { useUserStore } from "../../store/userStore";
 
 const Profile = () => {
-  // Profile state
-  const [profile, setProfile] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    avatar: null,
-    bio: "Software engineer passionate about building great user experiences.",
-    location: "San Francisco, CA",
-    timezone: "America/Los_Angeles",
-  });
+  // Zustand store
+  const {
+    user,
+    loading,
+    updating,
+    uploading,
+    changingPassword,
+    error,
+    fetchProfile,
+    updateProfile,
+    changePassword,
+    uploadAvatar,
+    deleteAvatar,
+    clearError,
+  } = useUserStore();
+
+  // Local state for editing
+  const [editableProfile, setEditableProfile] = useState({});
 
   // Password state
   const [passwordData, setPasswordData] = useState({
@@ -41,10 +50,41 @@ const Profile = () => {
     new: false,
     confirm: false,
   });
-  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const fileInputRef = useRef(null);
+
+  // Initialize profile data when user data loads
+  useEffect(() => {
+    if (user) {
+      setEditableProfile({
+        firstname: user.firstname || "",
+        lastname: user.lastname || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        location: user.location || "",
+        timezone: user.timezone || "America/Los_Angeles",
+        bio: user.bio || "",
+      });
+    }
+  }, [user]);
+
+  // Load user profile on mount
+  useEffect(() => {
+    if (!user) {
+      fetchProfile().catch(() => {
+        showToast("error", "Failed to load profile");
+      });
+    }
+  }, []);
+
+  // Clear store errors and show toast
+  useEffect(() => {
+    if (error) {
+      showToast("error", error);
+      clearError();
+    }
+  }, [error, clearError]);
 
   // Toast helper
   const showToast = (type, message) => {
@@ -69,17 +109,28 @@ const Profile = () => {
 
   // Handle profile update
   const handleProfileUpdate = async () => {
-    setLoading(true);
     try {
-      // API call would go here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await updateProfile(editableProfile);
       setIsEditing(false);
       showToast("success", "Profile updated successfully!");
     } catch (error) {
-      showToast("error", "Failed to update profile. Please try again.");
-    } finally {
-      setLoading(false);
+      showToast("error", error.message);
     }
+  };
+
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    // Reset to original user data
+    setEditableProfile({
+      firstname: user.firstname || "",
+      lastname: user.lastname || "",
+      email: user.email || "",
+      phoneNumber: user.phoneNumber || "",
+      location: user.location || "",
+      timezone: user.timezone || "America/Los_Angeles",
+      bio: user.bio || "",
+    });
+    setIsEditing(false);
   };
 
   // Handle password change
@@ -93,10 +144,11 @@ const Profile = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      // API call would go here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
       setPasswordData({
         currentPassword: "",
         newPassword: "",
@@ -104,27 +156,51 @@ const Profile = () => {
       });
       showToast("success", "Password changed successfully!");
     } catch (error) {
-      showToast("error", "Failed to change password. Please try again.");
-    } finally {
-      setLoading(false);
+      showToast("error", error.message);
     }
   };
 
   // Handle avatar upload
-  const handleAvatarUpload = (event) => {
+  const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfile((prev) => ({ ...prev, avatar: e.target.result }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showToast("error", "Please select an image file");
+      return;
+    }
+
+    // Validate file size (e.g., 5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("error", "File size must be less than 5MB");
+      return;
+    }
+
+    try {
+      await uploadAvatar(file);
+      showToast("success", "Avatar uploaded successfully!");
+    } catch (error) {
+      showToast("error", error.message);
+    }
+  };
+
+  // Handle avatar deletion
+  const handleAvatarDelete = async () => {
+    try {
+      await deleteAvatar();
+      showToast("success", "Avatar removed successfully!");
+    } catch (error) {
+      showToast("error", error.message);
     }
   };
 
   // Get user initials
   const getUserInitials = () => {
-    return `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase();
+    if (!user) return "U";
+    const firstName = user.firstname || "";
+    const lastName = user.lastname || "";
+    return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase() || "U";
   };
 
   // Password strength indicator
@@ -143,6 +219,26 @@ const Profile = () => {
     if (passwordStrength <= 4) return "Good";
     return "Strong";
   };
+
+  // Show loading if user data is still being fetched
+  if (loading && !user) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-12 bg-gray-300 rounded"></div>
+              <div className="h-12 bg-gray-300 rounded"></div>
+              <div className="h-12 bg-gray-300 rounded"></div>
+              <div className="h-12 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -177,10 +273,10 @@ const Profile = () => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="relative">
-                {profile.avatar ? (
+              <div className="relative group">
+                {user?.avatar?.url ? (
                   <img
-                    src={profile.avatar}
+                    src={user.avatar.url}
                     alt="Profile"
                     className="w-16 h-16 rounded-full object-cover border-4 border-blue-100"
                   />
@@ -189,12 +285,34 @@ const Profile = () => {
                     {getUserInitials()}
                   </div>
                 )}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
-                >
-                  <HiOutlineCamera size={14} />
-                </button>
+
+                {/* Avatar action buttons */}
+                <div className="absolute -bottom-1 -right-1 flex gap-1">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    title="Upload new avatar"
+                  >
+                    {uploading ? (
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <HiOutlineCamera size={14} />
+                    )}
+                  </button>
+
+                  {user?.avatar?.url && (
+                    <button
+                      onClick={handleAvatarDelete}
+                      disabled={uploading}
+                      className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors disabled:opacity-50 ml-1"
+                      title="Remove avatar"
+                    >
+                      <HiOutlineTrash size={14} />
+                    </button>
+                  )}
+                </div>
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -250,23 +368,34 @@ const Profile = () => {
                 <h2 className="text-lg font-semibold text-gray-900">
                   Personal Information
                 </h2>
-                <button
-                  onClick={() =>
-                    isEditing ? handleProfileUpdate() : setIsEditing(true)
-                  }
-                  disabled={loading}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isEditing
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                  {loading
-                    ? "Saving..."
-                    : isEditing
-                    ? "Save Changes"
-                    : "Edit Profile"}
-                </button>
+                <div className="flex gap-2">
+                  {isEditing && (
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={updating}
+                      className="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    onClick={() =>
+                      isEditing ? handleProfileUpdate() : setIsEditing(true)
+                    }
+                    disabled={updating}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isEditing
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    } ${updating ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    {updating
+                      ? "Saving..."
+                      : isEditing
+                      ? "Save Changes"
+                      : "Edit Profile"}
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -281,11 +410,11 @@ const Profile = () => {
                     />
                     <input
                       type="text"
-                      value={profile.firstName}
+                      value={editableProfile.firstname || ""}
                       onChange={(e) =>
-                        setProfile((prev) => ({
+                        setEditableProfile((prev) => ({
                           ...prev,
-                          firstName: e.target.value,
+                          firstname: e.target.value,
                         }))
                       }
                       disabled={!isEditing}
@@ -305,11 +434,11 @@ const Profile = () => {
                     />
                     <input
                       type="text"
-                      value={profile.lastName}
+                      value={editableProfile.lastname || ""}
                       onChange={(e) =>
-                        setProfile((prev) => ({
+                        setEditableProfile((prev) => ({
                           ...prev,
-                          lastName: e.target.value,
+                          lastname: e.target.value,
                         }))
                       }
                       disabled={!isEditing}
@@ -329,9 +458,9 @@ const Profile = () => {
                     />
                     <input
                       type="email"
-                      value={profile.email}
+                      value={editableProfile.email || ""}
                       onChange={(e) =>
-                        setProfile((prev) => ({
+                        setEditableProfile((prev) => ({
                           ...prev,
                           email: e.target.value,
                         }))
@@ -353,11 +482,11 @@ const Profile = () => {
                     />
                     <input
                       type="tel"
-                      value={profile.phone}
+                      value={editableProfile.phoneNumber || ""}
                       onChange={(e) =>
-                        setProfile((prev) => ({
+                        setEditableProfile((prev) => ({
                           ...prev,
-                          phone: e.target.value,
+                          phoneNumber: e.target.value,
                         }))
                       }
                       disabled={!isEditing}
@@ -372,9 +501,9 @@ const Profile = () => {
                   </label>
                   <input
                     type="text"
-                    value={profile.location}
+                    value={editableProfile.location || ""}
                     onChange={(e) =>
-                      setProfile((prev) => ({
+                      setEditableProfile((prev) => ({
                         ...prev,
                         location: e.target.value,
                       }))
@@ -389,9 +518,9 @@ const Profile = () => {
                     Timezone
                   </label>
                   <select
-                    value={profile.timezone}
+                    value={editableProfile.timezone || "America/Los_Angeles"}
                     onChange={(e) =>
-                      setProfile((prev) => ({
+                      setEditableProfile((prev) => ({
                         ...prev,
                         timezone: e.target.value,
                       }))
@@ -412,9 +541,12 @@ const Profile = () => {
                   Bio
                 </label>
                 <textarea
-                  value={profile.bio}
+                  value={editableProfile.bio || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({ ...prev, bio: e.target.value }))
+                    setEditableProfile((prev) => ({
+                      ...prev,
+                      bio: e.target.value,
+                    }))
                   }
                   disabled={!isEditing}
                   rows={4}
@@ -578,15 +710,63 @@ const Profile = () => {
                   <button
                     onClick={handlePasswordChange}
                     disabled={
-                      loading ||
+                      changingPassword ||
                       !passwordData.currentPassword ||
                       !passwordData.newPassword ||
-                      !passwordData.confirmPassword
+                      !passwordData.confirmPassword ||
+                      passwordData.newPassword !==
+                        passwordData.confirmPassword ||
+                      passwordStrength < 3
                     }
                     className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {loading ? "Changing Password..." : "Change Password"}
+                    {changingPassword
+                      ? "Changing Password..."
+                      : "Change Password"}
                   </button>
+                </div>
+              </div>
+
+              {/* Account Information Display */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Account Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500">Account ID:</span>
+                    <p className="font-mono text-gray-700 mt-1">{user?.id}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Email Status:</span>
+                    <p className="mt-1">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          user?.emailVerified
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {user?.emailVerified ? "Verified" : "Not Verified"}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Member Since:</span>
+                    <p className="text-gray-700 mt-1">
+                      {user?.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Last Updated:</span>
+                    <p className="text-gray-700 mt-1">
+                      {user?.updatedAt
+                        ? new Date(user.updatedAt).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
