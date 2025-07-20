@@ -60,7 +60,7 @@ const Profile = () => {
       setEditableProfile({
         firstname: user.firstname || "",
         lastname: user.lastname || "",
-        email: user.email || "",
+        email: user.email || "", // Keep email for display, but won't be editable
         phoneNumber: user.phoneNumber || "",
         location: user.location || "",
         timezone: user.timezone || "America/Los_Angeles",
@@ -107,10 +107,12 @@ const Profile = () => {
     setPasswordStrength(calculatePasswordStrength(passwordData.newPassword));
   }, [passwordData.newPassword]);
 
-  // Handle profile update
+  // Handle profile update - exclude email from updates
   const handleProfileUpdate = async () => {
     try {
-      await updateProfile(editableProfile);
+      // Create a copy of editableProfile without the email field
+      const { email, ...profileWithoutEmail } = editableProfile;
+      await updateProfile(profileWithoutEmail);
       setIsEditing(false);
       showToast("success", "Profile updated successfully!");
     } catch (error) {
@@ -450,6 +452,9 @@ const Profile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address
+                    <span className="text-xs text-gray-500 ml-2">
+                      (Read-only)
+                    </span>
                   </label>
                   <div className="relative">
                     <HiOutlineMail
@@ -459,16 +464,15 @@ const Profile = () => {
                     <input
                       type="email"
                       value={editableProfile.email || ""}
-                      onChange={(e) =>
-                        setEditableProfile((prev) => ({
-                          ...prev,
-                          email: e.target.value,
-                        }))
-                      }
-                      disabled={!isEditing}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                      disabled={true} // Always disabled - email cannot be edited
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                      readOnly
                     />
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Email cannot be changed. Contact support if you need to
+                    update your email address.
+                  </p>
                 </div>
 
                 <div>
