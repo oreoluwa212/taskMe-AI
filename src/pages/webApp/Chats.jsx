@@ -26,6 +26,7 @@ const Chats = () => {
     loading,
     sending,
     error,
+    user, // Add user from chat store
     fetchChats,
     createChat,
     fetchChat,
@@ -301,6 +302,17 @@ const Chats = () => {
     return !selectedChatId || !currentChat;
   };
 
+  // Get user avatar and name from user object
+  const userAvatar =
+    user?.avatar?.url || user?.profilePicture || user?.profileImage;
+  const userName =
+    user?.name || user?.username || user?.firstname || user?.firstName
+      ? `${user?.firstname || user?.firstName} ${
+          user?.lastname || user?.lastName || ""
+        }`.trim()
+      : user?.email?.split("@")[0] || // fallback to email username
+        null;
+
   return (
     <div className="h-screen flex bg-white overflow-hidden">
       {renderSidebar()}
@@ -328,6 +340,8 @@ const Chats = () => {
             isMobile={isMobile}
             error={error}
             clearError={clearError}
+            userAvatar={userAvatar}
+            userName={userName}
           />
         )}
       </div>

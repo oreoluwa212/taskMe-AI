@@ -9,20 +9,49 @@ export const useChatStore = create((set, get) => ({
     loading: false,
     sending: false,
     error: null,
+    user: null,
     fetchingChats: {}, // Track which chats are being fetched
 
-    // Fetch all chats
+    setUser: (userData) => {
+        set({ user: userData });
+    },
+
     fetchChats: async () => {
         set({ loading: true, error: null });
         try {
             const response = await api.get('/chats');
             const chats = response.data.data?.chats || response.data.data || response.data;
+
+            // If user data is not set, you might want to fetch it
+            const { user } = get();
+            if (!user) {
+                try {
+                    const userResponse = await api.get('/users/profile'); // or whatever your user endpoint is
+                    set({ user: userResponse.data.user || userResponse.data });
+                } catch (userError) {
+                    console.log('Could not fetch user data:', userError);
+                }
+            }
+
             set({ chats: Array.isArray(chats) ? chats : [], loading: false });
             return response.data;
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Failed to fetch chats';
             set({ error: errorMessage, loading: false });
             throw new Error(errorMessage);
+        }
+    },
+
+    // Add method to fetch user profile specifically
+    fetchUserProfile: async () => {
+        try {
+            const response = await api.get('/users/profile'); // Adjust endpoint as needed
+            const userData = response.data.user || response.data;
+            set({ user: userData });
+            return userData;
+        } catch (error) {
+            console.error('Failed to fetch user profile:', error);
+            throw error;
         }
     },
 

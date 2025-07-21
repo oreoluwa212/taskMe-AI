@@ -18,6 +18,9 @@ const ChatInterface = ({
   formatTime,
   isMobile,
   error,
+  clearError,
+  userAvatar, // Add this prop
+  userName, // Add this prop
 }) => {
   const messagesEndRef = useRef(null);
 
@@ -132,6 +135,8 @@ const ChatInterface = ({
                   message={message}
                   formatTime={formatTime}
                   isMobile={isMobile}
+                  userAvatar={userAvatar}
+                  userName={userName}
                 />
               ))}
               {sending && <TypingIndicator />}
