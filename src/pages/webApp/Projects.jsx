@@ -1,4 +1,4 @@
-// src/pages/webApp/Projects.jsx
+// src/pages/webApp/Projects.jsx - Updated with pagination
 import React, { useState, useEffect } from "react";
 import useAuthStore from "../../store/authStore";
 import { useProjectStore } from "../../store/projectStore";
@@ -9,6 +9,7 @@ import ProjectModal from "../../components/webApp/modals/ProjectModal";
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import Toast from "../../components/ui/Toast";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import Pagination from "../../components/ui/Pagination";
 import useProjectSearch from "../../hooks/useProjectSearch";
 import { formatDate } from "../../utils/dateUtils";
 
@@ -26,11 +27,14 @@ const Projects = () => {
     projects,
     loading: projectLoading,
     error: projectError,
+    pagination,
     fetchProjects,
+    goToPage,
+    setPageSize,
     resetStore,
   } = useProjectStore();
 
-  // Search hook
+  // Search hook - pass pagination info
   const {
     searchQuery,
     setSearchQuery,
@@ -49,7 +53,7 @@ const Projects = () => {
     const initializeProjects = async () => {
       try {
         resetStore();
-        await fetchProjects();
+        await fetchProjects(1, true, false); // Start with page 1
       } catch (error) {
         console.error("Failed to initialize projects:", error);
       } finally {
@@ -66,7 +70,7 @@ const Projects = () => {
     setInitialLoading(true);
     setHasInitialized(false);
     try {
-      await fetchProjects();
+      await fetchProjects(1, true, false);
     } finally {
       setInitialLoading(false);
       setHasInitialized(true);
@@ -79,7 +83,8 @@ const Projects = () => {
       message: `Project "${newProject.name}" created successfully!`,
     });
     setIsModalOpen(false);
-    await fetchProjects();
+    // Refresh current page after creating project
+    await fetchProjects(pagination.page, false, false);
   };
 
   const handleProjectError = (error) => {
@@ -93,10 +98,43 @@ const Projects = () => {
     setIsModalOpen(true);
   };
 
+  // Pagination handlers
+  const handlePageChange = async (page) => {
+    try {
+      await goToPage(page);
+    } catch (error) {
+      setToast({
+        type: "error",
+        message: "Failed to load page",
+      });
+    }
+  };
+
+  const handlePageSizeChange = async (newPageSize) => {
+    try {
+      await setPageSize(newPageSize);
+    } catch (error) {
+      setToast({
+        type: "error",
+        message: "Failed to update page size",
+      });
+    }
+  };
+
+  // Clear search when changing pages
+  const handlePageChangeWithClearSearch = async (page) => {
+    if (searchQuery || hasActiveFilters) {
+      clearSearch();
+    }
+    await handlePageChange(page);
+  };
+
   // Ensure arrays are properly formatted
   const projectsArray = Array.isArray(projects) ? projects : [];
-  const displayProjects = Array.isArray(filteredProjects)
-    ? filteredProjects
+  
+  // Use filtered projects if search is active, otherwise use all projects
+  const displayProjects = (searchQuery || hasActiveFilters) 
+    ? (Array.isArray(filteredProjects) ? filteredProjects : [])
     : projectsArray;
 
   // Determine loading state
@@ -108,15 +146,19 @@ const Projects = () => {
   // Only show error if we're not loading and we have an error
   const shouldShowError = projectError && !isLoading;
 
+  // Show pagination only when not searching/filtering and we have data
+  const showPagination = !isSearching && !hasActiveFilters && !searchQuery && 
+                        hasInitialized && !isLoading && pagination.pages > 1;
+
   return (
     <div className="w-full">
-      {/* Page Header - Remove duplicate padding since DashboardLayout handles it */}
+      {/* Page Header */}
       <div className="mb-6">
         <PageHeader
           title="My Projects"
-          subtitle="Manage and track all your projects in one place"
+          subtitle={`Manage and track all your projects in one place ${pagination.total ? `(${pagination.total} total)` : ''}`}
           onCreateProject={handleCreateProject}
-          showMobileMenu={false} // Don't show mobile menu here since DashboardLayout handles it
+          showMobileMenu={false}
         />
       </div>
 
@@ -143,6 +185,7 @@ const Projects = () => {
             isSearching={isSearching}
             resultsCount={displayProjects.length}
             showViewToggle={true}
+            totalResults={searchQuery || hasActiveFilters ? displayProjects.length : pagination.total}
           />
         </div>
       )}
@@ -154,17 +197,37 @@ const Projects = () => {
             <LoadingSpinner size="lg" />
           </div>
         ) : (
-          <ProjectGrid
-            projects={displayProjects}
-            viewMode={viewMode}
-            formatDate={formatDate}
-            isLoading={isLoading}
-            isSearching={isSearching}
-            searchQuery={searchQuery}
-            hasActiveFilters={hasActiveFilters}
-            onCreateProject={handleCreateProject}
-            hasInitialized={hasInitialized}
-          />
+          <div className="space-y-6">
+            <ProjectGrid
+              projects={displayProjects}
+              viewMode={viewMode}
+              formatDate={formatDate}
+              isLoading={isLoading}
+              isSearching={isSearching}
+              searchQuery={searchQuery}
+              hasActiveFilters={hasActiveFilters}
+              onCreateProject={handleCreateProject}
+              hasInitialized={hasInitialized}
+            />
+            
+            {/* Pagination */}
+            {showPagination && (
+              <div className="border-t border-gray-200 pt-6">
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.pages}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limit}
+                  onPageChange={handlePageChangeWithClearSearch}
+                  onPageSizeChange={handlePageSizeChange}
+                  loading={projectLoading}
+                  showPageSize={true}
+                  showInfo={true}
+                  className="px-4"
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
 

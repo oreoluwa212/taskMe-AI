@@ -13,6 +13,15 @@ export const useProjectStore = create(
             initialized: false,
             lastFetch: null,
 
+            pagination: {
+                page: 1,
+                pages: 1,
+                total: 0,
+                count: 0,
+                limit: 10,
+            },
+            loadingMore: false,
+
             // Add stats state
             stats: {
                 total: 0,
@@ -124,27 +133,39 @@ export const useProjectStore = create(
                 return await get().fetchProjects();
             },
 
-            // Fetch projects with better UX
-            fetchProjects: async (showLoader = true) => {
+            fetchProjects: async (page = 1, showLoader = true, append = false) => {
                 const currentState = get();
 
-                // Always set loading state, but preserve projects during refresh
-                if (showLoader) {
+                // Set loading states
+                if (showLoader && !append) {
                     set({
                         loading: true,
                         error: null
-                        // Don't clear projects here to prevent empty state flash
+                    });
+                } else if (append) {
+                    set({
+                        loadingMore: true,
+                        error: null
                     });
                 }
 
-                console.log('Fetching projects, current loading state:', currentState.loading);
+                console.log(`Fetching projects page ${page}, append: ${append}`);
 
                 try {
-                    const response = await api.get('/projects');
+                    const response = await api.get(`/projects?page=${page}&limit=${currentState.pagination.limit}`);
                     console.log('Fetch projects response:', response.data);
 
                     let projects = [];
+                    let paginationData = {
+                        page: 1,
+                        pages: 1,
+                        total: 0,
+                        count: 0,
+                        limit: currentState.pagination.limit,
+                    };
+
                     if (response.data) {
+                        // Extract projects data
                         if (response.data.data && Array.isArray(response.data.data)) {
                             projects = response.data.data;
                         } else if (Array.isArray(response.data)) {
@@ -152,19 +173,32 @@ export const useProjectStore = create(
                         } else if (response.data.projects && Array.isArray(response.data.projects)) {
                             projects = response.data.projects;
                         }
+
+                        // Extract pagination data
+                        if (response.data.success !== undefined) {
+                            paginationData = {
+                                page: response.data.page || 1,
+                                pages: response.data.pages || 1,
+                                total: response.data.total || projects.length,
+                                count: response.data.count || projects.length,
+                                limit: currentState.pagination.limit,
+                            };
+                        }
                     }
 
-                    console.log('Setting projects in store:', projects.length);
+                    console.log('Setting projects in store:', projects.length, 'append:', append);
 
                     set({
-                        projects,
+                        projects: append ? [...currentState.projects, ...projects] : projects,
+                        pagination: paginationData,
                         loading: false,
+                        loadingMore: false,
                         initialized: true,
                         lastFetch: Date.now(),
                         error: null
                     });
 
-                    return projects;
+                    return { projects, pagination: paginationData };
                 } catch (error) {
                     console.error('Fetch projects error:', error);
                     const errorMessage = error.response?.data?.message ||
@@ -175,13 +209,68 @@ export const useProjectStore = create(
                     set({
                         error: errorMessage,
                         loading: false,
+                        loadingMore: false,
                         initialized: true,
                         lastFetch: Date.now()
-                        // Keep existing projects on error
                     });
 
                     throw error;
                 }
+            },
+
+            // Load more projects (for infinite scroll or load more button)
+            loadMoreProjects: async () => {
+                const currentState = get();
+                const nextPage = currentState.pagination.page + 1;
+
+                if (nextPage <= currentState.pagination.pages) {
+                    return await currentState.fetchProjects(nextPage, false, true);
+                }
+
+                return null; // No more pages to load
+            },
+
+            // Go to specific page
+            goToPage: async (page) => {
+                const currentState = get();
+                if (page >= 1 && page <= currentState.pagination.pages) {
+                    return await currentState.fetchProjects(page, true, false);
+                }
+                throw new Error('Invalid page number');
+            },
+
+            // Check if there are more pages to load
+            hasMorePages: () => {
+                const currentState = get();
+                return currentState.pagination.page < currentState.pagination.pages;
+            },
+
+            // Reset pagination and fetch first page
+            resetPagination: async () => {
+                set({
+                    projects: [],
+                    pagination: {
+                        page: 1,
+                        pages: 1,
+                        total: 0,
+                        count: 0,
+                        limit: get().pagination.limit,
+                    }
+                });
+                return await get().fetchProjects(1, true, false);
+            },
+
+            // Update items per page
+            setPageSize: async (limit) => {
+                set({
+                    pagination: {
+                        ...get().pagination,
+                        limit,
+                        page: 1, // Reset to first page when changing page size
+                    },
+                    projects: [], // Clear current projects
+                });
+                return await get().fetchProjects(1, true, false);
             },
 
             // Fetch project stats from API
