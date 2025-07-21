@@ -14,6 +14,7 @@ const NavBar = () => {
   const closeMenu = () => setIsOpen(false);
 
   const navigationItems = [
+    { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     { label: "Features", path: "/features" },
   ];
@@ -77,10 +78,20 @@ const NavBar = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className="relative group hover:text-primary transition-colors duration-200"
+                    className={`relative group transition-colors duration-200 ${
+                      location.pathname === item.path
+                        ? "text-primary"
+                        : "text-gray-700 hover:text-primary"
+                    }`}
                   >
                     {item.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    <span
+                      className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                        location.pathname === item.path
+                          ? "w-full"
+                          : "w-0 group-hover:w-full"
+                      }`}
+                    ></span>
                   </Link>
                 </li>
               ))}
@@ -172,8 +183,10 @@ const NavBar = () => {
                     <Link
                       to={item.path}
                       onClick={closeMenu}
-                      className={`block px-4 py-3 rounded-lg text-lg font-semibold text-gray-700 hover:text-primary hover:bg-gray-50 transition-all duration-200 transform hover:translate-x-2 ${
-                        index === 0 ? "animate-fade-in-up" : ""
+                      className={`block px-4 py-3 rounded-lg text-lg font-semibold transition-all duration-200 transform hover:translate-x-2 ${
+                        location.pathname === item.path
+                          ? "text-primary bg-gray-100"
+                          : "text-gray-700 hover:text-primary hover:bg-gray-50"
                       }`}
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
