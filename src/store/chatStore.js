@@ -10,7 +10,11 @@ export const useChatStore = create((set, get) => ({
     sending: false,
     error: null,
     user: null,
-    fetchingChats: {}, // Track which chats are being fetched
+    fetchingChats: {},
+    // NEW: Chat suggestions state
+    suggestions: [],
+    suggestionsLoading: false,
+    suggestionsError: null,
 
     setUser: (userData) => {
         set({ user: userData });
@@ -22,11 +26,10 @@ export const useChatStore = create((set, get) => ({
             const response = await api.get('/chats');
             const chats = response.data.data?.chats || response.data.data || response.data;
 
-            // If user data is not set, you might want to fetch it
             const { user } = get();
             if (!user) {
                 try {
-                    const userResponse = await api.get('/users/profile'); // or whatever your user endpoint is
+                    const userResponse = await api.get('/users/profile');
                     set({ user: userResponse.data.user || userResponse.data });
                 } catch (userError) {
                     console.log('Could not fetch user data:', userError);
@@ -42,10 +45,32 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Add method to fetch user profile specifically
+    // NEW: Fetch chat suggestions
+    fetchChatSuggestions: async () => {
+        set({ suggestionsLoading: true, suggestionsError: null });
+        try {
+            const response = await api.get('/chats/suggestions');
+            const suggestions = response.data.data?.suggestions || response.data.data || response.data;
+
+            set({
+                suggestions: Array.isArray(suggestions) ? suggestions : [],
+                suggestionsLoading: false
+            });
+            return suggestions;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Failed to fetch chat suggestions';
+            set({
+                suggestionsError: errorMessage,
+                suggestionsLoading: false
+            });
+            console.error('Error fetching suggestions:', error);
+            return [];
+        }
+    },
+
     fetchUserProfile: async () => {
         try {
-            const response = await api.get('/users/profile'); // Adjust endpoint as needed
+            const response = await api.get('/users/profile');
             const userData = response.data.user || response.data;
             set({ user: userData });
             return userData;
@@ -55,7 +80,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Create a new chat
     createChat: async (chatData) => {
         set({ loading: true, error: null });
         try {
@@ -77,13 +101,22 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Create chat with suggestion
+    // UPDATED: Enhanced createChatWithSuggestion
     createChatWithSuggestion: async (suggestionData) => {
         set({ loading: true, error: null });
         try {
             const response = await api.post('/chats/create-with-suggestion', suggestionData);
-            const newChat = response.data.data?.chat || response.data.data || response.data;
-            const messages = response.data.data?.messages || newChat.messages || [];
+            const data = response.data.data;
+            const newChat = data?.chat || data || response.data;
+            const initialMessage = data?.initialMessage;
+
+            // Handle messages - could be from initialMessage or chat.messages
+            let messages = [];
+            if (initialMessage) {
+                messages = [initialMessage];
+            } else if (newChat.messages) {
+                messages = newChat.messages;
+            }
 
             set(state => ({
                 chats: [newChat, ...state.chats],
@@ -92,7 +125,7 @@ export const useChatStore = create((set, get) => ({
                 loading: false
             }));
 
-            return newChat;
+            return { chat: newChat, initialMessage, redirect: data?.redirect };
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Failed to create chat with suggestion';
             set({ error: errorMessage, loading: false });
@@ -100,17 +133,14 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Fetch specific chat with duplicate prevention
     fetchChat: async (chatId) => {
         const state = get();
 
-        // Prevent duplicate fetching
         if (state.fetchingChats[chatId]) {
             console.log('Already fetching chat:', chatId);
             return state.currentChat;
         }
 
-        // If it's the same chat that's already loaded, don't refetch
         if (state.currentChat?._id === chatId && state.messages.length > 0) {
             console.log('Chat already loaded:', chatId);
             return state.currentChat;
@@ -128,7 +158,7 @@ export const useChatStore = create((set, get) => ({
             const chat = data?.chat || data || response.data;
             const messages = data?.messages || chat.messages || [];
 
-            console.log('Fetched chat data:', { chat, messages }); // Debug log
+            console.log('Fetched chat data:', { chat, messages });
 
             set(state => ({
                 currentChat: chat,
@@ -149,11 +179,9 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Send message to chat
     sendMessage: async (chatId, messageContent) => {
         set({ sending: true, error: null });
 
-        // Add optimistic user message
         const userMessage = {
             _id: `temp-${Date.now()}`,
             chatId,
@@ -174,19 +202,14 @@ export const useChatStore = create((set, get) => ({
 
             const responseData = response.data.data || response.data;
 
-            // Handle different possible response structures
             let newMessages = [];
             if (responseData.messages) {
-                // If response includes all messages
                 newMessages = responseData.messages;
             } else if (Array.isArray(responseData)) {
-                // If response is array of messages
                 newMessages = responseData;
             } else if (responseData.userMessage && responseData.assistantMessage) {
-                // If response has separate user and assistant messages
                 newMessages = [responseData.userMessage, responseData.assistantMessage];
             } else {
-                // Single message response
                 newMessages = [...get().messages.filter(m => !m._id.startsWith('temp-')), responseData];
             }
 
@@ -197,7 +220,6 @@ export const useChatStore = create((set, get) => ({
 
             return responseData;
         } catch (error) {
-            // Remove optimistic message on error
             set(state => ({
                 messages: state.messages.filter(m => !m._id.startsWith('temp-')),
                 sending: false,
@@ -207,7 +229,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Update chat title
     updateChatTitle: async (chatId, newTitle) => {
         set({ loading: true, error: null });
         try {
@@ -238,7 +259,6 @@ export const useChatStore = create((set, get) => ({
     createProjectFromChat: async (chatId) => {
         const state = get();
 
-        // Additional validation
         if (!state.messages || state.messages.length < 2) {
             throw new Error('Not enough conversation content to create a project. Please have a more detailed discussion first.');
         }
@@ -252,10 +272,15 @@ export const useChatStore = create((set, get) => ({
         try {
             const response = await api.post(`/chats/${chatId}/create-project`);
             set({ loading: false });
-            return response.data;
+
+            // Return the project data so the component can handle routing
+            return {
+                success: true,
+                project: response.data.data.project,
+                projectId: response.data.data.project._id
+            };
         } catch (error) {
             set({ loading: false });
-            // Check for 429 or 503 and throw a specific error message
             if (error.response?.status === 429) {
                 set({ error: "You have reached the daily limit for AI requests. Please try again tomorrow or upgrade your plan." });
                 throw new Error("You have reached the daily limit for AI requests. Please try again tomorrow or upgrade your plan.");
@@ -266,7 +291,6 @@ export const useChatStore = create((set, get) => ({
             }
             const errorMessage = error.response?.data?.message || 'Failed to create project from chat';
             set({ error: errorMessage });
-            // Enhance error message for better UX
             if (error.response?.status === 400) {
                 throw new Error('Unable to extract project information from the conversation. Please provide more specific project details in your chat.');
             }
@@ -274,7 +298,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Delete chat
     deleteChat: async (chatId) => {
         set({ loading: true, error: null });
         try {
@@ -285,7 +308,6 @@ export const useChatStore = create((set, get) => ({
                 currentChat: state.currentChat?._id === chatId ? null : state.currentChat,
                 messages: state.currentChat?._id === chatId ? [] : state.messages,
                 loading: false,
-                // Clean up fetching state
                 fetchingChats: { ...state.fetchingChats, [chatId]: false }
             }));
 
@@ -297,7 +319,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Set current chat
     setCurrentChat: (chat) => {
         set({
             currentChat: chat,
@@ -305,14 +326,12 @@ export const useChatStore = create((set, get) => ({
         });
     },
 
-    // Add message to current chat (for optimistic updates)
     addMessage: (message) => {
         set(state => ({
             messages: [...state.messages, message]
         }));
     },
 
-    // Clear current chat
     clearCurrentChat: () => {
         set({
             currentChat: null,
@@ -320,10 +339,11 @@ export const useChatStore = create((set, get) => ({
         });
     },
 
-    // Clear error
+    // NEW: Clear suggestions error
+    clearSuggestionsError: () => set({ suggestionsError: null }),
+
     clearError: () => set({ error: null }),
 
-    // Clear all chat data
     clearChats: () => set({
         chats: [],
         currentChat: null,
@@ -331,6 +351,9 @@ export const useChatStore = create((set, get) => ({
         loading: false,
         sending: false,
         error: null,
-        fetchingChats: {}
+        fetchingChats: {},
+        suggestions: [],
+        suggestionsLoading: false,
+        suggestionsError: null
     })
 }));

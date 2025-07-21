@@ -24,9 +24,13 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
   const [step, setStep] = useState(1); // 1: Project details, 2: AI generation confirmation
   const [tagInput, setTagInput] = useState("");
   const [calculatedTimeline, setCalculatedTimeline] = useState(0);
+  const [currentOperation, setCurrentOperation] = useState(""); // Track current operation
 
   const { createProject, loading } = useProjectStore();
   const { generateAISubtasks, generatingSubtasks } = useSubtaskStore();
+
+  // Overall loading state
+  const isLoading = loading || generatingSubtasks;
 
   // Calculate timeline when dates change
   useEffect(() => {
@@ -102,6 +106,9 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
 
       console.log("Submitting project data:", projectData);
 
+      // Set current operation for loading UI
+      setCurrentOperation("Creating project...");
+
       // Create project
       const response = await createProject(projectData);
 
@@ -113,6 +120,8 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
       // If AI generation is enabled and subtasks weren't returned, generate them
       if (generateAI && !subtasks.length) {
         setStep(2);
+        setCurrentOperation("Generating AI subtasks...");
+
         try {
           const generatedSubtasks = await generateAISubtasks(
             newProject.id || newProject._id
@@ -166,6 +175,8 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
       if (onError) {
         onError(error);
       }
+    } finally {
+      setCurrentOperation("");
     }
   };
 
@@ -184,9 +195,11 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
     setStep(1);
     setTagInput("");
     setCalculatedTimeline(0);
+    setCurrentOperation("");
   };
 
   const handleClose = () => {
+    if (isLoading) return; // Prevent closing during loading
     resetForm();
     onClose();
   };
@@ -197,13 +210,34 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg px-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg px-6 w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center z-10 rounded-lg">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="text-center">
+                <p className="text-lg font-medium text-gray-800">
+                  {currentOperation || "Processing..."}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Please wait, this may take a few moments
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="w-full pt-4 flex justify-between items-center sticky top-0 bg-white">
           <h2 className="text-xl font-semibold">
             {step === 1 ? "New Project" : "Generating AI Subtasks..."}
           </h2>
           <LiaTimesSolid
-            className="cursor-pointer text-2xl hover:text-gray-600 transition-colors"
+            className={`text-2xl transition-colors ${
+              isLoading
+                ? "cursor-not-allowed text-gray-400"
+                : "cursor-pointer hover:text-gray-600"
+            }`}
             onClick={handleClose}
           />
         </div>
@@ -211,7 +245,9 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
         {step === 1 && (
           <form
             onSubmit={handleSubmit}
-            className="flex pt-5 pb-6 flex-col w-full gap-4"
+            className={`flex pt-5 pb-6 flex-col w-full gap-4 ${
+              isLoading ? "pointer-events-none opacity-50" : ""
+            }`}
           >
             <FormInput
               name="name"
@@ -220,6 +256,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
               onChange={handleInputChange}
               required
               placeholder="Enter project name"
+              disabled={isLoading}
             />
 
             <div className="flex w-full gap-4">
@@ -230,6 +267,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                 value={formData.startDate}
                 onChange={handleInputChange}
                 required
+                disabled={isLoading}
               />
               <FormInput
                 name="dueDate"
@@ -238,10 +276,11 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                 value={formData.dueDate}
                 onChange={handleInputChange}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            {/* Auto-calculated Timeline Display - Now positioned below dates */}
+            {/* Auto-calculated Timeline Display */}
             {calculatedTimeline > 0 && (
               <div className="flex flex-col gap-2 -mt-2">
                 <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
@@ -278,6 +317,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
               value={formData.dueTime}
               onChange={handleInputChange}
               placeholder="Optional deadline time"
+              disabled={isLoading}
             />
 
             <FormInput
@@ -286,6 +326,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
               value={formData.category}
               onChange={handleInputChange}
               placeholder="e.g., Web Development, Mobile App, etc."
+              disabled={isLoading}
             />
 
             <FormInput
@@ -294,6 +335,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
               value={formData.description}
               onChange={handleInputChange}
               placeholder="Project description..."
+              disabled={isLoading}
             />
 
             {/* Tags Section */}
@@ -308,12 +350,20 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleAddTag(e)}
                   placeholder="Add a tag..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isLoading}
+                  className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isLoading ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={handleAddTag}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={isLoading}
+                  className={`px-3 py-2 bg-blue-600 text-white rounded-lg transition-colors ${
+                    isLoading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                  }`}
                 >
                   Add
                 </button>
@@ -330,7 +380,12 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
-                        className="text-blue-600 hover:text-blue-800"
+                        disabled={isLoading}
+                        className={`text-blue-600 ${
+                          isLoading
+                            ? "cursor-not-allowed"
+                            : "hover:text-blue-800"
+                        }`}
                       >
                         ×
                       </button>
@@ -353,6 +408,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                       value={priority}
                       checked={formData.priority === priority}
                       onChange={handleInputChange}
+                      disabled={isLoading}
                       className="text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm">{priority}</span>
@@ -368,6 +424,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
                   type="checkbox"
                   checked={generateAI}
                   onChange={(e) => setGenerateAI(e.target.checked)}
+                  disabled={isLoading}
                   className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm font-medium">
@@ -384,10 +441,14 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
 
             <div className="pt-4">
               <CustomBtn
-                title={loading ? "Creating..." : "Create Project"}
+                title={
+                  isLoading
+                    ? currentOperation || "Processing..."
+                    : "Create Project"
+                }
                 type="submit"
                 disabled={
-                  loading ||
+                  isLoading ||
                   !formData.name ||
                   !formData.startDate ||
                   !formData.dueDate ||
@@ -402,9 +463,7 @@ const ProjectModal = ({ isOpen, onClose, onSuccess, onError }) => {
           <div className="flex pt-5 pb-6 flex-col w-full gap-4 items-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             <p className="text-center text-gray-600">
-              {generatingSubtasks
-                ? "AI is generating your project subtasks..."
-                : "Processing your project..."}
+              {currentOperation || "AI is generating your project subtasks..."}
             </p>
             <p className="text-center text-sm text-gray-500">
               This may take a few moments

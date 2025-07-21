@@ -19,8 +19,8 @@ const ChatInterface = ({
   isMobile,
   error,
   clearError,
-  userAvatar, // Add this prop
-  userName, // Add this prop
+  userAvatar,
+  userName,
 }) => {
   const messagesEndRef = useRef(null);
 
@@ -123,7 +123,7 @@ const ChatInterface = ({
       )}
 
       {/* Scrollable Messages Container */}
-      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4">
+      <div className="flex-1 overflow-y-auto h-[90vh] px-4 md:px-6 py-4">
         <div className="space-y-4 md:space-y-6">
           {!messages || messages.length === 0 ? (
             <EmptyMessagesState isMobile={isMobile} />

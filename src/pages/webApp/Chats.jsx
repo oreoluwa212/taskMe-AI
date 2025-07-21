@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import { useChatStore } from "../../store/chatStore";
 import { toast } from "react-toastify";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -7,8 +8,10 @@ import ChatInterface from "../../components/chats/ChatInterface";
 import EmptyState from "../../components/chats/EmptyState";
 import NewChatModal from "../../components/chats/NewChatModal";
 import ProjectCreationModal from "../../components/chats/ProjectCreationModal";
+import ChatSuggestions from "../../components/chats/ChatSuggestions";
 
 const Chats = () => {
+  const navigate = useNavigate();
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [newChatTitle, setNewChatTitle] = useState("");
@@ -26,7 +29,7 @@ const Chats = () => {
     loading,
     sending,
     error,
-    user, // Add user from chat store
+    user,
     fetchChats,
     createChat,
     fetchChat,
@@ -122,6 +125,33 @@ const Chats = () => {
     [newChatTitle, createChat, isMobile]
   );
 
+  // NEW: Handle chat created from suggestions
+  const handleChatCreatedFromSuggestion = useCallback(
+    async (newChat) => {
+      try {
+        // Update the selected chat
+        setSelectedChatId(newChat._id);
+
+        // Close sidebar on mobile
+        if (isMobile) {
+          setSidebarOpen(false);
+        }
+
+        // Fetch the complete chat data to ensure we have all messages
+        await fetchChat(newChat._id);
+
+        console.log(
+          "Successfully switched to new chat from suggestion:",
+          newChat
+        );
+      } catch (error) {
+        console.error("Error switching to new chat:", error);
+        toast.error("Chat created but failed to load");
+      }
+    },
+    [fetchChat, isMobile]
+  );
+
   const handleEditTitle = useCallback(
     async (chatId, title) => {
       if (!title.trim()) return;
@@ -187,8 +217,26 @@ const Chats = () => {
 
       try {
         const result = await createProjectFromChat(chatId);
+
         toast.success("Project created successfully!");
         console.log("Created project:", result);
+
+        // Navigate to project details page
+        if (result.data?.project?._id) {
+          navigate(`/project/${result.data.project._id}/details`);
+
+          // Close sidebar on mobile after navigation
+          if (isMobile) {
+            setSidebarOpen(false);
+          }
+        } else if (result.project?._id) {
+          // Handle different response structure if needed
+          navigate(`/project/${result.project._id}/details`);
+
+          if (isMobile) {
+            setSidebarOpen(false);
+          }
+        }
       } catch (error) {
         console.error("Error creating project:", error);
 
@@ -207,9 +255,8 @@ const Chats = () => {
         setCreatingProject(false);
       }
     },
-    [createProjectFromChat, messages]
+    [createProjectFromChat, messages, navigate, isMobile] // Add navigate and isMobile to dependencies
   );
-
   const formatMessageTime = useCallback((timestamp) => {
     try {
       if (!timestamp) return "";
@@ -310,14 +357,13 @@ const Chats = () => {
       ? `${user?.firstname || user?.firstName} ${
           user?.lastname || user?.lastName || ""
         }`.trim()
-      : user?.email?.split("@")[0] || // fallback to email username
-        null;
+      : user?.email?.split("@")[0] || null;
 
   return (
-    <div className="h-screen flex bg-white overflow-hidden">
+    <div className="h-[90vh] flex bg-white overflow-hidden">
       {renderSidebar()}
 
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-[90vh] overflow-hidden">
         {shouldShowEmptyState() ? (
           <EmptyState
             onCreateChat={openNewChatModal}
