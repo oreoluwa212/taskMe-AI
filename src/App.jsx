@@ -24,7 +24,6 @@ import ResetPasswordConfirmPage from "./pages/website/ResetPwConfirm";
 
 import Dashboard from "./pages/webApp/Dashboard";
 import Projects from "./pages/webApp/Projects";
-import ProjectOverview from "./pages/webApp/ProjectOverview";
 import ProjectDetails from "./pages/webApp/ProjectDetails";
 import Search from "./pages/webApp/Search";
 import Profile from "./pages/webApp/Profile";
@@ -74,16 +73,6 @@ function App() {
               <ProtectedRoute>
                 <DashboardLayout>
                   <Projects />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/project/:id"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <ProjectOverview />
                 </DashboardLayout>
               </ProtectedRoute>
             }
