@@ -17,6 +17,7 @@ const ChatInterface = ({
   onToggleSidebar,
   formatTime,
   isMobile,
+  error,
 }) => {
   const messagesEndRef = useRef(null);
 
@@ -134,6 +135,11 @@ const ChatInterface = ({
                 />
               ))}
               {sending && <TypingIndicator />}
+              {error && (
+                <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-red-700 text-sm font-medium">
+                  {error}
+                </div>
+              )}
             </>
           )}
           <div ref={messagesEndRef} />
@@ -151,17 +157,20 @@ const ChatInterface = ({
             <input
               type="text"
               value={messageInput}
-              onChange={(e) => onMessageInputChange(e.target.value)}
+              onChange={(e) => {
+                onMessageInputChange(e.target.value);
+                if (error) clearError();
+              }}
               placeholder="Message AI Assistant..."
               className="w-full pl-10 md:pl-12 pr-12 md:pr-16 py-3 md:py-4 
                 border border-gray-300 rounded-xl md:rounded-2xl focus:outline-none 
                 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
                 bg-white shadow-sm text-sm md:text-base resize-none"
-              disabled={sending}
+              disabled={sending || !!error}
             />
             <Button
               type="submit"
-              disabled={!messageInput.trim() || sending}
+              disabled={!messageInput.trim() || sending || !!error}
               variant="primary"
               size="sm"
               className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 

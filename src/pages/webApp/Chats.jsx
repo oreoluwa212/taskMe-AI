@@ -326,6 +326,8 @@ const Chats = () => {
             onToggleSidebar={toggleSidebar}
             formatTime={formatMessageTime}
             isMobile={isMobile}
+            error={error}
+            clearError={clearError}
           />
         )}
       </div>

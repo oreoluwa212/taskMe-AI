@@ -206,7 +206,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Create project from chat with better error handling
     createProjectFromChat: async (chatId) => {
         const state = get();
 
@@ -226,14 +225,22 @@ export const useChatStore = create((set, get) => ({
             set({ loading: false });
             return response.data;
         } catch (error) {
+            set({ loading: false });
+            // Check for 429 or 503 and throw a specific error message
+            if (error.response?.status === 429) {
+                set({ error: "You have reached the daily limit for AI requests. Please try again tomorrow or upgrade your plan." });
+                throw new Error("You have reached the daily limit for AI requests. Please try again tomorrow or upgrade your plan.");
+            }
+            if (error.response?.status === 503) {
+                set({ error: "The AI service is currently overloaded. Please try again in a few minutes." });
+                throw new Error("The AI service is currently overloaded. Please try again in a few minutes.");
+            }
             const errorMessage = error.response?.data?.message || 'Failed to create project from chat';
-            set({ error: errorMessage, loading: false });
-
+            set({ error: errorMessage });
             // Enhance error message for better UX
             if (error.response?.status === 400) {
                 throw new Error('Unable to extract project information from the conversation. Please provide more specific project details in your chat.');
             }
-
             throw new Error(errorMessage);
         }
     },
