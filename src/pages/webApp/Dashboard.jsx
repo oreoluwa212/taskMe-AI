@@ -1,5 +1,6 @@
 // src/pages/webApp/Dashboard.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaPlus, FaClock } from "react-icons/fa";
 import {
   HiOutlineFolder,
@@ -20,6 +21,7 @@ import CurrentProjectCard from "../../components/webApp/cards/CurrentProjectCard
 import { icon1, icon2, icon3, icon4 } from "../../../public";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -56,7 +58,7 @@ const Dashboard = () => {
     error: subtaskError,
   } = useSubtaskStore();
 
-  // Enhanced dashboard data state
+  // Dashboard data state
   const [dashboardData, setDashboardData] = useState({
     currentProject: null,
     todaysTask: null,
@@ -88,23 +90,13 @@ const Dashboard = () => {
         await getProfile();
       }
 
-      // Fetch all data in parallel with better error handling
+      // Fetch all data in parallel
       const dataPromises = [
-        fetchProjects().catch((err) =>
-          console.error("Projects fetch error:", err)
-        ),
-        fetchProjectStats().catch((err) =>
-          console.error("Project stats error:", err)
-        ),
-        getRecentSubtasks({ limit: 20 }).catch((err) =>
-          console.error("Recent subtasks error:", err)
-        ),
-        getOverdueSubtasks().catch((err) =>
-          console.error("Overdue subtasks error:", err)
-        ),
-        getWeeklyProductivity().catch((err) =>
-          console.error("Weekly productivity error:", err)
-        ),
+        fetchProjects().catch((err) => console.error("Projects fetch error:", err)),
+        fetchProjectStats().catch((err) => console.error("Project stats error:", err)),
+        getRecentSubtasks({ limit: 20 }).catch((err) => console.error("Recent subtasks error:", err)),
+        getOverdueSubtasks().catch((err) => console.error("Overdue subtasks error:", err)),
+        getWeeklyProductivity().catch((err) => console.error("Weekly productivity error:", err)),
       ];
 
       await Promise.allSettled(dataPromises);
@@ -119,61 +111,47 @@ const Dashboard = () => {
 
   const updateDashboardData = () => {
     const projectsArray = Array.isArray(projects) ? projects : [];
-    const recentSubtasksArray = Array.isArray(recentSubtasks)
-      ? recentSubtasks
-      : [];
-    const overdueSubtasksArray = Array.isArray(overdueSubtasks)
-      ? overdueSubtasks
-      : [];
+    const recentSubtasksArray = Array.isArray(recentSubtasks) ? recentSubtasks : [];
+    const overdueSubtasksArray = Array.isArray(overdueSubtasks) ? overdueSubtasks : [];
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    // Enhanced current project logic
+    // Get current project
     const currentProj =
       projectsArray.find((p) => p.status === "In Progress") ||
       projectsArray.find((p) => p.progress > 0 && p.progress < 100) ||
-      projectsArray.find(
-        (p) => p.status === "Pending" && p.priority === "High"
-      ) ||
+      projectsArray.find((p) => p.status === "Pending" && p.priority === "High") ||
       projectsArray[0];
 
-    // Get today's tasks from recent subtasks (filtering by due date)
+    // Get today's tasks
     const todaysTasks = recentSubtasksArray
       .filter((subtask) => {
         if (!subtask.dueDate) return false;
         const dueDate = new Date(subtask.dueDate);
-        const taskDate = new Date(
-          dueDate.getFullYear(),
-          dueDate.getMonth(),
-          dueDate.getDate()
-        );
-        return (
-          taskDate.getTime() === today.getTime() &&
-          subtask.status !== "Completed"
-        );
+        const taskDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+        return taskDate.getTime() === today.getTime() && subtask.status !== "Completed";
       })
       .slice(0, 5);
 
     // Get primary today's task
-    const todaysTask =
-      todaysTasks.length > 0
-        ? {
-            id: todaysTasks[0]._id,
-            name: todaysTasks[0].title,
-            description: todaysTasks[0].description,
-            project: todaysTasks[0].projectId?.name || "Unknown Project",
-            priority: todaysTasks[0].priority || "Medium",
-            status: todaysTasks[0].status,
-            dueTime: todaysTasks[0].dueTime || "5:00 PM",
-            projectId: todaysTasks[0].projectId?._id,
-            estimatedHours: todaysTasks[0].estimatedHours || 0,
-            category: todaysTasks[0].projectId?.category,
-            tags: todaysTasks[0].tags || [],
-          }
-        : null;
+    const todaysTask = todaysTasks.length > 0
+      ? {
+          id: todaysTasks[0]._id,
+          name: todaysTasks[0].title,
+          description: todaysTasks[0].description,
+          project: todaysTasks[0].projectId?.name || "Unknown Project",
+          priority: todaysTasks[0].priority || "Medium",
+          status: todaysTasks[0].status,
+          dueTime: todaysTasks[0].dueTime || "5:00 PM",
+          projectId: todaysTasks[0].projectId?._id,
+          estimatedHours: todaysTasks[0].estimatedHours || 0,
+          category: todaysTasks[0].projectId?.category,
+          tags: todaysTasks[0].tags || [],
+        }
+      : null;
 
-    // Enhanced upcoming deadlines using recent subtasks
+    // Get upcoming deadlines
     const upcomingSubtasks = recentSubtasksArray
       .filter((subtask) => {
         if (!subtask.dueDate || subtask.status === "Completed") return false;
@@ -198,7 +176,7 @@ const Dashboard = () => {
       estimatedHours: subtask.estimatedHours || 0,
     }));
 
-    // Enhanced overdue tasks using subtasks
+    // Get overdue tasks
     const overdueTasksFromSubtasks = overdueSubtasksArray.map((subtask) => ({
       id: subtask._id,
       name: subtask.projectId?.name || "Unknown Project",
@@ -213,7 +191,6 @@ const Dashboard = () => {
       projectId: subtask.projectId?._id,
     }));
 
-    // Combine project-level and subtask-level overdue items
     const overdueProjects = projectsArray
       .filter((p) => {
         if (!p.dueDate || p.status === "Completed") return false;
@@ -228,13 +205,14 @@ const Dashboard = () => {
         category: project.category,
         progress: project.progress || 0,
         type: "project",
+        projectId: project._id,
       }));
 
     const overdueTasks = [...overdueProjects, ...overdueTasksFromSubtasks].sort(
       (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
     );
 
-    // Recent projects (last 30 days)
+    // Get recent projects
     const recentProjects = projectsArray
       .filter((p) => {
         if (!p.createdAt) return false;
@@ -245,60 +223,39 @@ const Dashboard = () => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 5);
 
-    // Enhanced workload analysis using available subtask data
+    // Calculate workload analysis
     const workloadAnalysis = {
-      totalEstimatedHours: recentSubtasksArray.reduce(
-        (sum, s) => sum + (s.estimatedHours || 0),
-        0
-      ),
-      totalActualHours: recentSubtasksArray.reduce(
-        (sum, s) => sum + (s.actualHours || 0),
-        0
-      ),
+      totalEstimatedHours: recentSubtasksArray.reduce((sum, s) => sum + (s.estimatedHours || 0), 0),
+      totalActualHours: recentSubtasksArray.reduce((sum, s) => sum + (s.actualHours || 0), 0),
       averageTimeline:
         projectsArray.length > 0
-          ? Math.round(
-              projectsArray.reduce((sum, p) => sum + (p.timeline || 0), 0) /
-                projectsArray.length
-            )
+          ? Math.round(projectsArray.reduce((sum, p) => sum + (p.timeline || 0), 0) / projectsArray.length)
           : 0,
       totalSubtasks: recentSubtasksArray.length,
-      completedSubtasks: recentSubtasksArray.filter(
-        (s) => s.status === "Completed"
-      ).length,
-      pendingSubtasks: recentSubtasksArray.filter((s) => s.status === "Pending")
-        .length,
-      inProgressSubtasks: recentSubtasksArray.filter(
-        (s) => s.status === "In Progress"
-      ).length,
+      completedSubtasks: recentSubtasksArray.filter((s) => s.status === "Completed").length,
+      pendingSubtasks: recentSubtasksArray.filter((s) => s.status === "Pending").length,
+      inProgressSubtasks: recentSubtasksArray.filter((s) => s.status === "In Progress").length,
       todaysTaskCount: todaysTasks.length,
       overdueTaskCount: overdueTasksFromSubtasks.length,
     };
 
-    // Subtask statistics using available data
+    // Calculate subtask statistics
     const subtaskStats = {
       byPriority: {
         high: recentSubtasksArray.filter((s) => s.priority === "High").length,
-        medium: recentSubtasksArray.filter((s) => s.priority === "Medium")
-          .length,
+        medium: recentSubtasksArray.filter((s) => s.priority === "Medium").length,
         low: recentSubtasksArray.filter((s) => s.priority === "Low").length,
       },
       byStatus: {
-        completed: recentSubtasksArray.filter((s) => s.status === "Completed")
-          .length,
-        inProgress: recentSubtasksArray.filter(
-          (s) => s.status === "In Progress"
-        ).length,
-        pending: recentSubtasksArray.filter((s) => s.status === "Pending")
-          .length,
+        completed: recentSubtasksArray.filter((s) => s.status === "Completed").length,
+        inProgress: recentSubtasksArray.filter((s) => s.status === "In Progress").length,
+        pending: recentSubtasksArray.filter((s) => s.status === "Pending").length,
       },
       averageEstimatedHours:
         recentSubtasksArray.length > 0
           ? (
-              recentSubtasksArray.reduce(
-                (sum, s) => sum + (s.estimatedHours || 0),
-                0
-              ) / recentSubtasksArray.length
+              recentSubtasksArray.reduce((sum, s) => sum + (s.estimatedHours || 0), 0) /
+              recentSubtasksArray.length
             ).toFixed(1)
           : 0,
     };
@@ -330,7 +287,6 @@ const Dashboard = () => {
     });
   };
 
-  // Helper function to calculate subtask progress
   const calculateSubtaskProgress = (subtask) => {
     if (subtask.status === "Completed") return 100;
     if (subtask.status === "In Progress") return 50;
@@ -341,10 +297,7 @@ const Dashboard = () => {
     try {
       await getProfile();
     } catch (error) {
-      setToast({
-        type: "error",
-        message: "Failed to load profile",
-      });
+      setToast({ type: "error", message: "Failed to load profile" });
     }
   };
 
@@ -352,10 +305,7 @@ const Dashboard = () => {
     try {
       await Promise.all([fetchProjects(), fetchProjectStats()]);
     } catch (error) {
-      setToast({
-        type: "error",
-        message: "Failed to load projects",
-      });
+      setToast({ type: "error", message: "Failed to load projects" });
     }
   };
 
@@ -366,8 +316,6 @@ const Dashboard = () => {
     });
 
     setIsModalOpen(false);
-
-    // Refresh data after creating project
     await Promise.all([fetchProjects(), fetchProjectStats()]);
   };
 
@@ -378,16 +326,20 @@ const Dashboard = () => {
     });
   };
 
-  const handleCreateProject = () => {
-    setIsModalOpen(true);
-  };
-
+  const handleCreateProject = () => setIsModalOpen(true);
   const handleClearErrors = () => {
     clearError();
     clearStatsError();
   };
 
-  // Get safe stats - fallback to calculated stats if API fails
+  // Navigation handlers
+  const handleProjectClick = (projectId) => {
+    if (projectId) {
+      navigate(`/project/${projectId}/details`);
+    }
+  };
+
+  // Get safe stats
   const safeStats = React.useMemo(() => {
     if (statsError) {
       return getProjectStats();
@@ -411,26 +363,24 @@ const Dashboard = () => {
         onClearErrors={handleClearErrors}
       />
 
-      {/* Responsive Container */}
       <div className="w-full">
         <PageHeader
-          title={`Welcome back, ${
-            user?.data?.firstname || user?.firstname || "User"
-          }!`}
+          title={`Welcome back, ${user?.data?.firstname || user?.firstname || "User"}!`}
           subtitle="Here's what's on your plate today."
           onCreateProject={handleCreateProject}
         />
 
-        <EnhancedDashboardStatsCards
+        <DashboardStatsCards
           stats={safeStats}
           workloadAnalysis={dashboardData.workloadAnalysis}
           subtaskStats={dashboardData.subtaskStats}
           isLoading={statsLoading || subtaskLoading}
         />
 
-        <EnhancedOverviewContent
+        <OverviewContent
           dashboardData={dashboardData}
           onCreateProject={handleCreateProject}
+          onProjectClick={handleProjectClick}
           isLoading={projectLoading || subtaskLoading}
         />
       </div>
@@ -453,7 +403,7 @@ const Dashboard = () => {
   );
 };
 
-// Component: Dashboard Loader
+// Dashboard Loader Component
 const DashboardLoader = () => (
   <div className="flex items-center justify-center min-h-screen bg-gray-50">
     <div className="flex flex-col items-center gap-4 p-8">
@@ -463,7 +413,7 @@ const DashboardLoader = () => (
   </div>
 );
 
-// Enhanced Component: Error Messages
+// Error Messages Component
 const ErrorMessages = ({
   userError,
   projectError,
@@ -507,13 +457,8 @@ const ErrorMessages = ({
   </div>
 );
 
-// Enhanced Component: Dashboard Stats Cards with Subtask Data
-const EnhancedDashboardStatsCards = ({
-  stats,
-  workloadAnalysis,
-  subtaskStats,
-  isLoading,
-}) => {
+// Dashboard Stats Cards Component
+const DashboardStatsCards = ({ stats, workloadAnalysis, subtaskStats, isLoading }) => {
   if (isLoading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8 mb-6">
@@ -565,20 +510,9 @@ const EnhancedDashboardStatsCards = ({
   );
 };
 
-// Enhanced Component: Overview Content with Real Data
-const EnhancedOverviewContent = ({
-  dashboardData,
-  onCreateProject,
-  isLoading,
-}) => {
-  const {
-    currentProject,
-    todaysTask,
-    todaysTasks,
-    upcomingDeadlines,
-    recentProjects,
-    overdueTasks,
-  } = dashboardData;
+// Overview Content Component
+const OverviewContent = ({ dashboardData, onCreateProject, onProjectClick, isLoading }) => {
+  const { currentProject, todaysTask, todaysTasks, upcomingDeadlines, recentProjects, overdueTasks } = dashboardData;
 
   if (isLoading) {
     return (
@@ -599,21 +533,14 @@ const EnhancedOverviewContent = ({
     );
   }
 
-  if (
-    !currentProject &&
-    !todaysTask &&
-    upcomingDeadlines.length === 0 &&
-    recentProjects.length === 0
-  ) {
+  if (!currentProject && !todaysTask && upcomingDeadlines.length === 0 && recentProjects.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="text-center py-12">
           <div className="mb-4">
             <HiOutlineFolder className="mx-auto h-12 w-12 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No active projects
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No active projects</h3>
           <p className="text-gray-500 mb-6 max-w-md mx-auto">
             Get started by creating your first project to see your overview.
           </p>
@@ -632,7 +559,7 @@ const EnhancedOverviewContent = ({
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="space-y-6">
-        {/* Current Project - Full width */}
+        {/* Current Project */}
         {currentProject && (
           <div className="w-full">
             <CurrentProjectCard project={currentProject} />
@@ -650,15 +577,12 @@ const EnhancedOverviewContent = ({
               {todaysTasks.slice(1, 6).map((task, index) => (
                 <div
                   key={task.id || index}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-3 sm:gap-0"
+                  onClick={() => onProjectClick(task.projectId)}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer gap-3 sm:gap-0"
                 >
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 truncate">
-                      {task.name}
-                    </h4>
-                    <p className="text-sm text-gray-600 truncate">
-                      {task.project}
-                    </p>
+                    <h4 className="font-medium text-gray-900 truncate">{task.name}</h4>
+                    <p className="text-sm text-gray-600 truncate">{task.project}</p>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-500 mt-1">
                       <span>Due: {task.dueTime}</span>
                       <span>Est: {task.estimatedHours}h</span>
@@ -700,37 +624,31 @@ const EnhancedOverviewContent = ({
           </div>
         )}
 
-        {/* Overdue Tasks Alert (if any) */}
+        {/* Overdue Tasks Alert */}
         {overdueTasks.length > 0 && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-              <HiOutlineExclamationCircle
-                className="text-red-500 mt-1 flex-shrink-0"
-                size={20}
-              />
+              <HiOutlineExclamationCircle className="text-red-500 mt-1 flex-shrink-0" size={20} />
               <div className="flex-1 min-w-0">
                 <h3 className="text-red-800 font-medium mb-2">
-                  ⚠️ {overdueTasks.length} Overdue Item
-                  {overdueTasks.length > 1 ? "s" : ""}
+                  ⚠️ {overdueTasks.length} Overdue Item{overdueTasks.length > 1 ? "s" : ""}
                 </h3>
                 <div className="space-y-3">
                   {overdueTasks.slice(0, 3).map((item, index) => (
                     <div
                       key={item.id || index}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-3 rounded border gap-3 sm:gap-0"
+                      onClick={() => onProjectClick(item.projectId)}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-3 rounded border gap-3 sm:gap-0 hover:bg-gray-50 cursor-pointer transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {item.name}
-                        </h4>
+                        <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
                         {item.taskName && (
                           <p className="text-sm text-gray-700 font-medium truncate">
                             Task: {item.taskName}
                           </p>
                         )}
                         <p className="text-sm text-gray-600">
-                          Due: {formatDate(item.dueDate)} at{" "}
-                          {item.dueTime || "5:00 PM"}
+                          Due: {formatDate(item.dueDate)} at {item.dueTime || "5:00 PM"}
                         </p>
                         <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-1">
                           <span>{item.category}</span>
@@ -742,23 +660,16 @@ const EnhancedOverviewContent = ({
                       </div>
                       <div className="text-left sm:text-right flex-shrink-0">
                         <div className="text-sm font-medium text-red-600">
-                          {Math.ceil(
-                            (new Date() - new Date(item.dueDate)) /
-                              (1000 * 60 * 60 * 24)
-                          )}{" "}
-                          days overdue
+                          {Math.ceil((new Date() - new Date(item.dueDate)) / (1000 * 60 * 60 * 24))} days overdue
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {item.progress || 0}% complete
-                        </div>
+                        <div className="text-xs text-gray-500">{item.progress || 0}% complete</div>
                       </div>
                     </div>
                   ))}
                   {overdueTasks.length > 3 && (
                     <div className="text-center">
                       <p className="text-sm text-red-600">
-                        and {overdueTasks.length - 3} more overdue item
-                        {overdueTasks.length - 3 > 1 ? "s" : ""}
+                        and {overdueTasks.length - 3} more overdue item{overdueTasks.length - 3 > 1 ? "s" : ""}
                       </p>
                     </div>
                   )}
@@ -777,69 +688,57 @@ const EnhancedOverviewContent = ({
             </h3>
             <div className="space-y-3">
               {recentProjects.map((project, index) => (
-                <React.Fragment key={project._id || index}>
-                  <div
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-3 sm:gap-0"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {project.name}
-                        </h4>
-                        <span
-                          className={`px-2 py-0.5 text-xs rounded-full ${
-                            project.status === "Completed"
-                              ? "bg-green-100 text-green-700"
-                              : project.status === "In Progress"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {project.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-1">
-                        {project.category}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>Created: {formatDate(project.createdAt)}</span>
-                        {project.timeline && (
-                          <span>Timeline: {project.timeline} days</span>
-                        )}
-                        {project.subtaskStats && (
-                          <span>Tasks: {project.subtaskStats.totalSubtasks}</span>
-                        )}
-                        {project.subtaskStats && (
-                          <span>
-                            Est: {project.subtaskStats.totalEstimatedHours}h
-                          </span>
-                        )}
-                      </div>
+                <div
+                  key={project._id || index}
+                  onClick={() => onProjectClick(project._id)}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer gap-3 sm:gap-0"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h4 className="font-medium text-gray-900 truncate">{project.name}</h4>
+                      <span
+                        className={`px-2 py-0.5 text-xs rounded-full ${
+                          project.status === "Completed"
+                            ? "bg-green-100 text-green-700"
+                            : project.status === "In Progress"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-yellow-100 text-yellow-700"
+                        }`}
+                      >
+                        {project.status}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      {project.tags &&
-                        project.tags.slice(0, 2).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900">
-                          {project.progress || 0}%
-                        </div>
-                        <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-blue-600 h-1.5 rounded-full"
-                            style={{ width: `${project.progress || 0}%` }}
-                          />
-                        </div>
+                    <p className="text-sm text-gray-600 mb-1">{project.category}</p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span>Created: {formatDate(project.createdAt)}</span>
+                      {project.timeline && <span>Timeline: {project.timeline} days</span>}
+                      {project.subtaskStats && <span>Tasks: {project.subtaskStats.totalSubtasks}</span>}
+                      {project.subtaskStats && <span>Est: {project.subtaskStats.totalEstimatedHours}h</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {project.tags &&
+                      project.tags.slice(0, 2).map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-gray-900">
+                        {project.progress || 0}%
+                      </div>
+                      <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                        <div
+                          className="bg-blue-600 h-1.5 rounded-full"
+                          style={{ width: `${project.progress || 0}%` }}
+                        />
                       </div>
                     </div>
                   </div>
-                </React.Fragment>
+                </div>
               ))}
             </div>
           </div>
