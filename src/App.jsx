@@ -15,7 +15,6 @@ import useAuthStore from "./store/authStore";
 
 // Components
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import DashboardLayout from "./components/layout/DashboardLayout";
 
 // Website Pages
 import LandingPage from "./pages/website/LandingPage";
@@ -36,6 +35,7 @@ import Search from "./pages/webApp/Search";
 import Profile from "./pages/webApp/Profile";
 import Chats from "./pages/webApp/Chats";
 import ResetPasswordConfirmPage from "./pages/website/ResetPwConfirm";
+import DashboardLayout from "./components/layout/DashboardLayout";
 
 function App() {
   const { initializeAuth } = useAuthStore();
