@@ -1,4 +1,3 @@
-// src/pages/webApp/Chats.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useChatStore } from "../../store/chatStore";
 import { toast } from "react-toastify";
@@ -63,7 +62,7 @@ const Chats = () => {
     }
   }, [isMobile, chats, selectedChatId]);
 
-  // Handlers
+  // Handlers (keeping all existing handlers as they are)
   const handleSelectChat = useCallback(
     async (chat) => {
       if (selectedChatId === chat._id && currentChat?._id === chat._id) {
@@ -319,11 +318,11 @@ const Chats = () => {
   };
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="h-screen flex bg-white overflow-hidden">
       {/* Sidebar */}
       {renderSidebar()}
 
-      {/* Main Content - Fixed height container */}
+      {/* Main Content - Full height container with proper flex layout */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {shouldShowEmptyState() ? (
           <EmptyState
@@ -331,6 +330,7 @@ const Chats = () => {
             isMobile={isMobile}
             onToggleSidebar={isMobile ? toggleSidebar : undefined}
             hasChats={chats.length > 0}
+            chatCount={chats.length}
           />
         ) : (
           <ChatInterface

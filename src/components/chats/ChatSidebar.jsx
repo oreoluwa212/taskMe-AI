@@ -60,7 +60,7 @@ const ChatSidebar = ({
 
   return (
     <div
-      className={`bg-gray-50 border-r border-gray-200 flex flex-col h-full 
+      className={`bg-gray-50 overflow-hidden border-r border-gray-200 flex flex-col h-full 
         transition-all duration-300 ${sidebarWidth} ${className}
         ${isMobile ? "shadow-xl" : ""}`}
     >
