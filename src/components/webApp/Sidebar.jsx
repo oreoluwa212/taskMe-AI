@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
       currentPath.startsWith("/projects") ||
       currentPath.startsWith("/project/") ||
       currentPath.includes("/project/") ||
+      currentPath.includes("/search") ||
       currentPath.includes("subtask")
     ) {
       setActiveButton(2);
@@ -47,29 +48,23 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
     }
   };
 
-  const closeSidebar = () => {
-    setIsOpen(false);
-  };
+  const closeSidebar = () => setIsOpen(false);
 
   const toggleCollapse = () => {
     setIsTransitioning(true);
     setIsCollapsed(!isCollapsed);
 
-    // Reset transition state after animation completes
     setTimeout(() => {
       setIsTransitioning(false);
     }, 300);
   };
 
-  // Helper function to get user data
   const getUserData = () => {
     if (!user)
       return { firstname: "User", email: "", initials: "U", avatar: null };
 
-    // Handle different possible user data structures
     let userData = user;
 
-    // If user has a data property, use that
     if (user.data) {
       userData = user.data;
     }
@@ -77,7 +72,7 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
     const firstname = userData.firstname || "User";
     const email = userData.email || "";
     const initials = firstname[0]?.toUpperCase() || "U";
-    const avatar = userData.avatar?.url || null; // Extract avatar URL
+    const avatar = userData.avatar?.url || null;
 
     return { firstname, email, initials, avatar };
   };
@@ -134,7 +129,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
           {item.title}
         </span>
       )}
-      {/* Tooltip for collapsed state */}
       {!showText && !isMobile && (
         <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
           {item.title}
@@ -143,7 +137,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
     </Link>
   );
 
-  // Avatar component for reuse
   const Avatar = ({ size = "w-10 h-10", showTooltip = false }) => (
     <div
       className={`${size} rounded-full flex items-center justify-center overflow-hidden relative group flex-shrink-0`}
@@ -154,7 +147,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
           alt={firstname}
           className="w-full h-full object-cover"
           onError={(e) => {
-            // Fallback to initials if image fails to load
             e.target.style.display = "none";
             e.target.nextSibling.style.display = "flex";
           }}
@@ -167,7 +159,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
       >
         {initials}
       </div>
-      {/* Tooltip for collapsed state */}
       {showTooltip && (
         <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
           {firstname}
@@ -178,18 +169,16 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside
         className={`hidden lg:flex lg:flex-col ${
           isCollapsed ? "lg:w-16" : "lg:w-64"
         } lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200 transition-all duration-300 ease-in-out z-40`}
         style={{
           willChange: isTransitioning ? "width" : "auto",
-          transform: "translateZ(0)", // Force hardware acceleration
+          transform: "translateZ(0)",
         }}
       >
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          {/* Logo */}
           <div
             className={`flex items-center h-16 border-b border-gray-200 transition-all duration-300 ${
               isCollapsed ? "justify-center px-4" : "px-6"
@@ -204,7 +193,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
             />
           </div>
 
-          {/* Toggle Button */}
           <div
             className={`flex py-2 transition-all duration-300 ${
               isCollapsed ? "justify-center px-2" : "justify-end px-4"
@@ -223,7 +211,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
             </button>
           </div>
 
-          {/* Navigation */}
           <nav
             className={`flex-1 py-4 space-y-2 overflow-hidden transition-all duration-300 ${
               isCollapsed ? "px-2" : "px-4"
@@ -239,7 +226,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
             ))}
           </nav>
 
-          {/* User Section */}
           <div
             className={`border-t border-gray-200 p-4 transition-all duration-300 ${
               isCollapsed ? "px-2" : "px-4"
@@ -281,7 +267,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
                   Logout
                 </span>
               )}
-              {/* Tooltip for collapsed state */}
               {isCollapsed && (
                 <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   Logout
@@ -292,30 +277,26 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
         </div>
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
             onClick={closeSidebar}
           />
 
-          {/* Sidebar */}
           <div className="relative flex flex-col w-64 bg-white shadow-xl transform transition-transform duration-300 ease-out">
-            {/* Header */}
-            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+            <button
+              onClick={closeSidebar}
+              className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors z-10"
+              aria-label="Close sidebar"
+            >
+              <HiOutlineX size={20} />
+            </button>
+
+            <div className="flex items-center h-16 px-6 border-b border-gray-200">
               <img src={logo} alt="Logo" className="h-8 w-auto" />
-              <button
-                onClick={closeSidebar}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Close sidebar"
-              >
-                <HiOutlineX size={20} />
-              </button>
             </div>
 
-            {/* Navigation */}
             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
               {navigationItems.map((item) => (
                 <NavItem
@@ -327,7 +308,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
               ))}
             </nav>
 
-            {/* User Section */}
             <div className="border-t border-gray-200 p-4">
               <div className="flex items-center gap-3 mb-4">
                 <Avatar />
@@ -350,7 +330,6 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
         </div>
       )}
 
-      {/* Desktop content spacer */}
       <div
         className={`hidden lg:block lg:flex-shrink-0 transition-all duration-300 ease-in-out ${
           isCollapsed ? "lg:w-16" : "lg:w-64"

@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import SubtaskTable from "../../components/webApp/SubtaskTable";
 
-// Add the formatDate utility function
 const formatDate = (dateString) => {
   if (!dateString) return "Not set";
 
@@ -53,7 +52,7 @@ const ProjectDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
   const [projectStats, setProjectStats] = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key to force re-renders
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const refreshProjectData = useCallback(async () => {
     if (id) {
@@ -70,7 +69,6 @@ const ProjectDetails = () => {
           setProjectStats(response.stats);
         }
 
-        // Force a re-render by updating the refresh key
         setRefreshKey((prev) => prev + 1);
       } catch (err) {
         console.error("Error refreshing project:", err);
@@ -78,12 +76,10 @@ const ProjectDetails = () => {
     }
   }, [id, fetchProjectById]);
 
-  // Single useEffect for initial data loading
   useEffect(() => {
     refreshProjectData();
-  }, [id]); // Only depend on id, not refreshProjectData to avoid loops
+  }, [id]);
 
-  // Separate useEffect for updating edit data when currentProject changes
   useEffect(() => {
     if (currentProject) {
       setEditData({
@@ -104,7 +100,7 @@ const ProjectDetails = () => {
         dueTime: currentProject.dueTime || "12:00",
       });
     }
-  }, [currentProject, refreshKey]); // Add refreshKey as dependency
+  }, [currentProject, refreshKey]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -115,7 +111,6 @@ const ProjectDetails = () => {
       await updateProject(id, editData);
       setIsEditing(false);
       toast.success("Project updated successfully");
-      // Refresh project data to get updated information
       await refreshProjectData();
     } catch (error) {
       toast.error("Failed to update project");
@@ -149,7 +144,6 @@ const ProjectDetails = () => {
     try {
       await updateProjectProgress(id, newProgress);
       toast.success("Progress updated successfully");
-      // Add a small delay to ensure backend has processed the update
       setTimeout(async () => {
         await refreshProjectData();
       }, 100);
@@ -203,7 +197,6 @@ const ProjectDetails = () => {
   const getDaysRemaining = () => {
     if (!currentProject?.dueDate) return "N/A";
 
-    // Use the calculated values from the API if available
     if (currentProject.daysRemaining !== undefined) {
       const days = currentProject.daysRemaining;
       if (days < 0) {
@@ -215,7 +208,6 @@ const ProjectDetails = () => {
       }
     }
 
-    // Fallback calculation
     const today = new Date();
     const dueDate = new Date(currentProject.dueDate);
     const timeDiff = dueDate.getTime() - today.getTime();
@@ -276,7 +268,6 @@ const ProjectDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mb-6 mx-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <button
@@ -329,7 +320,6 @@ const ProjectDetails = () => {
           </div>
         </div>
 
-        {/* Project Overview Card */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
@@ -348,7 +338,6 @@ const ProjectDetails = () => {
                 </h1>
               )}
 
-              {/* Project Status Indicators */}
               <div className="flex items-center gap-4 mt-4">
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
@@ -372,7 +361,6 @@ const ProjectDetails = () => {
               </div>
             </div>
 
-            {/* Progress Circle */}
             <div className="flex items-center gap-4">
               <div className="relative w-20 h-20">
                 <svg
@@ -404,16 +392,13 @@ const ProjectDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Project Details */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Project Information */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Project Information
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Description */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description
@@ -437,7 +422,6 @@ const ProjectDetails = () => {
                   )}
                 </div>
 
-                {/* Category */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category
@@ -458,7 +442,6 @@ const ProjectDetails = () => {
                   )}
                 </div>
 
-                {/* Timeline */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Timeline (Days)
@@ -482,7 +465,6 @@ const ProjectDetails = () => {
                   )}
                 </div>
 
-                {/* Start Date */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Start Date
@@ -503,7 +485,6 @@ const ProjectDetails = () => {
                   )}
                 </div>
 
-                {/* Due Date */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Due Date
@@ -524,7 +505,6 @@ const ProjectDetails = () => {
                   )}
                 </div>
 
-                {/* Tags */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tags
@@ -557,7 +537,6 @@ const ProjectDetails = () => {
               </div>
             </div>
 
-            {/* Subtasks Section - Updated with stats info */}
             {projectStats && projectStats.totalSubtasks > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -569,7 +548,6 @@ const ProjectDetails = () => {
                   </span>
                 </div>
 
-                {/* Subtasks Statistics */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">
@@ -600,9 +578,7 @@ const ProjectDetails = () => {
             )}
           </div>
 
-          {/* Right Column - Project Stats */}
           <div className="space-y-6">
-            {/* Quick Stats */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Quick Stats
@@ -667,7 +643,6 @@ const ProjectDetails = () => {
               </div>
             </div>
 
-            {/* Project Timeline */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Timeline
@@ -720,15 +695,13 @@ const ProjectDetails = () => {
         </div>
       </div>
 
-      {/* Individual Subtasks - Show if available with refresh callback */}
       <SubtaskTable
-        key={refreshKey} // Force re-render when refreshKey changes
+        key={refreshKey}
         projectId={currentProject.id || currentProject._id}
         projectName={currentProject.name}
         onSubtaskChange={handleSubtaskChange}
       />
 
-      {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">

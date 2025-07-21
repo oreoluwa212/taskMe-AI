@@ -1,44 +1,47 @@
-// src/pages/webApp/Search.jsx
-import React, { useState, useEffect } from 'react';
-import { useProjectStore } from '../../store/projectStore';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import { useProjectStore } from "../../store/projectStore";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Search = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
-  const [searchBy, setSearchBy] = useState('name'); // name, status, priority
+  const [searchBy, setSearchBy] = useState("name");
   const { projects, fetchProjects, loading } = useProjectStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    // Fetch projects if not already loaded
     if (!projects.length) {
-      fetchProjects().catch(err => {
-        toast.error('Failed to fetch projects');
-        console.error('Error fetching projects:', err);
+      fetchProjects().catch((err) => {
+        toast.error("Failed to fetch projects");
+        console.error("Error fetching projects:", err);
       });
     }
-  }, [projects.length, fetchProjects]);
+
+    if (location.state?.searchQuery) {
+      setSearchTerm(location.state.searchQuery);
+      setSearchBy(location.state.searchBy || "name");
+    }
+  }, [projects.length, fetchProjects, location.state]);
 
   useEffect(() => {
-    // Filter projects based on search term and search criteria
     if (!searchTerm.trim()) {
       setFilteredProjects([]);
       return;
     }
 
-    const filtered = projects.filter(project => {
+    const filtered = projects.filter((project) => {
       const term = searchTerm.toLowerCase();
-      
+
       switch (searchBy) {
-        case 'name':
+        case "name":
           return project.name?.toLowerCase().includes(term);
-        case 'status':
+        case "status":
           return project.status?.toLowerCase().includes(term);
-        case 'priority':
+        case "priority":
           return project.priority?.toLowerCase().includes(term);
-        case 'description':
+        case "description":
           return project.description?.toLowerCase().includes(term);
         default:
           return project.name?.toLowerCase().includes(term);
@@ -53,53 +56,54 @@ const Search = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Not set';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    if (!dateString) return "Not set";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'in progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "in progress":
+        return "bg-blue-100 text-blue-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority?.toLowerCase()) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'medium':
-        return 'bg-orange-100 text-orange-800';
-      case 'low':
-        return 'bg-green-100 text-green-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-orange-100 text-orange-800";
+      case "low":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Search Projects</h1>
-          <p className="text-gray-600">Find your projects quickly and efficiently</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Search Projects
+          </h1>
+          <p className="text-gray-600">
+            Find your projects quickly and efficiently
+          </p>
         </div>
 
-        {/* Search Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
-            {/* Search Input */}
             <div className="flex-1">
               <input
                 type="text"
@@ -110,7 +114,6 @@ const Search = () => {
               />
             </div>
 
-            {/* Search By Filter */}
             <div className="md:w-48">
               <select
                 value={searchBy}
@@ -125,23 +128,21 @@ const Search = () => {
             </div>
           </div>
 
-          {/* Search Stats */}
           {searchTerm && (
             <div className="text-sm text-gray-600">
-              Found {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''} 
+              Found {filteredProjects.length} project
+              {filteredProjects.length !== 1 ? "s" : ""}
               {searchTerm && ` matching "${searchTerm}"`}
             </div>
           )}
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         )}
 
-        {/* Search Results */}
         {!loading && searchTerm && (
           <div className="space-y-4">
             {filteredProjects.length > 0 ? (
@@ -163,10 +164,18 @@ const Search = () => {
                       )}
                     </div>
                     <div className="flex gap-2 ml-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          project.status
+                        )}`}
+                      >
                         {project.status}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(project.priority)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
+                          project.priority
+                        )}`}
+                      >
                         {project.priority}
                       </span>
                     </div>
@@ -182,16 +191,22 @@ const Search = () => {
                             style={{ width: `${project.progress || 0}%` }}
                           ></div>
                         </div>
-                        <span className="text-gray-700 font-medium">{project.progress || 0}%</span>
+                        <span className="text-gray-700 font-medium">
+                          {project.progress || 0}%
+                        </span>
                       </div>
                     </div>
                     <div>
                       <span className="text-gray-500">Start Date:</span>
-                      <p className="font-medium">{formatDate(project.startDate)}</p>
+                      <p className="font-medium">
+                        {formatDate(project.startDate)}
+                      </p>
                     </div>
                     <div>
                       <span className="text-gray-500">Due Date:</span>
-                      <p className="font-medium">{formatDate(project.dueDate)}</p>
+                      <p className="font-medium">
+                        {formatDate(project.dueDate)}
+                      </p>
                     </div>
                     <div>
                       <span className="text-gray-500">Timeline:</span>
@@ -203,7 +218,9 @@ const Search = () => {
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">🔍</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No projects found
+                </h3>
                 <p className="text-gray-600">
                   Try adjusting your search term or search criteria
                 </p>
@@ -212,11 +229,12 @@ const Search = () => {
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && !searchTerm && (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Start searching</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Start searching
+            </h3>
             <p className="text-gray-600">
               Enter a search term above to find your projects
             </p>

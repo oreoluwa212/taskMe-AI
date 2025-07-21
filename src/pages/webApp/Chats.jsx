@@ -9,7 +9,6 @@ import NewChatModal from "../../components/chats/NewChatModal";
 import ProjectCreationModal from "../../components/chats/ProjectCreationModal";
 
 const Chats = () => {
-  // State
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [newChatTitle, setNewChatTitle] = useState("");
@@ -18,10 +17,8 @@ const Chats = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
 
-  // Custom hooks
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Store
   const {
     chats,
     currentChat,
@@ -39,7 +36,6 @@ const Chats = () => {
     clearError,
   } = useChatStore();
 
-  // Effects
   useEffect(() => {
     fetchChats();
   }, [fetchChats]);
@@ -51,18 +47,15 @@ const Chats = () => {
     }
   }, [error, clearError]);
 
-  // Auto-collapse sidebar on mobile
   useEffect(() => {
     if (isMobile) {
-      setSidebarCollapsed(false); // Don't auto-collapse on mobile
-      // Auto-select first chat if none selected and chats exist
+      setSidebarCollapsed(false);
       if (!selectedChatId && chats.length > 0) {
         handleSelectChat(chats[0]);
       }
     }
   }, [isMobile, chats, selectedChatId]);
 
-  // Handlers (keeping all existing handlers as they are)
   const handleSelectChat = useCallback(
     async (chat) => {
       if (selectedChatId === chat._id && currentChat?._id === chat._id) {
@@ -71,7 +64,6 @@ const Chats = () => {
 
       setSelectedChatId(chat._id);
 
-      // Close sidebar on mobile after selection
       if (isMobile) {
         setSidebarOpen(false);
       }
@@ -116,7 +108,6 @@ const Chats = () => {
         setNewChatTitle("");
         setShowNewChatModal(false);
 
-        // Close sidebar on mobile after creating chat
         if (isMobile) {
           setSidebarOpen(false);
         }
@@ -154,7 +145,6 @@ const Chats = () => {
       try {
         await deleteChat(chatId);
         if (selectedChatId === chatId) {
-          // Select another chat if available, or clear selection
           const remainingChats = chats.filter((chat) => chat._id !== chatId);
           if (remainingChats.length > 0) {
             setSelectedChatId(remainingChats[0]._id);
@@ -174,7 +164,6 @@ const Chats = () => {
 
   const handleCreateProject = useCallback(
     async (chatId) => {
-      // Validation
       if (!messages || messages.length < 2) {
         toast.warning(
           "Please have a more detailed conversation before creating a project."
@@ -255,12 +244,10 @@ const Chats = () => {
     setNewChatTitle("");
   }, []);
 
-  // Render sidebar
   const renderSidebar = () => {
     if (isMobile) {
       return (
         <>
-          {/* Mobile Overlay */}
           {sidebarOpen && (
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -268,7 +255,6 @@ const Chats = () => {
             />
           )}
 
-          {/* Mobile Sidebar */}
           <div
             className={`fixed left-0 top-0 h-full z-50 transform transition-transform duration-300 lg:hidden ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -292,7 +278,6 @@ const Chats = () => {
       );
     }
 
-    // Desktop Sidebar
     return (
       <ChatSidebar
         chats={chats}
@@ -309,7 +294,6 @@ const Chats = () => {
     );
   };
 
-  // Show empty state if no chats on mobile, or no selected chat
   const shouldShowEmptyState = () => {
     if (isMobile) {
       return chats.length === 0 || !selectedChatId;
@@ -319,10 +303,8 @@ const Chats = () => {
 
   return (
     <div className="h-screen flex bg-white overflow-hidden">
-      {/* Sidebar */}
       {renderSidebar()}
 
-      {/* Main Content - Full height container with proper flex layout */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {shouldShowEmptyState() ? (
           <EmptyState
@@ -348,7 +330,6 @@ const Chats = () => {
         )}
       </div>
 
-      {/* Modals */}
       <NewChatModal
         isOpen={showNewChatModal}
         onClose={closeNewChatModal}

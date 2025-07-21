@@ -1,4 +1,3 @@
-// src/App.jsx (Updated with Chats Route)
 import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -10,13 +9,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-// Store
 import useAuthStore from "./store/authStore";
-
-// Components
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
-// Website Pages
 import LandingPage from "./pages/website/LandingPage";
 import AboutPage from "./pages/website/AboutPage";
 import FeaturesPage from "./pages/website/FeaturesPage";
@@ -25,8 +20,8 @@ import SignUpPage from "./pages/website/SignUpPage";
 import ResetPasswordPage from "./pages/website/ResetPasswordPage";
 import NewPasswordPage from "./pages/website/NewPasswordPage";
 import SignupVerifyEmailPage from "./pages/website/SignupVerifyEmailPage";
+import ResetPasswordConfirmPage from "./pages/website/ResetPwConfirm";
 
-// WebApp Pages
 import Dashboard from "./pages/webApp/Dashboard";
 import Projects from "./pages/webApp/Projects";
 import ProjectOverview from "./pages/webApp/ProjectOverview";
@@ -34,14 +29,12 @@ import ProjectDetails from "./pages/webApp/ProjectDetails";
 import Search from "./pages/webApp/Search";
 import Profile from "./pages/webApp/Profile";
 import Chats from "./pages/webApp/Chats";
-import ResetPasswordConfirmPage from "./pages/website/ResetPwConfirm";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 function App() {
   const { initializeAuth } = useAuthStore();
 
   useEffect(() => {
-    // Initialize auth state on app load
     initializeAuth();
   }, [initializeAuth]);
 
@@ -49,7 +42,6 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* ========================== Website Routes ========================== */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/features" element={<FeaturesPage />} />
@@ -66,7 +58,6 @@ function App() {
             element={<ResetPasswordConfirmPage />}
           />
 
-          {/* ========================== Protected Dashboard Routes ========================== */}
           <Route
             path="/dashboard"
             element={
@@ -138,11 +129,9 @@ function App() {
             }
           />
 
-          {/* ========================== Catch All Route ========================== */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
-        {/* Toast Container for notifications */}
         <ToastContainer
           position="top-right"
           autoClose={4000}

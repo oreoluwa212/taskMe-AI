@@ -5,6 +5,7 @@ import {
   HiOutlineSearch,
   HiOutlineChevronDown,
   HiOutlineX,
+  HiOutlineArrowRight,
 } from "react-icons/hi";
 import { BiSolidUserCircle } from "react-icons/bi";
 import useAuthStore from "../../store/authStore";
@@ -41,6 +42,14 @@ const Header = ({ isCollapsed, isMobile = false }) => {
   };
   const formattedDate = today.toLocaleDateString("en-US", options);
 
+  // Function to handle closing the search dropdown
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    // Optionally clear the search query when closing (uncomment if needed)
+    // setSearchQuery("");
+    // setSearchResults([]);
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,7 +57,7 @@ const Header = ({ isCollapsed, isMobile = false }) => {
         setIsDropdownOpen(false);
       }
       if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsSearchOpen(false);
+        closeSearch(); // Use closeSearch instead of setIsSearchOpen(false)
       }
     };
 
@@ -148,13 +157,42 @@ const Header = ({ isCollapsed, isMobile = false }) => {
 
   // Fixed navigation function
   const handleSearchSelect = (project) => {
-    setIsSearchOpen(false);
+    closeSearch(); // Use closeSearch instead of setIsSearchOpen(false)
     setSearchQuery("");
     setSearchResults([]);
 
     // Use React Router's navigate instead of window.location.href
     // Fixed route path to match App.jsx (singular 'project', not 'projects')
     navigate(`/project/${project.id || project._id}/details`);
+  };
+
+  // New function to navigate to search page with current query
+  const handleViewAllResults = () => {
+    // Store the current search query before clearing
+    const currentQuery = searchQuery;
+    const currentFilters = searchFilters;
+
+    // Clear the search input and close dropdown
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearchOpen(false);
+
+    // Determine the search field based on which filter is active
+    let searchBy = "name"; // default
+    if (currentFilters.status) {
+      searchBy = "status";
+    } else if (currentFilters.progressMin || currentFilters.progressMax) {
+      searchBy = "progress";
+    }
+
+    // Navigate to search page with the stored query and filters
+    navigate("/search", {
+      state: {
+        searchQuery: currentQuery,
+        searchBy: searchBy,
+        filters: currentFilters,
+      },
+    });
   };
 
   const clearSearch = () => {
@@ -211,6 +249,24 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                 {/* Search Results Dropdown */}
                 {isSearchOpen && (searchQuery || searchResults.length > 0) && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-y-auto z-50">
+                    {/* View All Results Button - Now at TOP */}
+                    {(searchResults.length > 5 || searchQuery.trim()) && (
+                      <div className="border-b border-gray-100">
+                        <button
+                          onClick={handleViewAllResults}
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 text-blue-600 flex items-center justify-between group transition-colors"
+                        >
+                          <span className="text-sm font-medium">
+                            View all results{" "}
+                            {searchQuery && `for "${searchQuery}"`}
+                            {searchResults.length > 5 &&
+                              ` (${searchResults.length} total)`}
+                          </span>
+                          <HiOutlineArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+                    )}
+
                     {/* Search Filters */}
                     <div className="p-3 border-b border-gray-100">
                       <div className="flex flex-wrap gap-2 text-xs">
@@ -264,7 +320,7 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                       </div>
                     ) : searchResults.length > 0 ? (
                       <div className="py-1">
-                        {searchResults.map((project) => (
+                        {searchResults.slice(0, 5).map((project) => (
                           <button
                             key={project.id || project._id}
                             onClick={() => handleSearchSelect(project)}
@@ -304,6 +360,12 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                         <p className="text-sm">
                           No projects found for "{searchQuery}"
                         </p>
+                        <button
+                          onClick={handleViewAllResults}
+                          className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Go to advanced search
+                        </button>
                       </div>
                     ) : (
                       <div className="p-4 text-center text-gray-500">
@@ -345,6 +407,28 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                 {/* Mobile Search Results Dropdown */}
                 {isSearchOpen && (searchQuery || searchResults.length > 0) && (
                   <div className="absolute top-full left-0 right-4 mt-2 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-y-auto z-50">
+                    {/* View All Results Button - Mobile - Now at TOP */}
+                    {(searchResults.length > 3 || searchQuery.trim()) && (
+                      <div className="border-b border-gray-100">
+                        <button
+                          onClick={handleViewAllResults}
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 text-blue-600 flex items-center justify-between group transition-colors"
+                        >
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium">
+                              View all results
+                            </span>
+                            {searchQuery && (
+                              <span className="text-xs text-blue-500">
+                                for "{searchQuery}"
+                              </span>
+                            )}
+                          </div>
+                          <HiOutlineArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+                    )}
+
                     {/* Search Results */}
                     {isSearching ? (
                       <div className="p-4 text-center text-gray-500">
@@ -353,7 +437,7 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                       </div>
                     ) : searchResults.length > 0 ? (
                       <div className="py-1">
-                        {searchResults.map((project) => (
+                        {searchResults.slice(0, 3).map((project) => (
                           <button
                             key={project.id || project._id}
                             onClick={() => handleSearchSelect(project)}
@@ -391,6 +475,12 @@ const Header = ({ isCollapsed, isMobile = false }) => {
                         <p className="text-sm">
                           No projects found for "{searchQuery}"
                         </p>
+                        <button
+                          onClick={handleViewAllResults}
+                          className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Go to advanced search
+                        </button>
                       </div>
                     ) : (
                       <div className="p-4 text-center text-gray-500">
