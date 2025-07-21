@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
 import { HiOutlineLogout } from "react-icons/hi";
+import { HiChevronDoubleLeft, HiChevronDoubleRight } from "react-icons/hi";
 import { HiOutlineViewGrid, HiOutlineFolder, HiOutlineX } from "react-icons/hi";
 import { MessageSquare } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import { logo } from "../../../public";
 
-const Sidebar = ({ isOpen, setIsOpen }) => {
+const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [activeButton, setActiveButton] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -47,6 +49,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const closeSidebar = () => {
     setIsOpen(false);
+  };
+
+  const toggleCollapse = () => {
+    setIsTransitioning(true);
+    setIsCollapsed(!isCollapsed);
+
+    // Reset transition state after animation completes
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 300);
   };
 
   // Helper function to get user data
@@ -99,25 +111,42 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     },
   ];
 
-  const NavItem = ({ item, isActive, isMobile = false }) => (
+  const NavItem = ({ item, isActive, showText = true, isMobile = false }) => (
     <Link
       to={item.path}
       onClick={isMobile ? closeSidebar : undefined}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+      className={`flex items-center ${
+        showText ? "gap-3 px-4" : "justify-center px-2"
+      } py-3 rounded-lg transition-all duration-200 group relative ${
         isActive
           ? "bg-blue-600 text-white shadow-md"
           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
       }`}
+      title={!showText ? item.title : undefined}
     >
-      <item.icon size={20} />
-      <span className="font-medium">{item.title}</span>
+      <item.icon size={20} className="flex-shrink-0" />
+      {showText && (
+        <span
+          className={`font-medium transition-opacity duration-200 ${
+            isTransitioning ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {item.title}
+        </span>
+      )}
+      {/* Tooltip for collapsed state */}
+      {!showText && !isMobile && (
+        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+          {item.title}
+        </div>
+      )}
     </Link>
   );
 
   // Avatar component for reuse
-  const Avatar = ({ size = "w-10 h-10" }) => (
+  const Avatar = ({ size = "w-10 h-10", showTooltip = false }) => (
     <div
-      className={`${size} rounded-full flex items-center justify-center overflow-hidden`}
+      className={`${size} rounded-full flex items-center justify-center overflow-hidden relative group flex-shrink-0`}
     >
       {avatar ? (
         <img
@@ -138,76 +167,156 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       >
         {initials}
       </div>
+      {/* Tooltip for collapsed state */}
+      {showTooltip && (
+        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+          {firstname}
+        </div>
+      )}
     </div>
   );
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200">
-        <div className="flex flex-col flex-1 min-h-0">
+      <aside
+        className={`hidden lg:flex lg:flex-col ${
+          isCollapsed ? "lg:w-16" : "lg:w-64"
+        } lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200 transition-all duration-300 ease-in-out z-40`}
+        style={{
+          willChange: isTransitioning ? "width" : "auto",
+          transform: "translateZ(0)", // Force hardware acceleration
+        }}
+      >
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-200">
-            <img src={logo} alt="Logo" className="h-8 w-auto" />
+          <div
+            className={`flex items-center h-16 border-b border-gray-200 transition-all duration-300 ${
+              isCollapsed ? "justify-center px-4" : "px-6"
+            }`}
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              className={`transition-all duration-300 ${
+                isCollapsed ? "h-6 w-auto" : "h-8 w-auto"
+              }`}
+            />
+          </div>
+
+          {/* Toggle Button */}
+          <div
+            className={`flex py-2 transition-all duration-300 ${
+              isCollapsed ? "justify-center px-2" : "justify-end px-4"
+            }`}
+          >
+            <button
+              onClick={toggleCollapse}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700 flex-shrink-0"
+              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isCollapsed ? (
+                <HiChevronDoubleRight size={16} />
+              ) : (
+                <HiChevronDoubleLeft size={16} />
+              )}
+            </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav
+            className={`flex-1 py-4 space-y-2 overflow-hidden transition-all duration-300 ${
+              isCollapsed ? "px-2" : "px-4"
+            }`}
+          >
             {navigationItems.map((item) => (
               <NavItem
                 key={item.id}
                 item={item}
                 isActive={activeButton === item.id}
+                showText={!isCollapsed}
               />
             ))}
           </nav>
 
           {/* User Section */}
-          <div className="border-t border-gray-200 p-4">
-            <div className="flex items-center gap-3 mb-4">
-              <Avatar />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {firstname}
-                </p>
-                <p className="text-xs text-gray-500 truncate">{email}</p>
-              </div>
+          <div
+            className={`border-t border-gray-200 p-4 transition-all duration-300 ${
+              isCollapsed ? "px-2" : "px-4"
+            }`}
+          >
+            <div
+              className={`flex items-center transition-all duration-300 ${
+                isCollapsed ? "justify-center mb-2" : "gap-3 mb-4"
+              }`}
+            >
+              <Avatar showTooltip={isCollapsed} />
+              {!isCollapsed && (
+                <div
+                  className={`flex-1 min-w-0 transition-opacity duration-200 ${
+                    isTransitioning ? "opacity-0" : "opacity-100"
+                  }`}
+                >
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {firstname}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">{email}</p>
+                </div>
+              )}
             </div>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className={`w-full flex items-center transition-all duration-200 text-red-600 hover:bg-red-50 rounded-lg group relative ${
+                isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-4 py-3"
+              }`}
+              title={isCollapsed ? "Logout" : undefined}
             >
-              <HiOutlineLogout size={20} />
-              <span className="font-medium">Logout</span>
+              <HiOutlineLogout size={20} className="flex-shrink-0" />
+              {!isCollapsed && (
+                <span
+                  className={`font-medium transition-opacity duration-200 ${
+                    isTransitioning ? "opacity-0" : "opacity-100"
+                  }`}
+                >
+                  Logout
+                </span>
+              )}
+              {/* Tooltip for collapsed state */}
+              {isCollapsed && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  Logout
+                </div>
+              )}
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
       {/* Mobile Sidebar Overlay */}
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-50"
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
             onClick={closeSidebar}
           />
 
           {/* Sidebar */}
-          <div className="relative flex flex-col w-64 bg-white shadow-xl">
+          <div className="relative flex flex-col w-64 bg-white shadow-xl transform transition-transform duration-300 ease-out">
             {/* Header */}
             <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
               <img src={logo} alt="Logo" className="h-8 w-auto" />
               <button
                 onClick={closeSidebar}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Close sidebar"
               >
                 <HiOutlineX size={20} />
               </button>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 space-y-2">
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
               {navigationItems.map((item) => (
                 <NavItem
                   key={item.id}
@@ -242,7 +351,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       )}
 
       {/* Desktop content spacer */}
-      <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" />
+      <div
+        className={`hidden lg:block lg:flex-shrink-0 transition-all duration-300 ease-in-out ${
+          isCollapsed ? "lg:w-16" : "lg:w-64"
+        }`}
+      />
     </>
   );
 };

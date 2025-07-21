@@ -400,7 +400,7 @@ const Dashboard = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <ErrorMessages
         userError={userError}
         projectError={projectError}
@@ -411,26 +411,29 @@ const Dashboard = () => {
         onClearErrors={handleClearErrors}
       />
 
-      <PageHeader
-        title={`Welcome back, ${
-          user?.data?.firstname || user?.firstname || "User"
-        }!`}
-        subtitle="Here's what's on your plate today."
-        onCreateProject={handleCreateProject}
-      />
+      {/* Responsive Container */}
+      <div className="w-full">
+        <PageHeader
+          title={`Welcome back, ${
+            user?.data?.firstname || user?.firstname || "User"
+          }!`}
+          subtitle="Here's what's on your plate today."
+          onCreateProject={handleCreateProject}
+        />
 
-      <EnhancedDashboardStatsCards
-        stats={safeStats}
-        workloadAnalysis={dashboardData.workloadAnalysis}
-        subtaskStats={dashboardData.subtaskStats}
-        isLoading={statsLoading || subtaskLoading}
-      />
+        <EnhancedDashboardStatsCards
+          stats={safeStats}
+          workloadAnalysis={dashboardData.workloadAnalysis}
+          subtaskStats={dashboardData.subtaskStats}
+          isLoading={statsLoading || subtaskLoading}
+        />
 
-      <EnhancedOverviewContent
-        dashboardData={dashboardData}
-        onCreateProject={handleCreateProject}
-        isLoading={projectLoading || subtaskLoading}
-      />
+        <EnhancedOverviewContent
+          dashboardData={dashboardData}
+          onCreateProject={handleCreateProject}
+          isLoading={projectLoading || subtaskLoading}
+        />
+      </div>
 
       <ProjectModal
         isOpen={isModalOpen}
@@ -446,16 +449,16 @@ const Dashboard = () => {
           onClose={() => setToast(null)}
         />
       )}
-    </>
+    </div>
   );
 };
 
 // Component: Dashboard Loader
 const DashboardLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="flex flex-col items-center gap-4">
+  <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center gap-4 p-8">
       <LoadingSpinner size={40} />
-      <p className="text-gray-600">Loading your dashboard...</p>
+      <p className="text-gray-600 text-center">Loading your dashboard...</p>
     </div>
   </div>
 );
@@ -470,19 +473,19 @@ const ErrorMessages = ({
   onRetryProjects,
   onClearErrors,
 }) => (
-  <>
+  <div className="space-y-4">
     {userError && (
       <ErrorMessage
         message={userError}
         onRetry={onRetryProfile}
-        className="mb-6"
+        className="mx-4 sm:mx-0"
       />
     )}
     {projectError && (
       <ErrorMessage
         message={projectError}
         onRetry={onRetryProjects}
-        className="mb-6"
+        className="mx-4 sm:mx-0"
       />
     )}
     {statsError && (
@@ -490,7 +493,7 @@ const ErrorMessages = ({
         message={`Stats error: ${statsError}`}
         onRetry={onRetryProjects}
         onClose={onClearErrors}
-        className="mb-6"
+        className="mx-4 sm:mx-0"
       />
     )}
     {subtaskError && (
@@ -498,10 +501,10 @@ const ErrorMessages = ({
         message={`Subtask error: ${subtaskError}`}
         onRetry={onRetryProjects}
         onClose={onClearErrors}
-        className="mb-6"
+        className="mx-4 sm:mx-0"
       />
     )}
-  </>
+  </div>
 );
 
 // Enhanced Component: Dashboard Stats Cards with Subtask Data
@@ -513,25 +516,26 @@ const EnhancedDashboardStatsCards = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center text-center min-h-[120px] w-full animate-pulse"
-          >
-            <div className="w-8 h-8 bg-gray-200 rounded mb-2"></div>
-            <div className="w-12 h-8 bg-gray-200 rounded mb-2"></div>
-            <div className="w-20 h-4 bg-gray-200 rounded"></div>
-          </div>
-        ))}
+      <div className="px-4 sm:px-6 lg:px-8 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center text-center min-h-[100px] sm:min-h-[120px] animate-pulse"
+            >
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded mb-2"></div>
+              <div className="w-8 h-6 sm:w-12 sm:h-8 bg-gray-200 rounded mb-2"></div>
+              <div className="w-16 h-3 sm:w-20 sm:h-4 bg-gray-200 rounded"></div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      {/* Project Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div className="px-4 sm:px-6 lg:px-8 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <HomeCard
           title="Total Projects"
           value={stats?.total || 0}
@@ -557,7 +561,7 @@ const EnhancedDashboardStatsCards = ({
           icon={icon4}
         />
       </div>
-    </>
+    </div>
   );
 };
 
@@ -578,17 +582,19 @@ const EnhancedOverviewContent = ({
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse"
-          >
-            <div className="h-4 bg-gray-200 rounded mb-3"></div>
-            <div className="h-3 bg-gray-200 rounded mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-          </div>
-        ))}
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 animate-pulse"
+            >
+              <div className="h-4 bg-gray-200 rounded mb-3"></div>
+              <div className="h-3 bg-gray-200 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -600,235 +606,245 @@ const EnhancedOverviewContent = ({
     recentProjects.length === 0
   ) {
     return (
-      <div className="text-center py-12">
-        <div className="mb-4">
-          <HiOutlineFolder className="mx-auto h-12 w-12 text-gray-400" />
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="text-center py-12">
+          <div className="mb-4">
+            <HiOutlineFolder className="mx-auto h-12 w-12 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No active projects
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            Get started by creating your first project to see your overview.
+          </p>
+          <button
+            onClick={onCreateProject}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FaPlus size={14} />
+            Create Project
+          </button>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          No active projects
-        </h3>
-        <p className="text-gray-500 mb-6">
-          Get started by creating your first project to see your overview.
-        </p>
-        <button
-          onClick={onCreateProject}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <FaPlus size={14} />
-          Create Project
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Main Overview Cards */}
-      <div className="flex flex-col gap-6">
-        {/* Current Project - Takes full width on mobile, 2/3 on desktop */}
-        <div className="w-full">
-          <CurrentProjectCard project={currentProject} />
-        </div>
-      </div>
-
-      {/* Today's Tasks Overview */}
-      {todaysTasks && todaysTasks.length > 1 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FaClock className="text-blue-500" />
-            All Today's Tasks ({todaysTasks.length})
-          </h3>
-          <div className="grid gap-3">
-            {todaysTasks.slice(1, 6).map((task, index) => (
-              <div
-                key={task.id || index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{task.name}</h4>
-                  <p className="text-sm text-gray-600">{task.project}</p>
-                  <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                    <span>Due: {task.dueTime}</span>
-                    <span>Est: {task.estimatedHours}h</span>
-                    {task.category && <span>{task.category}</span>}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`px-2 py-1 text-xs rounded ${
-                      task.priority === "High"
-                        ? "bg-red-100 text-red-700"
-                        : task.priority === "Medium"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {task.priority}
-                  </span>
-                  <span
-                    className={`px-2 py-1 text-xs rounded ${
-                      task.status === "In Progress"
-                        ? "bg-blue-100 text-blue-700"
-                        : task.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {task.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-            {todaysTasks.length > 6 && (
-              <div className="text-center text-sm text-gray-500 py-2">
-                +{todaysTasks.length - 6} more tasks for today
-              </div>
-            )}
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="space-y-6">
+        {/* Current Project - Full width */}
+        {currentProject && (
+          <div className="w-full">
+            <CurrentProjectCard project={currentProject} />
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Overdue Tasks Alert (if any) */}
-      {overdueTasks.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <HiOutlineExclamationCircle
-              className="text-red-500 mt-1 flex-shrink-0"
-              size={20}
-            />
-            <div className="flex-1">
-              <h3 className="text-red-800 font-medium mb-2">
-                ⚠️ {overdueTasks.length} Overdue Item
-                {overdueTasks.length > 1 ? "s" : ""}
-              </h3>
-              <div className="space-y-2">
-                {overdueTasks.slice(0, 3).map((item, index) => (
-                  <div
-                    key={item.id || index}
-                    className="flex items-center justify-between bg-white p-3 rounded border"
-                  >
-                    <div>
-                      <h4 className="font-medium text-gray-900">{item.name}</h4>
-                      {item.taskName && (
-                        <p className="text-sm text-gray-700 font-medium">
-                          Task: {item.taskName}
-                        </p>
-                      )}
-                      <p className="text-sm text-gray-600">
-                        Due: {formatDate(item.dueDate)} at{" "}
-                        {item.dueTime || "5:00 PM"}
-                      </p>
-                      <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                        <span>{item.category}</span>
-                        <span>{item.priority} Priority</span>
-                        <span className="px-2 py-1 bg-gray-100 rounded">
-                          {item.type === "subtask" ? "Task" : "Project"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-red-600">
-                        {Math.ceil(
-                          (new Date() - new Date(item.dueDate)) /
-                            (1000 * 60 * 60 * 24)
-                        )}{" "}
-                        days overdue
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {item.progress || 0}% complete
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {overdueTasks.length > 3 && (
-                  <div className="text-center">
-                    <p className="text-sm text-red-600">
-                      and {overdueTasks.length - 3} more overdue item
-                      {overdueTasks.length - 3 > 1 ? "s" : ""}
+        {/* Today's Tasks Overview */}
+        {todaysTasks && todaysTasks.length > 1 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <FaClock className="text-blue-500" />
+              All Today's Tasks ({todaysTasks.length})
+            </h3>
+            <div className="space-y-3">
+              {todaysTasks.slice(1, 6).map((task, index) => (
+                <div
+                  key={task.id || index}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-3 sm:gap-0"
+                >
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-gray-900 truncate">
+                      {task.name}
+                    </h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {task.project}
                     </p>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-500 mt-1">
+                      <span>Due: {task.dueTime}</span>
+                      <span>Est: {task.estimatedHours}h</span>
+                      {task.category && <span>{task.category}</span>}
+                    </div>
                   </div>
-                )}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span
+                      className={`px-2 py-1 text-xs rounded whitespace-nowrap ${
+                        task.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : task.priority === "Medium"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {task.priority}
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-xs rounded whitespace-nowrap ${
+                        task.status === "In Progress"
+                          ? "bg-blue-100 text-blue-700"
+                          : task.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {task.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {todaysTasks.length > 6 && (
+                <div className="text-center text-sm text-gray-500 py-2">
+                  +{todaysTasks.length - 6} more tasks for today
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Overdue Tasks Alert (if any) */}
+        {overdueTasks.length > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+              <HiOutlineExclamationCircle
+                className="text-red-500 mt-1 flex-shrink-0"
+                size={20}
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-red-800 font-medium mb-2">
+                  ⚠️ {overdueTasks.length} Overdue Item
+                  {overdueTasks.length > 1 ? "s" : ""}
+                </h3>
+                <div className="space-y-3">
+                  {overdueTasks.slice(0, 3).map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-3 rounded border gap-3 sm:gap-0"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 truncate">
+                          {item.name}
+                        </h4>
+                        {item.taskName && (
+                          <p className="text-sm text-gray-700 font-medium truncate">
+                            Task: {item.taskName}
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-600">
+                          Due: {formatDate(item.dueDate)} at{" "}
+                          {item.dueTime || "5:00 PM"}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-1">
+                          <span>{item.category}</span>
+                          <span>{item.priority} Priority</span>
+                          <span className="px-2 py-1 bg-gray-100 rounded">
+                            {item.type === "subtask" ? "Task" : "Project"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-left sm:text-right flex-shrink-0">
+                        <div className="text-sm font-medium text-red-600">
+                          {Math.ceil(
+                            (new Date() - new Date(item.dueDate)) /
+                              (1000 * 60 * 60 * 24)
+                          )}{" "}
+                          days overdue
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.progress || 0}% complete
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {overdueTasks.length > 3 && (
+                    <div className="text-center">
+                      <p className="text-sm text-red-600">
+                        and {overdueTasks.length - 3} more overdue item
+                        {overdueTasks.length - 3 > 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Recent Projects Activity */}
-      {recentProjects.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <HiOutlineCheckCircle className="text-blue-500" />
-            Recent Activity ({recentProjects.length})
-          </h3>
-          <div className="space-y-3">
-            {recentProjects.map((project, index) => (
-              <div
-                key={project._id || index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900">
-                      {project.name}
-                    </h4>
-                    <span
-                      className={`px-2 py-0.5 text-xs rounded-full ${
-                        project.status === "Completed"
-                          ? "bg-green-100 text-green-700"
-                          : project.status === "In Progress"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {project.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    {project.category}
-                  </p>
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>Created: {formatDate(project.createdAt)}</span>
-                    {project.timeline && (
-                      <span>Timeline: {project.timeline} days</span>
-                    )}
-                    {project.subtaskStats && (
-                      <span>Tasks: {project.subtaskStats.totalSubtasks}</span>
-                    )}
-                    {project.subtaskStats && (
-                      <span>
-                        Est: {project.subtaskStats.totalEstimatedHours}h
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {project.tags &&
-                    project.tags.slice(0, 2).map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  <div className="text-right">
-                    <div className="text-sm font-medium text-gray-900">
-                      {project.progress || 0}%
+        {/* Recent Projects Activity */}
+        {recentProjects.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <HiOutlineCheckCircle className="text-blue-500" />
+              Recent Activity ({recentProjects.length})
+            </h3>
+            <div className="space-y-3">
+              {recentProjects.map((project, index) => (
+                <React.Fragment key={project._id || index}>
+                  <div
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-3 sm:gap-0"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h4 className="font-medium text-gray-900 truncate">
+                          {project.name}
+                        </h4>
+                        <span
+                          className={`px-2 py-0.5 text-xs rounded-full ${
+                            project.status === "Completed"
+                              ? "bg-green-100 text-green-700"
+                              : project.status === "In Progress"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {project.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {project.category}
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>Created: {formatDate(project.createdAt)}</span>
+                        {project.timeline && (
+                          <span>Timeline: {project.timeline} days</span>
+                        )}
+                        {project.subtaskStats && (
+                          <span>Tasks: {project.subtaskStats.totalSubtasks}</span>
+                        )}
+                        {project.subtaskStats && (
+                          <span>
+                            Est: {project.subtaskStats.totalEstimatedHours}h
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                      <div
-                        className="bg-blue-600 h-1.5 rounded-full"
-                        style={{ width: `${project.progress || 0}%` }}
-                      />
+                    <div className="flex items-center gap-3">
+                      {project.tags &&
+                        project.tags.slice(0, 2).map((tag, tagIndex) => (
+                          <span
+                            key={tagIndex}
+                            className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {project.progress || 0}%
+                        </div>
+                        <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-blue-600 h-1.5 rounded-full"
+                            style={{ width: `${project.progress || 0}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

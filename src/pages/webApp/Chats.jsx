@@ -344,7 +344,7 @@ const Chats = () => {
               <MessageSquare size={32} className="text-blue-600" />
             </div>
             <h3 className="text-2xl font-semibold text-gray-900 mb-3">
-              Welcome to AI Chat
+              Welcome to TaskMe AI Chat
             </h3>
             <p className="text-gray-600 mb-8 leading-relaxed">
               Start a conversation with our AI assistant. Ask questions, get

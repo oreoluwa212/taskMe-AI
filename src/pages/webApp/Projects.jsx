@@ -13,7 +13,6 @@ import useProjectSearch from "../../hooks/useProjectSearch";
 import { formatDate } from "../../utils/dateUtils";
 
 const Projects = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [viewMode, setViewMode] = useState("grid");
@@ -100,10 +99,7 @@ const Projects = () => {
     ? filteredProjects
     : projectsArray;
 
-  // Determine loading state - show loading if:
-  // 1. Initial loading is true, OR
-  // 2. We haven't initialized yet, OR
-  // 3. Project loading is true AND we don't have any projects yet
+  // Determine loading state
   const isLoading =
     initialLoading ||
     !hasInitialized ||
@@ -113,76 +109,66 @@ const Projects = () => {
   const shouldShowError = projectError && !isLoading;
 
   return (
-    <div className="flex w-full bg-dashboardBg font-lato">
-      {/* Main Content Area - Takes full available space */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Header - Fixed at top */}
-        <header className="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-6 pb-4 border-b border-gray-200">
-          <PageHeader
-            title="My Projects"
-            subtitle="Manage and track all your projects in one place"
-            onCreateProject={handleCreateProject}
-            isMobileMenuOpen={isOpen}
-            setMobileMenuOpen={setIsOpen}
-            showMobileMenu={true}
-          />
-        </header>
+    <div className="w-full">
+      {/* Page Header - Remove duplicate padding since DashboardLayout handles it */}
+      <div className="mb-6">
+        <PageHeader
+          title="My Projects"
+          subtitle="Manage and track all your projects in one place"
+          onCreateProject={handleCreateProject}
+          showMobileMenu={false} // Don't show mobile menu here since DashboardLayout handles it
+        />
+      </div>
 
-        {/* Error Message - Fixed positioning when present */}
-        {shouldShowError && (
-          <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 py-4 bg-red-50 border-b border-red-200">
-            <ErrorMessage
-              message={projectError}
-              onRetry={handleRetryProjects}
-            />
-          </div>
-        )}
-
-        {/* Search and Filters - Fixed positioning when present */}
-        {!isLoading && (
-          <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 py-4 bg-gray-50 border-b border-gray-200">
-            <SearchAndFilters
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-              filters={filters}
-              setFilters={setFilters}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              clearSearch={clearSearch}
-              isSearching={isSearching}
-              resultsCount={displayProjects.length}
-              showViewToggle={true}
-            />
-          </div>
-        )}
-
-        {/* Content Area - Scrollable, takes remaining space */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 sm:px-6 lg:px-8 py-6">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <LoadingSpinner size="lg" />
-              </div>
-            ) : (
-              <ProjectGrid
-                projects={displayProjects}
-                viewMode={viewMode}
-                formatDate={formatDate}
-                isLoading={isLoading}
-                isSearching={isSearching}
-                searchQuery={searchQuery}
-                hasActiveFilters={hasActiveFilters}
-                onCreateProject={handleCreateProject}
-                hasInitialized={hasInitialized}
-              />
-            )}
-          </div>
+      {/* Error Message */}
+      {shouldShowError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <ErrorMessage message={projectError} onRetry={handleRetryProjects} />
         </div>
-      </main>
+      )}
 
-      {/* Modals and Notifications - Portal/Fixed positioning */}
+      {/* Search and Filters */}
+      {!isLoading && (
+        <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            filters={filters}
+            setFilters={setFilters}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            clearSearch={clearSearch}
+            isSearching={isSearching}
+            resultsCount={displayProjects.length}
+            showViewToggle={true}
+          />
+        </div>
+      )}
+
+      {/* Content Area */}
+      <div className="w-full">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : (
+          <ProjectGrid
+            projects={displayProjects}
+            viewMode={viewMode}
+            formatDate={formatDate}
+            isLoading={isLoading}
+            isSearching={isSearching}
+            searchQuery={searchQuery}
+            hasActiveFilters={hasActiveFilters}
+            onCreateProject={handleCreateProject}
+            hasInitialized={hasInitialized}
+          />
+        )}
+      </div>
+
+      {/* Modals and Notifications */}
       {isModalOpen && (
         <ProjectModal
           isOpen={isModalOpen}
