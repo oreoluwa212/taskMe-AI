@@ -1,13 +1,39 @@
 // src/components/chat/ProjectCreationModal.jsx
 import React from "react";
 import { Sparkles, FolderPlus, Zap, Code, Lightbulb } from "lucide-react";
+import { useModal } from "../../hooks/useModal";
 
-const ProjectCreationModal = ({ isOpen, chatTitle }) => {
+const ProjectCreationModal = ({ isOpen, chatTitle, onClose }) => {
+  // Use the enhanced modal hook for scroll prevention
+  useModal(isOpen);
+
   if (!isOpen) return null;
 
+  // Prevent clicks inside modal from closing it
+  const handleModalClick = (e) => {
+    e.stopPropagation();
+  };
+
+  // Handle overlay click to close modal (optional)
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl">
+    <div
+      className="modal-overlay bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="project-modal-title"
+    >
+      <div
+        className="modal-content bg-white rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl"
+        onClick={handleModalClick}
+        role="document"
+      >
         <div className="text-center">
           {/* Animated Icon */}
           <div className="relative mb-6">
@@ -19,6 +45,7 @@ const ProjectCreationModal = ({ isOpen, chatTitle }) => {
               <FolderPlus
                 size={32}
                 className="text-blue-600 z-10 animate-bounce"
+                aria-hidden="true"
               />
 
               {/* Floating Icons */}
@@ -26,26 +53,35 @@ const ProjectCreationModal = ({ isOpen, chatTitle }) => {
                 size={12}
                 className="absolute top-2 right-2 text-purple-500 animate-pulse"
                 style={{ animationDelay: "0.5s" }}
+                aria-hidden="true"
               />
               <Code
                 size={10}
                 className="absolute bottom-2 left-2 text-blue-500 animate-pulse"
                 style={{ animationDelay: "1s" }}
+                aria-hidden="true"
               />
               <Lightbulb
                 size={10}
                 className="absolute top-2 left-2 text-yellow-500 animate-pulse"
                 style={{ animationDelay: "1.5s" }}
+                aria-hidden="true"
               />
             </div>
 
             {/* Spinning Ring */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+            <div
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin"
+              aria-hidden="true"
+            ></div>
           </div>
 
           {/* Content */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-gray-900">
+            <h3
+              id="project-modal-title"
+              className="text-2xl font-bold text-gray-900"
+            >
               Creating Your Project
             </h3>
 
@@ -60,7 +96,11 @@ const ProjectCreationModal = ({ isOpen, chatTitle }) => {
             </p>
 
             {/* Progress Steps */}
-            <div className="mt-8 space-y-3">
+            <div
+              className="mt-8 space-y-3"
+              role="list"
+              aria-label="Project creation progress"
+            >
               <ProgressStep
                 icon={Zap}
                 text="Analyzing conversation context"
@@ -87,7 +127,10 @@ const ProjectCreationModal = ({ isOpen, chatTitle }) => {
             </div>
 
             {/* Loading Dots */}
-            <div className="flex justify-center space-x-2 mt-6">
+            <div
+              className="flex justify-center space-x-2 mt-6"
+              aria-hidden="true"
+            >
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
@@ -107,14 +150,15 @@ const ProjectCreationModal = ({ isOpen, chatTitle }) => {
   );
 };
 
-// ProgressStep Component
+// Enhanced ProgressStep Component with better accessibility
 const ProgressStep = ({ icon: Icon, text, isActive, delay = "0s" }) => (
-  <div className="flex items-center space-x-3 text-left">
+  <div className="flex items-center space-x-3 text-left" role="listitem">
     <div
       className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 ${
         isActive ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-400"
       }`}
       style={{ animationDelay: delay }}
+      aria-hidden="true"
     >
       <Icon
         size={12}

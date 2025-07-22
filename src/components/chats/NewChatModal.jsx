@@ -1,7 +1,8 @@
-// src/components/chat/NewChatModal.jsx
+// Updated NewChatModal.jsx
 import React from "react";
 import { Plus } from "lucide-react";
 import Button from "../ui/Button";
+import { useModal } from "../../hooks/useModal"; // Import the hook
 
 const NewChatModal = ({
   isOpen,
@@ -11,6 +12,9 @@ const NewChatModal = ({
   onSubmit,
   loading = false,
 }) => {
+  // Use the modal hook to handle body scroll lock
+  useModal(isOpen);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
@@ -19,24 +23,30 @@ const NewChatModal = ({
     onSubmit();
   };
 
-  const handleClose = () => {
-    onClose();
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center 
-      justify-center z-50 p-4"
+      className="modal-overlay bg-black bg-opacity-50"
+      onClick={handleOverlayClick}
     >
-      <div className="bg-white rounded-xl p-4 md:p-6 w-full max-w-md shadow-2xl">
-        <ModalHeader />
-        <ModalForm
-          title={title}
-          onTitleChange={onTitleChange}
-          onSubmit={handleSubmit}
-          onClose={handleClose}
-          loading={loading}
-        />
+      <div className="modal-container">
+        <div className="modal-content bg-white w-full max-w-md">
+          <div className="p-4 md:p-6">
+            <ModalHeader />
+            <ModalForm
+              title={title}
+              onTitleChange={onTitleChange}
+              onSubmit={handleSubmit}
+              onClose={onClose}
+              loading={loading}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

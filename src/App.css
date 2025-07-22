@@ -453,3 +453,133 @@ html {
   padding: 16px;
   background-color: white;
 }
+
+/* Prevent background scrolling when modal is open */
+.modal-open {
+  overflow: hidden;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
+}
+
+/* Ensure modal overlays are properly positioned */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Prevent scrolling issues on mobile/zoom */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Modal container styling */
+.modal-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  /* Ensure proper sizing on all devices */
+  box-sizing: border-box;
+}
+
+/* Modal content wrapper */
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  /* Prevent content from jumping on zoom */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Smooth scrolling within modal */
+  scroll-behavior: smooth;
+}
+
+/* Prevent zoom-related layout shifts */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Fix for sticky headers inside modals */
+.modal-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .modal-container {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 2rem);
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* High DPI/Zoom fixes */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .modal-overlay {
+    /* Ensure crisp rendering on high DPI displays */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Animation classes for smooth modal transitions */
+.modal-fade-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.modal-fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.modal-fade-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 150ms ease-in, transform 150ms ease-in;
+}
+
+/* Focus trap styling */
+.modal-content:focus {
+  outline: none;
+}
