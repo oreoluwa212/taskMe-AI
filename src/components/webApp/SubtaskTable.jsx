@@ -425,9 +425,9 @@ const SubtaskTable = ({ projectId, projectName, onSubtaskChange }) => {
                 <th className="text-left p-3 border-b font-semibold text-gray-700">
                   Status
                 </th>
-                <th className="text-left p-3 border-b font-semibold text-gray-700">
+                {/* <th className="text-left p-3 border-b font-semibold text-gray-700">
                   Due Date
-                </th>
+                </th> */}
                 <th className="text-left p-3 border-b font-semibold text-gray-700">
                   Hours
                 </th>
@@ -542,7 +542,7 @@ const SubtaskTable = ({ projectId, projectName, onSubtaskChange }) => {
                       </div>
                     )}
                   </td>
-                  <td className="p-3 border-b">
+                  {/* <td className="p-3 border-b">
                     {isEditing === (subtask.id || subtask._id) ? (
                       <input
                         type="date"
@@ -562,7 +562,7 @@ const SubtaskTable = ({ projectId, projectName, onSubtaskChange }) => {
                           : "No date set"}
                       </span>
                     )}
-                  </td>
+                  </td> */}
                   <td className="p-3 border-b">
                     <div className="text-sm text-gray-600">
                       <div>Est: {subtask.estimatedHours || 0}h</div>
