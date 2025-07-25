@@ -43,7 +43,7 @@ To empower individuals to achieve their goals with ease and efficiency.
 ## Technologies Used
 - **React** and **Tailwind** for user interfaces
 - **Figma** for design
-- **PipeOps** for deployment
+- **Vercel** for deployment
 
 ## Getting Started
 
